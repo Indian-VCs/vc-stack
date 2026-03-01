@@ -207,5 +207,5 @@ a[class*="cta"]{
 
 /* ── Footer legal links: right-align to match social icons above ── */
 [class*="legals_link_wrap"]{
-  justify-content:flex-end !important;
+  justify-self:end !important;
 }
