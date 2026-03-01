@@ -13,16 +13,17 @@ html, body {
   height: 100%;
   background: #F8F8EE;
   -webkit-font-smoothing: antialiased;
+  /* Allow scroll on mobile when poster overflows */
+  overflow: auto;
 }
 
-/* ── Full-screen poster page ── */
+/* ── Poster page wrapper ── */
+/* No flex centering — CSS transforms don't change layout size,
+   so flexbox would try to center a 1920px element and clip it.
+   JS handles sizing & centering via inline styles. */
 .poster-page {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
+  background: #F8F8EE;
 }
 
 /* ── The poster: fixed 1920×1080, scaled via JS ── */
@@ -36,7 +37,8 @@ html, body {
   border-radius: 10px;
   box-shadow: 0 6px 36px rgba(0,0,0,0.12);
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  transform-origin: center center;
+  transform-origin: top left;
+  flex-shrink: 0;
   /* JS sets the scale */
   transform: scale(var(--poster-scale, 0.7));
 }

@@ -159,16 +159,34 @@ export default function Home() {
       renderLandscape(landscapeRef.current);
     }
 
-    // Scale poster to fit viewport — poster is one fixed unit,
-    // just scales down at every size, never reflows.
+    // Scale poster to fit viewport. Poster is one fixed 1920×1080
+    // unit — it only scales, never reflows.
+    //
+    // All viewports: scale to fit entirely in viewport (like an image).
+    // On mobile the poster appears small — users pinch-to-zoom to
+    // read details (viewport meta allows up to 5× zoom).
     function fitPoster() {
       if (!posterRef.current) return;
+      const page = posterRef.current.parentElement!;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const scaleX = vw / 1920;
-      const scaleY = vh / 1080;
-      const scale = Math.min(scaleX, scaleY, 1); // never upscale past 1:1
+
+      // Always fit the entire poster inside the viewport
+      const scale = Math.min(vw / 1920, vh / 1080, 1);
+
+      const w = Math.ceil(1920 * scale);
+      const h = Math.ceil(1080 * scale);
       posterRef.current.style.transform = `scale(${scale})`;
+
+      // Page fills viewport; poster is centered inside via padding.
+      // overflow:hidden hides the poster's 1920px layout box.
+      page.style.width = `${vw}px`;
+      page.style.height = `${vh}px`;
+      page.style.overflow = "hidden";
+
+      // Center in viewport with padding
+      page.style.paddingLeft = `${Math.max(0, (vw - w) / 2)}px`;
+      page.style.paddingTop = `${Math.max(0, (vh - h) / 2)}px`;
     }
 
     fitPoster();
