@@ -116,3 +116,72 @@ a[class*="cta"]:hover{
 a[class*="cta"]:hover [class*="cta_line_abs"]{
   width:100%;
 }
+
+/* ══════════════════════════════════════════════════════
+   DevLink variable fallback overrides
+   Webflow's mode-collection system doesn't resolve in
+   Next.js CSS modules, so heading fonts, sizes, and
+   other design tokens need explicit fallbacks.
+   ══════════════════════════════════════════════════════ */
+
+/* ── Headings: force Arapey + correct sizes ── */
+/* The mode-collection system doesn't resolve in Next.js,
+   so --_text-style---font-size falls back to 1rem (16px).
+   We must override with !important to beat CSS module specificity. */
+[class*="u-text-style-h1"],
+[class*="u-text-style-h2"],
+[class*="u-text-style-h3"],
+[class*="u-text-style-h4"],
+[class*="u-text-style-h5"]{
+  font-family:'Arapey','Times New Roman',sans-serif !important;
+  line-height:1.2 !important;
+  letter-spacing:-0.04em !important;
+  font-weight:400 !important;
+}
+[class*="u-text-style-h1"]{font-size:clamp(3rem, 2.5rem + 2.22vw, 5rem) !important}
+[class*="u-text-style-h2"]{font-size:clamp(2.5rem, 2rem + 2.22vw, 4rem) !important}
+[class*="u-text-style-h3"]{font-size:clamp(2rem, 1.5rem + 2.22vw, 3.5rem) !important}
+[class*="u-text-style-h4"]{font-size:clamp(1.5rem, 1.25rem + 1.11vw, 2rem) !important}
+[class*="u-text-style-h5"]{font-size:clamp(1.25rem, 1rem + 1.11vw, 1.5rem) !important}
+
+/* ── Contact heading size ── */
+[class*="contact-heading"]{
+  font-size:clamp(2rem, 1.5rem + 2.22vw, 3.5rem) !important;
+}
+
+/* ── Footer heading size + red color ── */
+[class*="footer_heading"]:not([class*="wrap"]){
+  font-size:clamp(2.5rem, 2rem + 2.22vw, 4rem) !important;
+}
+[class*="u-color-indian-vc-red"]{
+  color:var(--swatch--pc-indian-vcs-red, #d21905);
+}
+
+/* ── CTA base: uppercase + sizing (matches Webflow) ── */
+a[class*="cta"]{
+  text-transform:uppercase;
+  font-weight:500;
+  font-size:var(--_typography---font-size--text-small, 0.875rem);
+}
+
+/* ── Contact section dark bg fallback ── */
+[class*="section_contact"]{
+  background-color:var(--swatch--sc-charcoal, #191816);
+}
+
+/* ── Footer divider band: ensure 9px red ── */
+[class*="footer_divider_band"]{
+  background-color:var(--swatch--pc-indian-vcs-red, #d21905);
+  height:9px;
+}
+
+/* ── Cream text class (used in contact section) ── */
+[class*="text-color-cream"]{
+  color:var(--swatch--sc-pearl-cream, #f8f8ee);
+}
+
+/* ── "pretty" class for Arapey italic ── */
+[class*="pretty"]{
+  font-family:'Arapey','Times New Roman',serif;
+  font-style:italic;
+}
