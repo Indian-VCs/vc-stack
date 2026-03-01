@@ -1,0 +1,25 @@
+{
+  "name": "vc-landscape",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Indian VC Stack - Visual landscape of tools used by VCs and angel investors",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
+  },
+  "dependencies": {
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@opennextjs/cloudflare": "1.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.23.0"
+  }
+}
