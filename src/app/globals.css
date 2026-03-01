@@ -77,20 +77,6 @@
 }
 
 /* ══════════════════════════════════════════════════════
-   Webflow section_grid wrapper
-   On the live site, every section sits inside a 5-column
-   CSS Grid that constrains content to the center 3 cols.
-   DevLink export omits this wrapper, so we recreate it.
-   ══════════════════════════════════════════════════════ */
-.section-grid{
-  display:grid;
-  grid-template-columns:minmax(160px,1.5fr) 2fr 2fr 2fr minmax(120px,1fr);
-}
-.section-grid > *{
-  grid-column:2/5;
-}
-
-/* ══════════════════════════════════════════════════════
    DevLink CSS-module overrides
    GlobalStyles injects hover CSS targeting plain class names
    (.nav_link, .cta) but CSS modules hash them, so we use
@@ -163,9 +149,12 @@ a[class*="cta"]:hover [class*="cta_line_abs"]{
   font-size:clamp(2rem, 1.5rem + 2.22vw, 3.5rem) !important;
 }
 
-/* ── Footer heading size + red color ── */
+/* ── Footer heading size + red color + constrained width for line break ── */
 [class*="footer_heading"]:not([class*="wrap"]){
   font-size:clamp(2.5rem, 2rem + 2.22vw, 4rem) !important;
+  max-width:420px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
 }
 [class*="u-color-indian-vc-red"]{
   color:var(--swatch--pc-indian-vcs-red, #d21905);

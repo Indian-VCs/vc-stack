@@ -192,12 +192,8 @@ export default function Home() {
         </div>
         </div>
       </div>
-      <div className="section-grid">
-        <ContactSection />
-      </div>
-      <div className="section-grid">
-        <Footer title="Shaping India's venture future" />
-      </div>
+      <ContactSection />
+      <Footer title="Shaping India's venture future" />
     </DevLinkProvider>
   );
 }
