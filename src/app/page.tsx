@@ -26,15 +26,15 @@ const D: Tool[] = [
   // Productivity (4) — renamed from Project Mgmt, added Airtable
   {n:"Airtable",c:"Productivity",d:"airtable.com"},{n:"Coda",c:"Productivity",d:"coda.io"},{n:"Google Sheets",c:"Productivity",d:"google.com"},{n:"Notion",c:"Productivity",d:"notion.so"},
   // Research (15) — removed Tegus/Constellation/Forrester/Frost&Sullivan/Latka, added Ahrefs/SEMRush, updated Kavi domain
-  {n:"1Lattice",c:"Research",d:"1lattice.com"},{n:"Ahrefs",c:"Research",d:"ahrefs.com"},{n:"AlphaSense",c:"Research",d:"alpha-sense.com"},{n:"Bain",c:"Research",d:"bain.com"},{n:"Clearbit",c:"Research",d:"clearbit.com"},{n:"Data AI",c:"Research",d:"data.ai"},{n:"G2",c:"Research",d:"g2.com"},{n:"GLG",c:"Research",d:"glginsights.com"},{n:"Gartner",c:"Research",d:"gartner.com"},{n:"Kavi Research",c:"Research",d:"joinkavi.com"},{n:"Owler",c:"Research",d:"owler.com"},{n:"RedSeer",c:"Research",d:"redseer.com"},{n:"SEMRush",c:"Research",d:"semrush.com"},{n:"Similarweb",c:"Research",d:"similarweb.com"},{n:"Statista",c:"Research",d:"statista.com"},
-  // Communication (3)
-  {n:"Discord",c:"Communication",d:"discord.com"},{n:"Slack",c:"Communication",d:"slack.com"},{n:"WhatsApp",c:"Communication",d:"whatsapp.com"},
+  {n:"1Lattice",c:"Research",d:"1lattice.com"},{n:"Ahrefs",c:"Research",d:"ahrefs.com",u:"https://assets-3b70.kxcdn.com/images/mediakit/logo_blue@2x.png?v=2"},{n:"AlphaSense",c:"Research",d:"alpha-sense.com"},{n:"Bain",c:"Research",d:"bain.com"},{n:"Clearbit",c:"Research",d:"clearbit.com"},{n:"Data AI",c:"Research",d:"data.ai"},{n:"G2",c:"Research",d:"g2.com"},{n:"GLG",c:"Research",d:"glginsights.com"},{n:"Gartner",c:"Research",d:"gartner.com"},{n:"Kavi Research",c:"Research",d:"joinkavi.com"},{n:"Owler",c:"Research",d:"owler.com"},{n:"RedSeer",c:"Research",d:"redseer.com"},{n:"SEMRush",c:"Research",d:"semrush.com"},{n:"Similarweb",c:"Research",d:"similarweb.com"},{n:"Statista",c:"Research",d:"statista.com"},
+  // Communication (4) — added Telegram
+  {n:"Discord",c:"Communication",d:"discord.com"},{n:"Slack",c:"Communication",d:"slack.com"},{n:"Telegram",c:"Communication",d:"telegram.org"},{n:"WhatsApp",c:"Communication",d:"whatsapp.com"},
   // Vibe Coding (5)
   {n:"Bolt",c:"Vibe Coding",d:"bolt.new"},{n:"Emergent",c:"Vibe Coding",d:"emergent.sh"},{n:"Lovable",c:"Vibe Coding",d:"lovable.dev"},{n:"Replit",c:"Vibe Coding",d:"replit.com"},{n:"v0",c:"Vibe Coding",d:"v0.dev"},
   // News (14) — renamed ARC Internet→Arc, removed Fortune/Gander, updated Ken domain
   {n:"Arc",c:"News",d:"thearcweb.com",bg:"#000"},{n:"Economic Times",c:"News",d:"economictimes.indiatimes.com"},{n:"Entrepreneur India",c:"News",d:"entrepreneur.com"},{n:"Forbes",c:"News",d:"forbes.com"},{n:"Inc42",c:"News",d:"inc42.com"},{n:"Ken",c:"News",d:"the-ken.com"},{n:"Live Mint",c:"News",d:"livemint.com"},{n:"Money Control",c:"News",d:"moneycontrol.com"},{n:"The Morning Context",c:"News",d:"themorningcontext.com"},{n:"TechCrunch",c:"News",d:"techcrunch.com"},{n:"The Generalist",c:"News",d:"generalist.com"},{n:"VCCircle",c:"News",d:"vccircle.com"},{n:"YourStory",c:"News",d:"yourstory.com"},{n:"entrackr",c:"News",d:"entrackr.com"},
   // AI (7)
-  {n:"ChatGPT",c:"AI",d:"openai.com"},{n:"Claude",c:"AI",d:"claude.ai"},{n:"Gemini",c:"AI",d:"gemini.google.com"},{n:"Manus",c:"AI",d:"manus.ai"},{n:"MiniMax",c:"AI",d:"minimax.com"},{n:"Perplexity",c:"AI",d:"perplexity.ai"},{n:"Qwen",c:"AI",d:"qwen.ai"},
+  {n:"ChatGPT",c:"AI",d:"openai.com"},{n:"Claude",c:"AI",d:"claude.ai"},{n:"Gemini",c:"AI",d:"gemini.google.com"},{n:"Manus",c:"AI",d:"manus.ai"},{n:"MiniMax",c:"AI",d:"minimax.io"},{n:"Perplexity",c:"AI",d:"perplexity.ai"},{n:"Qwen",c:"AI",d:"qwen.ai"},
   // Voice to Text (4) — removed VoiceInk
   {n:"Aqua Voice",c:"Voice to Text",d:"aquavoice.com"},{n:"Superwhisper",c:"Voice to Text",d:"superwhisper.ai"},{n:"Willow Voice",c:"Voice to Text",d:"willowvoice.com"},{n:"Wispr Flow",c:"Voice to Text",d:"wisprflow.com"},
   // Other Tools (23) — removed Cabal/Bright Data/GitRow/MMT/ValueLabs/Tako
@@ -55,12 +55,11 @@ const D: Tool[] = [
 
 /* ── Column layout ── */
 const COLS = [
-  ["CRM", "Admin/Ops", "Captable", "Voice to Text"],
-  ["Data", "Finance", "Productivity"],
-  ["Research", "Communication", "Vibe Coding"],
-  ["News", "AI"],
-  ["Other Tools", "Portfolio Mgmt"],
-  ["Automation", "Mailing", "Calendar", "Browser", "Transcription"],
+  ["CRM", "Admin/Ops", "Captable", "Voice to Text", "Mailing"],
+  ["Data", "Finance", "Productivity", "Calendar"],
+  ["Research", "Communication", "Vibe Coding", "Automation"],
+  ["News", "AI", "Browser"],
+  ["Other Tools", "Portfolio Mgmt", "Transcription"],
 ];
 
 /* ── Fallback gradients for missing logos ── */
@@ -175,7 +174,7 @@ export default function Home() {
       const vh = window.innerHeight;
 
       // Fit poster inside viewport, then shrink 20% for breathing room
-      const scale = Math.min(vw / 1920, vh / 1080, 1) * 0.8;
+      const scale = Math.min(vw / 1920, vh / 1080, 1) * 0.96;
 
       const w = Math.ceil(1920 * scale);
       const h = Math.ceil(1080 * scale);
@@ -201,12 +200,9 @@ export default function Home() {
     <div className="poster-page">
       <div className="poster" ref={posterRef}>
         <header className="header">
-          <div className="hdr-row">
-            <h1>VC Stack</h1>
-            <span className="sep">&middot;</span>
-            <span className="curated">curated by</span>
+          <h1>
             <a
-              href="https://hub.indianvcs.com"
+              href="https://indianvcs.com"
               target="_blank"
               rel="noopener noreferrer"
               className="logo-link"
@@ -214,10 +210,16 @@ export default function Home() {
             >
               <IndianVCsLogo />
             </a>
-          </div>
+            {" "}Tech Stack 2026
+          </h1>
         </header>
         <div className="landscape" ref={landscapeRef} />
-        <div className="poster-footer" />
+        <div className="disclaimer">This market map is for informational purposes only and reflects publicly available data + editorial curation &bull; Not exhaustive &bull; No ranking, recommendation, or endorsement is implied &bull; All trademarks/logos are the property of their respective owners</div>
+        <footer className="poster-footer">
+          <span>Discover tools &amp; workflows used by the top 1% VCs</span>
+          <span className="footer-sep">&rarr;</span>
+          <a href="https://hub.indianvcs.com" target="_blank" rel="noopener noreferrer" className="footer-link">hub.indianvcs.com</a>
+        </footer>
       </div>
     </div>
   );

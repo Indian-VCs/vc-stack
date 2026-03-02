@@ -46,8 +46,10 @@ html, body {
 /* ── Header bar ── */
 .header {
   background: #301008;
-  text-align: center;
-  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 32px;
   flex-shrink: 0;
   position: relative;
 }
@@ -58,44 +60,31 @@ html, body {
   height: 3px;
   background: linear-gradient(90deg, #D21905 0%, #AB342B 40%, #D21905 70%, #AB342B 100%);
 }
-.hdr-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
 .header h1 {
   font-family: 'Arapey', Georgia, serif;
-  font-size: 30px;
+  font-size: 42px;
   font-weight: 400;
   color: #F8F8EE;
-  line-height: 1.1;
-}
-.header .sep {
-  color: rgba(248,248,238,0.3);
-  font-size: 24px;
-  font-weight: 300;
-}
-.header .curated {
-  font-size: 15px;
-  color: rgba(248,248,238,0.45);
-  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .logo-link {
   display: inline-flex;
   align-items: center;
-  border-bottom: 1.5px solid rgba(210,25,5,0.6);
-  padding-bottom: 2px;
-  transition: border-color 0.2s;
+  text-decoration: none;
 }
-.logo-link:hover { border-bottom-color: #D21905; }
-.logo-link svg { height: 18px; width: auto; }
+.logo-link:hover { opacity: 0.85; }
+.logo-link svg { height: 32px; width: auto; }
 
 /* ── Landscape grid ── */
 .landscape {
   flex: 1;
   display: flex;
   gap: 7px;
-  padding: 8px;
+  padding: 20px 8px 20px;
   overflow: hidden;
   min-height: 0;
 }
@@ -114,15 +103,30 @@ html, body {
   border: 1px solid rgba(25,24,22,0.08);
   border-radius: 8px;
   overflow: hidden;
-  flex-shrink: 0;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
 }
-.card-head { padding: 7px 10px 4px; }
+/* Dark heading bar — mirrors the poster header */
+.card-head {
+  background: #301008;
+  padding: 5px 10px;
+  position: relative;
+}
+/* Thin red accent line under heading — mirrors poster header::after */
+.card-head::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, #D21905 0%, #AB342B 50%, #D21905 100%);
+}
 .card-head .name {
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #D21905;
+  color: #F8F8EE;
 }
 
 /* ── Tool pills ── */
@@ -131,7 +135,8 @@ html, body {
   flex-wrap: wrap;
   gap: 5px;
   padding: 5px 8px 8px;
-  align-content: flex-start;
+  flex: 1;
+  align-content: center;
 }
 .t {
   display: inline-flex;
@@ -172,9 +177,46 @@ html, body {
   line-height: 1.15;
 }
 
-/* ── Bottom gradient bar ── */
+/* ── Disclaimer strip ── */
+.disclaimer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 4px 32px;
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 0.3px;
+  background: #F8F8EE;
+  border-top: 1px solid rgba(25,24,22,0.06);
+}
+
+/* ── Footer CTA bar ── */
 .poster-footer {
   flex-shrink: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #D21905 0%, #AB342B 40%, #D21905 70%, #AB342B 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 32px;
+  background: #D21905;
+  border-radius: 0 0 10px 10px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.footer-sep {
+  opacity: 0.8;
+  font-size: 20px;
+}
+.footer-link {
+  color: #fff;
+  font-weight: 700;
+  font-size: 19px;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(255,255,255,0.5);
+  padding-bottom: 1px;
+  transition: border-color 0.2s;
+}
+.footer-link:hover {
+  border-bottom-color: #fff;
 }
