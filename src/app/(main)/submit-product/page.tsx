@@ -37,7 +37,7 @@ export default async function SubmitProductPage() {
             marginBottom: 10,
           }}
         >
-          To the Desk · Submissions
+          Submissions
         </div>
         <h1
           style={{

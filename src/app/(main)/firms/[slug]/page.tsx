@@ -32,8 +32,6 @@ export default async function FirmPage({ params }: Props) {
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
-        <Link href="/stacks">VC Stacks</Link>
-        <span className="sep">·</span>
         <span style={{ color: 'var(--ink)' }}>{firm.name}</span>
       </div>
 

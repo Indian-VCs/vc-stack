@@ -39,10 +39,10 @@ export default async function AdminCategoriesPage() {
               lineHeight: 1.1,
             }}
           >
-            Sections of the Paper
+            Categories
           </h1>
           <Link href="/admin/categories/new" className="btn btn--primary">
-            + New Section
+            + New Category
           </Link>
         </div>
       </header>

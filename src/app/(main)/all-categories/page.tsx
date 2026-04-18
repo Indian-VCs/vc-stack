@@ -53,7 +53,7 @@ export default async function AllCategoriesPage() {
             lineHeight: 1.1,
           }}
         >
-          All Sections of the Paper
+          All Categories
         </h1>
         <p
           style={{

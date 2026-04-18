@@ -40,6 +40,8 @@ export interface Tool {
   isFeatured: boolean
   categoryId: string
   category?: Category
+  /** Slugs of additional categories the tool appears under (market map multi-placement). Primary category is always `category`. */
+  extraCategorySlugs?: string[]
   subCategoryId?: string | null
   subCategory?: SubCategory | null
   tags?: Tag[]

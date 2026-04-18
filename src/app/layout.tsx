@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from "@/lib/stats";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "VC Stack 2026 | Indian VCs",
   description:
-    "Explore the definitive visual market map of 138+ tools and workflows powering India's top venture capital firms in 2026. Curated by Indian VCs across 19 categories including CRM, AI, Research, Data, News, Portfolio Management, Automation, Vibe Coding, and more. Built by DealQuick Labs Private Limited.",
+    `Explore the definitive visual market map of ${TOTAL_TOOL_APPEARANCES}+ tools and workflows powering India's top venture capital firms in 2026. Curated by Indian VCs across ${TOTAL_CATEGORIES} categories including CRM, AI, Research, Data, News, Portfolio Management, Automation, Vibe Coding, and more. Built by DealQuick Labs Private Limited.`,
   keywords: [
     "Indian VCs",
     "VC tech stack",
@@ -59,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VC Stack 2026 | Indian VCs",
     description:
-      "138+ tools across 19 categories â the complete tech stack powering India's top VCs. CRM, AI, Research, Data, News, Vibe Coding & more. Curated by Indian VCs.",
+      `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. CRM, AI, Research, Data, News, Vibe Coding & more. Curated by Indian VCs.`,
     url: "https://indianvcs.com/tech-stack",
     siteName: "Indian VCs",
     type: "website",
@@ -69,7 +70,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VC Stack 2026 | Indian VCs",
     description:
-      "138+ tools across 19 categories â the complete tech stack powering India's top VCs. Curated by Indian VCs.",
+      `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. Curated by Indian VCs.`,
     creator: "@indianvcs",
   },
   robots: {
@@ -103,7 +104,7 @@ const jsonLd = {
       url: "https://indianvcs.com/tech-stack",
       name: "VC Stack 2026 | Indian VCs",
       description:
-        "The definitive visual market map of 138+ tools and workflows powering India's top venture capital firms in 2026.",
+        `The definitive visual market map of ${TOTAL_TOOL_APPEARANCES}+ tools and workflows powering India's top venture capital firms in 2026.`,
       isPartOf: {
         "@type": "WebSite",
         "@id": "https://indianvcs.com/#website",
@@ -124,8 +125,8 @@ const jsonLd = {
         "@type": "ItemList",
         name: "VC Tech Stack 2026 â Tools by Category",
         description:
-          "138+ tools across 19 categories used by India's top venture capital firms",
-        numberOfItems: 138,
+          `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories used by India's top venture capital firms`,
+        numberOfItems: TOTAL_TOOL_APPEARANCES,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "CRM (12 tools)" },
           { "@type": "ListItem", position: 2, name: "Data (13 tools)" },

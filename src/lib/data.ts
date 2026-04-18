@@ -81,7 +81,9 @@ export async function getToolsByCategory(
       return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) }
     } catch { /* fall through */ }
   }
-  let filtered = STATIC_TOOLS.filter((t) => t.category?.slug === categorySlug)
+  let filtered = STATIC_TOOLS.filter(
+    (t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug)
+  )
   if (pricing) filtered = filtered.filter((t) => t.pricingModel === pricing)
   if (query) {
     const q = query.toLowerCase()
@@ -236,7 +238,13 @@ export async function getRelatedTools(toolId: string, categoryId: string, limit 
       })
     } catch { /* fall through */ }
   }
-  return STATIC_TOOLS.filter((t) => t.categoryId === categoryId && t.id !== toolId).slice(0, limit)
+  // Include tools whose primary or extra category matches, excluding the current tool.
+  const cat = STATIC_CATEGORIES.find((c) => c.id === categoryId)
+  const catSlug = cat?.slug
+  return STATIC_TOOLS
+    .filter((t) => t.id !== toolId)
+    .filter((t) => t.categoryId === categoryId || (catSlug ? (t.extraCategorySlugs ?? []).includes(catSlug) : false))
+    .slice(0, limit)
 }
 
 export async function getSiteStats() {
@@ -320,6 +328,48 @@ function catById(id: string): Category {
   return STATIC_CATEGORIES.find((c) => c.id === id) ?? STATIC_CATEGORIES[0]
 }
 
-// Wire up category resolver and build comprehensive tool catalog (510 tools)
+// Wire up category resolver and build the canonical tool catalog
 setCategoryResolver(catById)
 export const STATIC_TOOLS: Tool[] = buildAllTools()
+
+/** All category slugs a tool belongs to (primary + extras). */
+export function categorySlugsForTool(tool: Tool): string[] {
+  const primary = tool.category?.slug
+  const extras = tool.extraCategorySlugs ?? []
+  return primary ? [primary, ...extras] : extras
+}
+
+/** Total appearances = sum of all (tool × category) pairs across the catalog. */
+function totalAppearances(tools: Tool[]): number {
+  return tools.reduce((acc, t) => acc + categorySlugsForTool(t).length, 0)
+}
+
+// Backfill STATIC_CATEGORIES._count.tools with live counts so nothing drifts.
+for (const cat of STATIC_CATEGORIES) {
+  const count = STATIC_TOOLS.filter((t) => categorySlugsForTool(t).includes(cat.slug)).length
+  cat._count = { tools: count }
+}
+
+/** Single source of truth for public-facing stats. */
+export async function getCanonicalStats(): Promise<{
+  totalTools: number
+  uniqueTools: number
+  totalCategories: number
+}> {
+  const db = await getPrisma()
+  if (db) {
+    try {
+      const [toolCount, categoryCount] = await Promise.all([
+        db.tool.count(),
+        db.category.count(),
+      ])
+      // Without m2m schema support yet, treat DB tool count as both unique and total.
+      return { totalTools: toolCount, uniqueTools: toolCount, totalCategories: categoryCount }
+    } catch { /* fall through */ }
+  }
+  return {
+    totalTools: totalAppearances(STATIC_TOOLS),
+    uniqueTools: STATIC_TOOLS.length,
+    totalCategories: STATIC_CATEGORIES.length,
+  }
+}

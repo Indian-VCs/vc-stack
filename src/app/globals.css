@@ -13,7 +13,7 @@
   --paper-alt: #ede7db;
   --ink: #1a1410;
   --ink-light: #4a4035;
-  --ink-muted: #635a4a;
+  --ink-muted: #524a3c;
   --red: #c0392b;
   --red-dark: #962d22;
   --rule: #c8bfb0;
@@ -280,10 +280,33 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   font-family: var(--mono);
   font-size: var(--fs-tag);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   color: var(--ink-muted);
   margin-bottom: 24px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
-.breadcrumb a { color: var(--ink-muted); text-decoration: none; }
+.breadcrumb a {
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
 .breadcrumb a:hover { color: var(--red); }
-.breadcrumb .sep { margin: 0 6px; }
+.breadcrumb .sep {
+  /* Hide the existing · character and replace with a › arrow */
+  font-size: 0;
+  color: transparent;
+  display: inline-flex;
+  align-items: center;
+}
+.breadcrumb .sep::before {
+  content: '\203A';
+  font-size: 0.95rem;
+  color: var(--ink-muted);
+  opacity: 0.6;
+  line-height: 1;
+  font-weight: 400;
+}
+.breadcrumb > :last-child:not(.sep) { color: var(--ink); font-weight: 600; }

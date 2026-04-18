@@ -1,46 +1,40 @@
 'use client'
 
-import { useState } from 'react'
-
 export default function NewsletterForm() {
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const substackUrl = process.env.NEXT_PUBLIC_SUBSTACK_URL || ''
+  const isLive = Boolean(substackUrl.trim())
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (email.trim()) setSubmitted(true)
-  }
-
-  if (submitted) {
+  if (!isLive) {
     return (
       <p
         style={{
           fontFamily: 'var(--body)',
           fontSize: 'var(--fs-body)',
-          color: 'var(--success)',
+          color: 'var(--ink)',
           marginTop: 12,
         }}
+        role="status"
       >
-        <strong>Subscribed.</strong> Your confirmation is on its way.
+        <strong>Launching soon.</strong> Weekly dispatch starting in the next few weeks.
       </p>
     )
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: 'flex', gap: 8, marginTop: 12, maxWidth: 420 }}
+    <a
+      href={substackUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="btn btn--primary"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 10,
+        marginTop: 16,
+      }}
     >
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="name@fund.com"
-        required
-        className="input"
-        style={{ flex: 1 }}
-      />
-      <button type="submit" className="btn btn--primary">Subscribe</button>
-    </form>
+      Subscribe on Substack
+      <span aria-hidden="true" style={{ fontSize: '0.95rem' }}>↗</span>
+    </a>
   )
 }

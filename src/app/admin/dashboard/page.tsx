@@ -34,7 +34,7 @@ export default async function AdminDashboardPage() {
             marginBottom: 8,
           }}
         >
-          Editor’s Desk · Today
+          Admin Dashboard
         </div>
         <h1
           style={{

@@ -38,7 +38,7 @@ async function main() {
     if (!prod.name || !prod.slug) continue;
 
     let categoryId = null;
-    const parentCat = categoriesData.find((c) => c.products.includes(prod.slug));
+    const parentCat = categoriesData.find((c: any) => c.products.includes(prod.slug));
     if (parentCat) {
       const cat = await prisma.category.findUnique({ where: { slug: parentCat.slug } });
       if (cat) categoryId = cat.id;

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from '@/lib/stats'
 
 type Cat = { name: string; slug: string }
 
@@ -32,17 +33,7 @@ const CATEGORIES_SECONDARY: Cat[] = [
 ]
 
 const BLOG_EXTERNAL = 'https://hub.indianvcs.com/'
-
-const NAV_LINKS: { label: string; href: string; external?: boolean; match?: (p: string) => boolean }[] = [
-  { label: 'Home',       href: '/',            match: (p) => p === '/' },
-  { label: 'Tools',      href: '/tools',       match: (p) => p.startsWith('/tools') },
-  { label: 'Market Map', href: '/market-map',  match: (p) => p.startsWith('/market-map') },
-  { label: 'VC Hub',     href: BLOG_EXTERNAL,  external: true },
-]
-
-const TODAY = new Date().toLocaleDateString('en-US', {
-  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-})
+const NEWSLETTER_EXTERNAL = 'https://hub.indianvcs.com/newsletter'
 
 export default function Navbar() {
   const router = useRouter()
@@ -80,76 +71,36 @@ export default function Navbar() {
   }
 
   return (
-    <header style={{ background: 'var(--paper)', borderBottom: '1px solid var(--ink)' }}>
-      {/* ── Top strapline ──────────────────────────────────────────── */}
-      <div
-        className="page"
-        style={{
-          fontFamily: 'var(--mono)',
-          fontSize: 'var(--fs-tag)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.2em',
-          color: 'var(--ink-muted)',
-          padding: '10px 24px 0',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 16,
-        }}
-      >
-        <span className="hidden sm:inline">Vol. I · No. 01</span>
-        <span className="hidden md:inline">{TODAY}</span>
-        <span>India Edition</span>
-      </div>
-
-      {/* ── Masthead ───────────────────────────────────────────────── */}
-      <div className="page" style={{ textAlign: 'center', padding: '12px 24px 8px' }}>
-        <Link
-          href="/"
-          style={{
-            fontFamily: 'var(--serif)',
-            fontWeight: 900,
-            fontSize: 'clamp(2.2rem, 6vw, var(--fs-masthead))',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: 'var(--ink)',
-            textDecoration: 'none',
-            lineHeight: 1,
-            display: 'inline-block',
-          }}
-        >
-          IndianVCs
-        </Link>
-        <div
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-muted)',
-            marginTop: 8,
-          }}
-        >
-          · The Venture Capital Tool Stack ·
-        </div>
-      </div>
-
+    <header style={{ background: 'var(--paper)', borderBottom: '1px solid var(--ink)', position: 'sticky', top: 0, zIndex: 100 }}>
       {/* ── Nav rail ───────────────────────────────────────────────── */}
       <nav
         className="page nav-rail"
         style={{
-          borderTop: '1px solid var(--ink)',
-          borderBottom: '1px solid var(--rule)',
           padding: '0 24px',
           position: 'relative',
         }}
       >
         <div
           className="flex items-center"
-          style={{ height: 48, gap: 0, justifyContent: 'space-between' }}
+          style={{ height: 56, gap: 0, justifyContent: 'space-between' }}
         >
-          {/* ── Left: primary nav ─────────────────────────────────── */}
+          {/* ── Left: logo + primary nav ─────────────────────────── */}
           <div className="hidden lg:flex items-center" style={{ gap: 0 }}>
+            <Link
+              href="/"
+              style={{
+                fontFamily: 'var(--serif)',
+                fontWeight: 900,
+                fontSize: '1.25rem',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                color: 'var(--ink)',
+                textDecoration: 'none',
+                marginRight: 20,
+              }}
+            >
+              IndianVCs
+            </Link>
             <NavLink href="/" label="Home" active={pathname === '/'} />
 
             {/* Categories megamenu trigger */}
@@ -213,7 +164,7 @@ export default function Navbar() {
                     <aside className="megamenu-aside">
                       <div className="megamenu-header" style={{ color: 'var(--red)' }}>Browse</div>
                       <p className="megamenu-blurb">
-                        19 categories · 138 tools curated from the Indian VC stack.
+                        {TOTAL_CATEGORIES} categories · {TOTAL_TOOL_APPEARANCES} tools curated from the Indian VC stack.
                       </p>
                       <Link href="/all-categories" className="megamenu-cta">
                         View all categories →
@@ -230,9 +181,10 @@ export default function Navbar() {
             <NavLink href="/tools" label="Tools" active={pathname.startsWith('/tools')} />
             <NavLink href="/market-map" label="Market Map" active={pathname.startsWith('/market-map')} />
             <NavLink href={BLOG_EXTERNAL} label="VC Hub" external active={false} />
+            <NavLink href={NEWSLETTER_EXTERNAL} label="Newsletter" external active={false} />
           </div>
 
-          {/* ── Right: search + newsletter CTA ────────────────────── */}
+          {/* ── Right: search ─────────────────────────────────────── */}
           <div className="hidden md:flex items-center" style={{ gap: 16, marginLeft: 'auto' }}>
             <form onSubmit={handleSearch} className="nav-search" role="search">
               <svg
@@ -252,13 +204,6 @@ export default function Navbar() {
               />
               <kbd className="nav-search-kbd">↵</kbd>
             </form>
-
-            <Link
-              href="/newsletter"
-              className={`nav-cta ${pathname.startsWith('/newsletter') ? 'is-active' : ''}`}
-            >
-              Newsletter
-            </Link>
           </div>
 
         </div>
