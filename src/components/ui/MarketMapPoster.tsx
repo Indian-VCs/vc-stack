@@ -136,8 +136,12 @@ export default function MarketMapPoster({ tools, categories }: Props) {
     const el = posterRef.current
     if (!el) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) {
+    const isNarrow = window.matchMedia('(max-width: 900px)').matches
+    // Skip scroll-linked zoom on mobile — the initial faint state reads as
+    // "empty section" before the user scrolls, hurting first impressions.
+    if (reduce || isNarrow) {
       el.style.setProperty('--poster-scale', '1')
+      el.style.setProperty('--poster-opacity', '1')
       return
     }
     let rafId = 0
@@ -426,6 +430,13 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           .poster .card,
           .poster .t,
           .poster .t img { transition: none !important; }
+          .poster .card { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* Mobile: skip scroll-in stagger. Cards below the fold never
+           trigger IntersectionObserver until the user scrolls, which
+           reads as 'empty section' on first paint. */
+        @media (max-width: 900px) {
           .poster .card { opacity: 1 !important; transform: none !important; }
         }
       `}</style>
