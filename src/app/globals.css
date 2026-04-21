@@ -54,7 +54,7 @@
   --sp-12: 48px;
 
   /* Layout */
-  --page-max: 1120px;
+  --page-max: 1280px;
   --detail-max: 760px;
   --modal-max: 620px;
 
@@ -104,7 +104,13 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
 ::selection { background: var(--red); color: var(--paper); }
 
 /* ── Layout ────────────────────────────────────────────────────────────── */
-.page { max-width: var(--page-max); margin: 0 auto; padding: 0 24px; }
+.page { max-width: var(--page-max); margin: 0 auto; padding: 0 120px; }
+@media (max-width: 1180px) {
+  .page { padding: 0 64px; }
+}
+@media (max-width: 900px) {
+  .page { padding: 0 24px; }
+}
 .page--detail { max-width: var(--detail-max); }
 
 /* ── Masthead ──────────────────────────────────────────────────────────── */

@@ -61,3 +61,18 @@ coverage/
 # Vercel
 .vercel/
 .gstack/
+
+# Local design exploration (kept out of builds)
+public/design-previews/
+
+# Stray macOS Finder duplicates (e.g. "file 2.ts", "dir 2/")
+* 2
+* 2.*
+* 2/
+**/* 2
+**/* 2.*
+**/* 2/
+
+# gstack isolated agent worktrees and skill symlink caches
+.claude/
+

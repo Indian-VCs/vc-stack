@@ -199,10 +199,9 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           willChange: 'transform, opacity',
         }}
       >
-        {/* ── Header band ── */}
-        <div className="header">
-          <span className="kicker">Market Map</span>
-          <span className="counter">{totalAppearances} tools · {totalCats} categories</span>
+        {/* Inline counter — the homepage section header already names this block */}
+        <div className="poster-counter">
+          <span>{totalAppearances} tools · {totalCats} categories</span>
         </div>
 
         {/* ── Columns ── */}
@@ -247,44 +246,26 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          background: #f8f4ea;
-          border: 1px solid #2a0a05;
-          box-shadow: 8px 8px 0 rgba(26, 20, 16, 0.08);
-          overflow: hidden;
+          background: var(--paper);
+          overflow: visible;
           transition: none;
         }
-        .header {
+        .poster-counter {
           display: flex;
-          justify-content: space-between;
-          align-items: baseline;
-          gap: 16px;
-          background: #2a0a05;
-          color: #f8f8ee;
-          padding: 14px 22px;
-          border-bottom: 1px solid #0e0402;
-          flex-wrap: wrap;
-        }
-        .kicker {
-          font-family: var(--mono);
-          font-size: 0.78rem;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          color: #f8f8ee;
-          font-weight: 700;
-        }
-        .counter {
+          justify-content: flex-end;
+          padding: 0 0 10px;
           font-family: var(--mono);
           font-size: 0.66rem;
           letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: #d9cfb9;
+          color: var(--ink-muted);
         }
 
         .landscape {
           display: flex;
           gap: 14px;
           align-items: flex-start;
-          padding: 18px;
+          padding: 0;
         }
         .landscape-desktop { display: flex; }
         .landscape-mobile  { display: none; flex-direction: column; gap: 12px; }
@@ -297,8 +278,8 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         }
 
         :global(.poster .card) {
-          background: #fdfaf2;
-          border: 1px solid #2a0a05;
+          background: var(--paper);
+          border: 1px solid var(--ink);
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -313,22 +294,23 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           transform: translateY(0);
         }
         :global(.poster .card-head) {
-          background: #2a0a05;
-          padding: 5px 10px;
+          background: var(--ink);
+          padding: 6px 10px;
         }
         :global(.poster .card-head .name) {
           font-family: var(--mono);
-          font-size: 0.68rem;
+          font-size: 0.66rem;
           font-weight: 700;
-          letter-spacing: 0.16em;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: #f8f8ee;
+          color: var(--paper);
         }
         :global(.poster .tools) {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 3px 6px;
           padding: 8px 8px 10px;
+          background: var(--paper-alt);
         }
 
         .disclaimer {
@@ -337,7 +319,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           font-size: 0.72rem;
           color: var(--ink-muted);
           text-align: center;
-          padding: 12px 24px 18px;
+          padding: 18px 24px 4px;
           line-height: 1.5;
         }
       `}</style>
@@ -347,10 +329,10 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          border: 1px solid #e6dfcd;
-          border-radius: 6px;
+          border: 1px solid var(--rule);
+          border-radius: 3px;
           padding: 4px 6px;
-          background: #fdfaf2;
+          background: var(--paper);
           white-space: nowrap;
           min-width: 0;
           overflow: hidden;
@@ -363,14 +345,14 @@ export default function MarketMapPoster({ tools, categories }: Props) {
             transform 180ms ease;
         }
         .poster .t:hover {
-          border-color: #2a0a05;
-          background: #f7efde;
+          border-color: var(--ink);
+          background: var(--paper-alt);
           transform: translateY(-1px);
         }
         .poster .t img {
           width: 18px;
           height: 18px;
-          border-radius: 3px;
+          border-radius: 2px;
           object-fit: contain;
           flex-shrink: 0;
           background: #fff;
@@ -380,7 +362,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         .poster .t-fb {
           width: 18px;
           height: 18px;
-          border-radius: 3px;
+          border-radius: 2px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
@@ -394,7 +376,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           font-family: var(--body);
           font-size: 0.8rem;
           font-weight: 500;
-          color: #1a0603;
+          color: var(--ink);
           line-height: 1.2;
           overflow: hidden;
           text-overflow: ellipsis;

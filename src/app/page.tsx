@@ -1,6 +1,6 @@
 import PageLayout from '@/components/layout/PageLayout'
 import CategoryCard from '@/components/cards/CategoryCard'
-import NewsletterForm from '@/components/ui/NewsletterForm'
+import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import Link from 'next/link'
@@ -34,31 +34,79 @@ export default async function HomePage() {
         }}
       >
         <div>
+          {/* Broadsheet eyebrow — issue marker */}
+          <div
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: 'var(--fs-tag)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.28em',
+              color: 'var(--red)',
+              fontWeight: 600,
+              marginBottom: 18,
+            }}
+          >
+            The Dispatch · No. 01 · Apr 2026
+          </div>
           <h1
             style={{
               fontFamily: 'var(--serif)',
-              fontWeight: 900,
-              fontSize: 'clamp(2.4rem, 4.4vw, 3.6rem)',
+              fontStyle: 'italic',
+              fontWeight: 700,
+              fontSize: 'clamp(1.8rem, 3.25vw, 2.8rem)',
               lineHeight: 1.05,
               color: 'var(--ink)',
-              letterSpacing: '-0.02em',
-              margin: '0 0 18px',
+              letterSpacing: '-0.01em',
+              margin: '0 0 16px',
             }}
           >
-            The Indian VC tech stack.
+            The Indian VC{' '}
+            <span style={{ fontStyle: 'normal', color: 'var(--red)' }}>
+              tech stack.
+            </span>
           </h1>
           <p
             style={{
               fontFamily: 'var(--body)',
-              fontSize: '1.15rem',
+              fontSize: '1.1rem',
               lineHeight: 1.5,
               color: 'var(--ink-light)',
-              maxWidth: 460,
-              margin: 0,
+              maxWidth: 520,
+              margin: '0 0 20px',
             }}
           >
             Browse {stats.totalTools} tools across {stats.totalCategories} categories — from sourcing and research to portfolio ops and back office.
           </p>
+
+          {/* Broadsheet pull-rule decoration */}
+          <div
+            aria-hidden="true"
+            style={{
+              width: 80,
+              height: 3,
+              borderTop: '1px solid var(--ink)',
+              borderBottom: '1px solid var(--ink)',
+              margin: '22px 0 20px',
+            }}
+          />
+
+          {/* Inline newsletter embed — fills the left column, wide/compact */}
+          <div >
+            <div
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: 'var(--fs-tag)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.22em',
+                color: 'var(--red)',
+                marginBottom: 12,
+                fontWeight: 600,
+              }}
+            >
+              The Dispatch · Weekly
+            </div>
+            <SubstackEmbed wide />
+          </div>
         </div>
         <div>
           <HeroFeaturedTool tools={featuredTools} />
@@ -73,7 +121,7 @@ export default async function HomePage() {
           }
           @media (min-width: 860px) {
             .hero-grid {
-              grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+              grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
               gap: 48px;
             }
           }
@@ -165,56 +213,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Newsletter / The Dispatch ───────────────────────────── */}
-      <section className="page" style={{ padding: '0 24px 60px' }}>
-        <div
-          style={{
-            border: '2px solid var(--ink)',
-            padding: 32,
-            display: 'grid',
-            gap: 24,
-          }}
-          className="md:grid-cols-[1fr_auto]"
-        >
-          <div>
-            <div
-              style={{
-                fontFamily: 'var(--mono)',
-                fontSize: 'var(--fs-tag)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.2em',
-                color: 'var(--red)',
-                marginBottom: 8,
-              }}
-            >
-              The Dispatch · Weekly edition
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--serif)',
-                fontWeight: 900,
-                fontSize: '1.8rem',
-                color: 'var(--ink)',
-                marginBottom: 8,
-              }}
-            >
-              Opinionated takes on the tools Indian VCs actually use.
-            </h3>
-            <p
-              style={{
-                fontFamily: 'var(--body)',
-                fontSize: 'var(--fs-body)',
-                color: 'var(--ink-light)',
-                maxWidth: 520,
-              }}
-            >
-              One well-argued piece every Monday. Which CRM we'd pick for a seed fund,
-              which research tools survive diligence, and the judgments behind the stack.
-            </p>
-            <NewsletterForm />
-          </div>
-        </div>
-      </section>
     </PageLayout>
   )
 }
