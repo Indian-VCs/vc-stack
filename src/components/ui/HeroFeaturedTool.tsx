@@ -46,9 +46,10 @@ export default function HeroFeaturedTool({ tools }: Props) {
 
   const t = rotation[i]
   const icon = t.logoUrl || faviconFor(t.websiteUrl)
-  const subDesc = t.shortDesc?.trim()
-    || t.description.split(/(?<=[.!?])\s+/)[0]?.trim()
-    || t.description.slice(0, 180)
+  // Prefer the long `description` so the hero card fills its 3-line
+  // description area consistently. `shortDesc` is reserved for compact
+  // surfaces (Recommended Tools carousel, category previews).
+  const subDesc = t.description?.trim() || t.shortDesc?.trim() || ''
 
   const goProduct = () => router.push(`/product/${t.slug}`)
   const goPrev = () => setI((n) => (n - 1 + rotation.length) % rotation.length)
@@ -166,10 +167,10 @@ export default function HeroFeaturedTool({ tools }: Props) {
           min-width: 0;
           color: var(--ink);
           text-decoration: none;
-          height: 440px;
+          height: 320px;
         }
         @media (max-width: 859px) {
-          .hft-card { height: auto; min-height: 400px; }
+          .hft-card { height: auto; min-height: 300px; }
         }
         .hft-card:focus-visible {
           outline: 2px solid var(--red);
@@ -180,7 +181,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-header {
           display: flex;
           align-items: center;
-          padding: 12px 20px;
+          padding: 9px 18px;
           background: var(--ink);
           color: var(--paper);
           border-bottom: 1px solid var(--ink);
@@ -206,7 +207,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
           to   { opacity: 1; transform: translateY(0); }
         }
         .hft-row {
-          padding: 18px 22px;
+          padding: 12px 18px;
           border-bottom: 1px solid var(--rule);
         }
         .hft-row:last-child { border-bottom: 0; }
@@ -220,8 +221,8 @@ export default function HeroFeaturedTool({ tools }: Props) {
           flex: 0 0 auto;
         }
         .hft-icon-wrap {
-          width: 72px;
-          height: 72px;
+          width: 56px;
+          height: 56px;
           border: 1px solid var(--rule);
           background: #fff;
           display: flex;
@@ -229,7 +230,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
           justify-content: center;
           flex-shrink: 0;
         }
-        .hft-icon { width: 50px; height: 50px; object-fit: contain; }
+        .hft-icon { width: 40px; height: 40px; object-fit: contain; }
         .hft-icon-fb {
           width: 100%;
           height: 100%;
@@ -253,10 +254,12 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-name {
           font-family: var(--serif);
           font-weight: 900;
-          font-size: clamp(1.9rem, 2.6vw, 2.25rem);
+          font-size: clamp(1.4rem, 2vw, 1.75rem);
           color: var(--ink);
-          line-height: 1.05;
-          letter-spacing: -0.015em;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
+          /* Lock height to one line so short/long names don't shift layout */
+          height: 1.1em;
           margin: 0;
           min-width: 0;
           overflow: hidden;
@@ -284,21 +287,26 @@ export default function HeroFeaturedTool({ tools }: Props) {
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          gap: 10px;
-          padding-top: 18px;
-          padding-bottom: 18px;
+          gap: 8px;
+          padding-top: 12px;
+          padding-bottom: 12px;
         }
         .hft-desc {
           font-family: var(--body);
-          font-size: 1.05rem;
+          font-size: 1rem;
           font-weight: 500;
           color: var(--ink);
-          line-height: 1.55;
+          line-height: 1.5;
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 4;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          text-overflow: ellipsis;
+          /* Lock to exactly 3 lines so short/long descriptions don't
+             shift the CTA position between tools */
+          height: calc(1.5em * 3);
         }
 
         /* Inline CTA (text-style, right-aligned) */

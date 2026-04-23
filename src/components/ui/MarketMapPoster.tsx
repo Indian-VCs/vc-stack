@@ -255,14 +255,18 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
+          /* Red wash — brand red (#c0392b) layered over a cooler cream base
+             so the red doesn't pick up warm-cream undertones and drift
+             toward orange. Higher alpha than the initial pass to read as
+             deliberate red, not accidental tint. */
           background:
             linear-gradient(
               135deg,
-              rgba(192, 57, 43, 0.04) 0%,
-              rgba(192, 57, 43, 0.10) 50%,
-              rgba(192, 57, 43, 0.06) 100%
+              rgba(192, 57, 43, 0.12) 0%,
+              rgba(192, 57, 43, 0.22) 50%,
+              rgba(192, 57, 43, 0.14) 100%
             ),
-            var(--paper-alt);
+            #efe8dc;
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;

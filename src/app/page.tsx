@@ -20,7 +20,7 @@ export const revalidate = 3600
  * Each tool here should have a ~200-char description so the card
  * fills consistently (3-line description area).
  */
-const HERO_ROTATION_SLUGS = ['evertrace', 'notion', 'superhuman', 'wispr-flow'] as const
+const HERO_ROTATION_SLUGS = ['evertrace', 'notion', 'superhuman', 'wispr-flow', 'claude'] as const
 
 export default async function HomePage() {
   const [categories, featuredTools, previewToolsMap, allTools, stats] = await Promise.all([
