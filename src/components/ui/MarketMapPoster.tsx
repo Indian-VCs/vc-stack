@@ -255,19 +255,10 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          /* Red wash — brand red #D21905 and cream #F8F8EE, both lifted
-             from hub.indianvcs.com for cross-property brand consistency.
-             Diagonal linear gradient with moderate alpha: reads as a
-             deliberate brand-red wash over the cream base, not an
-             accidental peach tint. */
-          background:
-            linear-gradient(
-              135deg,
-              rgba(210, 25, 5, 0.12) 0%,
-              rgba(210, 25, 5, 0.24) 50%,
-              rgba(210, 25, 5, 0.14) 100%
-            ),
-            #F8F8EE;
+          /* Flat red-tint background — no gradient.
+             Pre-mix of hub brand red (#D21905) at ~12% over cream.
+             Subtle enough to read as paper, saturated enough to read as red. */
+          background: #F1D8CC;
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;
