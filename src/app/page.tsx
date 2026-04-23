@@ -14,6 +14,14 @@ import {
 
 export const revalidate = 3600
 
+/**
+ * Hero featured-tool rotation — curated list, order-preserved.
+ * Change this array to change which tools rotate in the hero card.
+ * Each tool here should have a ~200-char description so the card
+ * fills consistently (3-line description area).
+ */
+const HERO_ROTATION_SLUGS = ['evertrace', 'notion', 'superhuman', 'wispr-flow'] as const
+
 export default async function HomePage() {
   const [categories, featuredTools, previewToolsMap, allTools, stats] = await Promise.all([
     getCategories(),
@@ -22,6 +30,11 @@ export default async function HomePage() {
     getAllTools(),
     getCanonicalStats(),
   ])
+
+  // Build the hero rotation in the exact order declared above.
+  const heroRotation = HERO_ROTATION_SLUGS
+    .map((slug) => allTools.find((t) => t.slug === slug))
+    .filter((t): t is NonNullable<typeof t> => t !== undefined)
 
   return (
     <PageLayout>
@@ -80,7 +93,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div>
-          <HeroFeaturedTool tools={featuredTools} />
+          <HeroFeaturedTool tools={heroRotation} />
         </div>
 
         <style>{`
