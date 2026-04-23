@@ -256,9 +256,10 @@ export default function MarketMapPoster({ tools, categories }: Props) {
       <style jsx>{`
         .poster {
           /* Flat red-tint background — no gradient.
-             Pre-mix of hub brand red (#D21905) at ~12% over cream.
-             Subtle enough to read as paper, saturated enough to read as red. */
-          background: #F1D8CC;
+             Hub brand red (#D21905) pre-mixed over cream at ~20%
+             and shifted slightly brighter. More saturated red than
+             the previous subtle tint while staying in the light range. */
+          background: #F4CBBE;
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;
