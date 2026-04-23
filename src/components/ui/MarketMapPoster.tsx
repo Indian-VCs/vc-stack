@@ -255,11 +255,12 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          /* Flat red-tint background — no gradient.
-             Hub brand red (#D21905) pre-mixed over cream at ~20%
-             and shifted slightly brighter. More saturated red than
-             the previous subtle tint while staying in the light range. */
-          background: #F4CBBE;
+          /* Flat red-tint background — lighter + red-leaning (not pink).
+             The trick to keep light tints red-not-pink is to widen the
+             R vs B channel gap (kept ~37 here) while pushing all
+             channels brighter. Lighter than the earlier #F1D8CC,
+             without drifting into the pink register. */
+          background: #FBE2D6;
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;
