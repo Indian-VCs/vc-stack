@@ -181,7 +181,16 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         bySlug[slug].push(t)
       }
     }
-    Object.values(bySlug).forEach((list) => list.sort((a, b) => a.name.localeCompare(b.name)))
+    // Sort: featured tools first, then alphabetical. Stable so multiple
+    // featured tools keep a predictable order (by name).
+    Object.values(bySlug).forEach((list) =>
+      list.sort((a, b) => {
+        const af = a.isFeatured ? 0 : 1
+        const bf = b.isFeatured ? 0 : 1
+        if (af !== bf) return af - bf
+        return a.name.localeCompare(b.name)
+      }),
+    )
     const totalAppearances = Object.values(bySlug).reduce((n, l) => n + l.length, 0)
     const totalCats = Object.keys(bySlug).length
     return { bySlug, slugToName, totalAppearances, totalCats }
@@ -246,7 +255,14 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          background: var(--paper-alt);
+          background:
+            linear-gradient(
+              135deg,
+              rgba(192, 57, 43, 0.04) 0%,
+              rgba(192, 57, 43, 0.10) 50%,
+              rgba(192, 57, 43, 0.06) 100%
+            ),
+            var(--paper-alt);
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;
