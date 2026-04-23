@@ -21,48 +21,11 @@ function faviconFor(url: string) {
   }
 }
 
-function domainOf(url: string) {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return ''
-  }
-}
-
 function initials(name: string) {
   const w = name.trim().split(/\s+/)
   return w.length === 1
     ? w[0].substring(0, 2).toUpperCase()
     : (w[0][0] + w[1][0]).toUpperCase()
-}
-
-function splitParts(t: Tool): { subDesc: string; uses: string[] } {
-  const text = (t.description || '').trim()
-  const sents = text
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const subDesc = t.shortDesc?.trim() || sents[0] || text.slice(0, 160)
-  const start = t.shortDesc ? 0 : 1
-  const real = sents
-    .slice(start)
-    .filter((s) => s.length >= 12 && s.length <= 140)
-    .slice(0, 2)
-
-  const uses = [...real]
-  if (uses.length < 2 && t.category?.name) {
-    uses.push(`Category · ${t.category.name}`)
-  }
-  if (uses.length < 2 && t.pricingModel) {
-    uses.push(`Pricing · ${t.pricingModel.toLowerCase()}`)
-  }
-  if (uses.length < 2 && t.websiteUrl) {
-    const d = domainOf(t.websiteUrl)
-    if (d) uses.push(`Website · ${d}`)
-  }
-
-  return { subDesc, uses: uses.slice(0, 2) }
 }
 
 export default function HeroFeaturedTool({ tools }: Props) {
@@ -83,9 +46,18 @@ export default function HeroFeaturedTool({ tools }: Props) {
 
   const t = rotation[i]
   const icon = t.logoUrl || faviconFor(t.websiteUrl)
-  const { subDesc, uses } = splitParts(t)
+  const subDesc = t.shortDesc?.trim()
+    || t.description.split(/(?<=[.!?])\s+/)[0]?.trim()
+    || t.description.slice(0, 180)
 
   const goProduct = () => router.push(`/product/${t.slug}`)
+  const goPrev = () => setI((n) => (n - 1 + rotation.length) % rotation.length)
+  const goNext = () => setI((n) => (n + 1) % rotation.length)
+
+  // Stops card-level navigation on any interactive control inside the card
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation()
+  }
 
   return (
     <div
@@ -96,6 +68,8 @@ export default function HeroFeaturedTool({ tools }: Props) {
       onClick={goProduct}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          const target = e.target as HTMLElement
+          if (target.closest('button')) return
           e.preventDefault()
           goProduct()
         }
@@ -119,20 +93,15 @@ export default function HeroFeaturedTool({ tools }: Props) {
               <div className="hft-icon hft-icon-fb">{initials(t.name)}</div>
             )}
           </div>
-          <h3 className="hft-name">{t.name}</h3>
-          {t.category && <span className="hft-cat-pill">{t.category.name}</span>}
+          <div className="hft-title-wrap">
+            <h3 className="hft-name">{t.name}</h3>
+            {t.category && <span className="hft-cat-pill">{t.category.name}</span>}
+          </div>
         </div>
 
-        {/* 2b — sub-description + use cases + inline CTA */}
+        {/* 2b — description only (no meta bullets) */}
         <div className="hft-row hft-row-text">
           <p className="hft-desc">{subDesc}</p>
-          {uses.length > 0 && (
-            <ul className="hft-uses">
-              {uses.map((u, idx) => (
-                <li key={idx}>{u}</li>
-              ))}
-            </ul>
-          )}
           <div className="hft-cta-row">
             <span className="hft-cta">
               Read more
@@ -142,9 +111,20 @@ export default function HeroFeaturedTool({ tools }: Props) {
         </div>
       </div>
 
-      {/* ── Row 3 · Card footer (slider, fixed) ── */}
+      {/* ── Row 3 · Card footer (prev/next + slider, fixed) ── */}
       {rotation.length > 1 && (
         <div className="hft-footer">
+          <button
+            type="button"
+            className="hft-nav-btn"
+            aria-label="Previous featured tool"
+            onClick={(e) => { stop(e); goPrev() }}
+            onKeyDown={stop}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M9 2 L4 7 L9 12" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
           <div className="hft-dots" role="tablist" aria-label="Featured tool">
             {rotation.map((_, idx) => (
               <button
@@ -153,11 +133,25 @@ export default function HeroFeaturedTool({ tools }: Props) {
                 role="tab"
                 aria-selected={idx === i}
                 aria-label={`Show featured tool ${idx + 1}`}
-                className={`hft-dot ${idx === i ? 'is-on' : ''}`}
-                onClick={(e) => { e.stopPropagation(); setI(idx) }}
-              />
+                className={`hft-dot-btn ${idx === i ? 'is-on' : ''}`}
+                onClick={(e) => { stop(e); setI(idx) }}
+                onKeyDown={stop}
+              >
+                <span className="hft-dot-bar" />
+              </button>
             ))}
           </div>
+          <button
+            type="button"
+            className="hft-nav-btn"
+            aria-label="Next featured tool"
+            onClick={(e) => { stop(e); goNext() }}
+            onKeyDown={stop}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M5 2 L10 7 L5 12" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       )}
 
@@ -172,10 +166,10 @@ export default function HeroFeaturedTool({ tools }: Props) {
           min-width: 0;
           color: var(--ink);
           text-decoration: none;
-          height: 340px;
+          height: 440px;
         }
         @media (max-width: 859px) {
-          .hft-card { height: auto; min-height: 320px; }
+          .hft-card { height: auto; min-height: 400px; }
         }
         .hft-card:focus-visible {
           outline: 2px solid var(--red);
@@ -186,7 +180,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-header {
           display: flex;
           align-items: center;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--ink);
           color: var(--paper);
           border-bottom: 1px solid var(--ink);
@@ -212,7 +206,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
           to   { opacity: 1; transform: translateY(0); }
         }
         .hft-row {
-          padding: 10px 16px;
+          padding: 18px 22px;
           border-bottom: 1px solid var(--rule);
         }
         .hft-row:last-child { border-bottom: 0; }
@@ -221,13 +215,13 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-row-head {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 18px;
           min-width: 0;
           flex: 0 0 auto;
         }
         .hft-icon-wrap {
-          width: 48px;
-          height: 48px;
+          width: 72px;
+          height: 72px;
           border: 1px solid var(--rule);
           background: #fff;
           display: flex;
@@ -235,7 +229,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
           justify-content: center;
           flex-shrink: 0;
         }
-        .hft-icon { width: 32px; height: 32px; object-fit: contain; }
+        .hft-icon { width: 50px; height: 50px; object-fit: contain; }
         .hft-icon-fb {
           width: 100%;
           height: 100%;
@@ -243,20 +237,27 @@ export default function HeroFeaturedTool({ tools }: Props) {
           color: var(--paper);
           font-family: var(--mono);
           font-weight: 700;
-          font-size: 1rem;
+          font-size: 1.25rem;
           display: flex;
           align-items: center;
           justify-content: center;
         }
+        .hft-title-wrap {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
         .hft-name {
           font-family: var(--serif);
           font-weight: 900;
-          font-size: clamp(1.5rem, 2vw, 1.75rem);
+          font-size: clamp(1.9rem, 2.6vw, 2.25rem);
           color: var(--ink);
-          line-height: 1.1;
-          letter-spacing: -0.01em;
+          line-height: 1.05;
+          letter-spacing: -0.015em;
           margin: 0;
-          flex: 1;
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -265,7 +266,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-cat-pill {
           font-family: var(--mono);
           font-size: var(--fs-tag);
-          letter-spacing: 0.18em;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
           color: var(--ink);
           background: var(--paper-alt);
@@ -276,44 +277,26 @@ export default function HeroFeaturedTool({ tools }: Props) {
           flex-shrink: 0;
         }
 
-        /* 2b — combined description + use cases + inline CTA */
+        /* 2b — description + inline CTA */
         .hft-row-text {
           flex: 1;
           min-height: 0;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          gap: 6px;
-          padding-top: 10px;
-          padding-bottom: 10px;
+          gap: 10px;
+          padding-top: 18px;
+          padding-bottom: 18px;
         }
         .hft-desc {
           font-family: var(--body);
-          font-size: 0.95rem;
-          font-weight: 600;
+          font-size: 1.05rem;
+          font-weight: 500;
           color: var(--ink);
-          line-height: 1.45;
+          line-height: 1.55;
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .hft-uses {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-        }
-        .hft-uses li {
-          font-family: var(--body);
-          font-size: 0.8rem;
-          color: var(--ink-muted);
-          line-height: 1.5;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
+          -webkit-line-clamp: 4;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
@@ -323,20 +306,20 @@ export default function HeroFeaturedTool({ tools }: Props) {
           display: flex;
           justify-content: flex-end;
           margin-top: auto;
-          padding-top: 8px;
+          padding-top: 12px;
         }
         .hft-cta {
           font-family: var(--mono);
-          font-size: 0.7rem;
+          font-size: 0.76rem;
           text-transform: uppercase;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.24em;
           color: var(--ink);
           font-weight: 600;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
           border-bottom: 1px solid var(--ink);
-          padding-bottom: 2px;
+          padding-bottom: 3px;
           transition: color 180ms ease, border-color 180ms ease;
         }
         .hft-card:hover .hft-cta {
@@ -344,35 +327,72 @@ export default function HeroFeaturedTool({ tools }: Props) {
           border-color: var(--red);
         }
         .hft-card:hover .hft-arrow { transform: translateX(3px); }
-        .hft-arrow { font-size: 0.85rem; transition: transform 200ms ease; }
+        .hft-arrow { font-size: 0.95rem; transition: transform 200ms ease; }
 
         /* ROW 3 — slider footer (fixed) */
         .hft-footer {
-          padding: 10px 18px;
+          padding: 10px 14px;
           background: var(--paper-alt);
           border-top: 1px solid var(--ink);
           display: flex;
-          justify-content: center;
+          align-items: center;
+          gap: 12px;
           flex: 0 0 auto;
+        }
+        .hft-nav-btn {
+          all: unset;
+          cursor: pointer;
+          width: 32px;
+          height: 32px;
+          border: 1px solid var(--rule);
+          background: var(--paper);
+          color: var(--ink);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+          flex-shrink: 0;
+        }
+        .hft-nav-btn:hover {
+          background: var(--ink);
+          color: var(--paper);
+          border-color: var(--ink);
+        }
+        .hft-nav-btn:focus-visible {
+          outline: 2px solid var(--red);
+          outline-offset: 2px;
         }
         .hft-dots {
           display: flex;
-          gap: 6px;
+          gap: 4px;
+          flex: 1;
+          justify-content: center;
           flex-wrap: wrap;
         }
-        .hft-dot {
-          width: 22px;
-          height: 3px;
-          background: var(--rule);
-          border: 0;
-          padding: 0;
+        /* Dot BUTTON has a padded hit area; dot BAR is visual only */
+        .hft-dot-btn {
+          all: unset;
           cursor: pointer;
+          padding: 10px 4px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .hft-dot-btn:focus-visible {
+          outline: 2px solid var(--red);
+          outline-offset: 2px;
+        }
+        .hft-dot-bar {
+          display: block;
+          width: 28px;
+          height: 4px;
+          background: var(--rule);
           transition: background 220ms ease, width 220ms ease;
         }
-        .hft-dot:hover { background: var(--ink-muted); }
-        .hft-dot.is-on {
+        .hft-dot-btn:hover .hft-dot-bar { background: var(--ink-muted); }
+        .hft-dot-btn.is-on .hft-dot-bar {
           background: var(--red);
-          width: 36px;
+          width: 44px;
         }
 
         /* No underlines anywhere inside the card */

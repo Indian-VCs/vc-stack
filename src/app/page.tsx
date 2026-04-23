@@ -34,36 +34,19 @@ export default async function HomePage() {
         }}
       >
         <div>
-          {/* Broadsheet eyebrow — issue marker */}
-          <div
-            style={{
-              fontFamily: 'var(--mono)',
-              fontSize: 'var(--fs-tag)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.28em',
-              color: 'var(--red)',
-              fontWeight: 600,
-              marginBottom: 18,
-            }}
-          >
-            The Dispatch · No. 01 · Apr 2026
-          </div>
           <h1
             style={{
               fontFamily: 'var(--serif)',
-              fontStyle: 'italic',
-              fontWeight: 700,
-              fontSize: 'clamp(1.8rem, 3.25vw, 2.8rem)',
+              fontWeight: 900,
+              fontSize: 'clamp(1.9rem, 3.4vw, 2.9rem)',
               lineHeight: 1.05,
               color: 'var(--ink)',
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.02em',
               margin: '0 0 16px',
             }}
           >
             The Indian VC{' '}
-            <span style={{ fontStyle: 'normal', color: 'var(--red)' }}>
-              tech stack.
-            </span>
+            <span style={{ color: 'var(--red)' }}>tech stack.</span>
           </h1>
           <p
             style={{
@@ -72,23 +55,11 @@ export default async function HomePage() {
               lineHeight: 1.5,
               color: 'var(--ink-light)',
               maxWidth: 520,
-              margin: '0 0 20px',
+              margin: '0 0 28px',
             }}
           >
             Browse {stats.totalTools} tools across {stats.totalCategories} categories — from sourcing and research to portfolio ops and back office.
           </p>
-
-          {/* Broadsheet pull-rule decoration */}
-          <div
-            aria-hidden="true"
-            style={{
-              width: 80,
-              height: 3,
-              borderTop: '1px solid var(--ink)',
-              borderBottom: '1px solid var(--ink)',
-              margin: '22px 0 20px',
-            }}
-          />
 
           {/* Inline newsletter embed — fills the left column, wide/compact */}
           <div >
@@ -137,8 +108,7 @@ export default async function HomePage() {
             alignItems: 'baseline',
             gap: 16,
             flexWrap: 'wrap',
-            borderTop: '2px solid var(--ink)',
-            paddingTop: 20,
+            paddingTop: 4,
             marginBottom: 24,
           }}
         >
@@ -171,14 +141,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── Browse by Category ──────────────────────────────────── */}
-      <section className="page" style={{ padding: '12px 24px 48px' }}>
+      <section className="page" style={{ padding: '12px 24px 48px', borderTop: '1px solid var(--rule)' }}>
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'baseline',
-            borderTop: '2px solid var(--ink)',
-            paddingTop: 20,
+            paddingTop: 24,
             marginBottom: 20,
           }}
         >

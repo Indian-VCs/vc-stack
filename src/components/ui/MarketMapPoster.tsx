@@ -246,14 +246,19 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          background: var(--paper);
+          background: var(--paper-alt);
+          border: 1px solid var(--ink);
+          padding: 20px;
           overflow: visible;
           transition: none;
+        }
+        @media (max-width: 900px) {
+          .poster { padding: 14px; }
         }
         .poster-counter {
           display: flex;
           justify-content: flex-end;
-          padding: 0 0 10px;
+          padding: 0 0 12px;
           font-family: var(--mono);
           font-size: 0.66rem;
           letter-spacing: 0.2em;
