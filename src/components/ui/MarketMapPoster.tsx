@@ -255,18 +255,19 @@ export default function MarketMapPoster({ tools, categories }: Props) {
 
       <style jsx>{`
         .poster {
-          /* Red wash — brand red (#c0392b) layered over a cooler cream base
-             so the red doesn't pick up warm-cream undertones and drift
-             toward orange. Higher alpha than the initial pass to read as
-             deliberate red, not accidental tint. */
+          /* Red wash — brand red #D21905 and cream #F8F8EE, both lifted
+             from hub.indianvcs.com for cross-property brand consistency.
+             Diagonal linear gradient with moderate alpha: reads as a
+             deliberate brand-red wash over the cream base, not an
+             accidental peach tint. */
           background:
             linear-gradient(
               135deg,
-              rgba(192, 57, 43, 0.12) 0%,
-              rgba(192, 57, 43, 0.22) 50%,
-              rgba(192, 57, 43, 0.14) 100%
+              rgba(210, 25, 5, 0.12) 0%,
+              rgba(210, 25, 5, 0.24) 50%,
+              rgba(210, 25, 5, 0.14) 100%
             ),
-            #efe8dc;
+            #F8F8EE;
           border: 1px solid var(--ink);
           padding: 20px;
           overflow: visible;

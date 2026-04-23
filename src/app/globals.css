@@ -14,8 +14,9 @@
   --ink: #1a1410;
   --ink-light: #4a4035;
   --ink-muted: #524a3c;
-  --red: #c0392b;
-  --red-dark: #962d22;
+  /* Brand red — synced with hub.indianvcs.com (--ivc-red) */
+  --red: #d21905;
+  --red-dark: #a41204;
   --rule: #c8bfb0;
   --rule-dark: #9a9080;
   --rule-heavy: #9a9080;
