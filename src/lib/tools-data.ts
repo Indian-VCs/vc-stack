@@ -1,15 +1,19 @@
 /**
- * IndianVCs Tech Stack 2026 — the 138 tools that power India's top venture desks.
+ * IndianVCs Tech Stack 2026 — the tools that power India's top venture desks.
  * Mirrors the broadsheet poster at vcstack.io.
  *
- * Categories (19):
- *   cat-1  CRM                cat-8  Finance           cat-15 Voice to Text
- *   cat-2  Data               cat-9  Admin/Ops         cat-16 Productivity
- *   cat-3  Research           cat-10 Automation        cat-17 Vibe Coding
- *   cat-4  News               cat-11 Communication     cat-18 Browser
- *   cat-5  AI                 cat-12 Mailing           cat-19 Other Tools
- *   cat-6  Portfolio Mgmt     cat-13 Calendar
- *   cat-7  Captable           cat-14 Transcription
+ * Categories (17):
+ *   cat-1  CRM                cat-10 Automation        cat-17 Vibe Coding
+ *   cat-2  Data               cat-11 Communication     cat-18 Browser
+ *   cat-3  Research           cat-12 Mailing           cat-19 Other Tools
+ *   cat-4  News               cat-13 Calendar
+ *   cat-5  AI                 cat-14 Transcription
+ *   cat-6  Portfolio Mgmt     cat-15 Voice to Text
+ *   cat-9  Admin/Ops          cat-16 Productivity
+ *
+ * Retired:
+ *   cat-7  Captable — startup-stack concern; tools merged into Other Tools.
+ *   cat-8  Finance  — payroll/HRMS tools merged into Other Tools.
  */
 
 import type { Tool, Category, PricingModel } from './types'
@@ -61,7 +65,7 @@ function t(
 export function buildAllTools(): Tool[] {
   return [
     // ═══════════════════════════════════════════════════════════════════════
-    // CRM (cat-1) — 12 tools
+    // CRM (cat-1) — 11 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-1', 'Affinity', 'affinity', 'Relationship intelligence CRM for private capital.', 'Affinity is a relationship-intelligence CRM purpose-built for venture capital, private equity, and investment banking — it automatically captures the network graph from email and calendar so deal teams never lose track of a warm intro.', 'https://affinity.co', 'PAID', 'cat-1'),
     t('t-2', 'Airtable', 'airtable', 'Flexible database that many firms bend into a CRM.', 'Airtable is a spreadsheet-database hybrid — many early-stage funds use it as a lightweight dealflow CRM before graduating to purpose-built systems.', 'https://airtable.com', 'FREEMIUM', 'cat-1', false, ['productivity']),
@@ -72,12 +76,11 @@ export function buildAllTools(): Tool[] {
     t('t-7', 'Folk', 'folk', 'A lightweight, human-shaped CRM.', 'Folk is a minimalist CRM designed for founders, operators, and small funds — built around the idea that your contacts should feel like people, not rows.', 'https://folk.app', 'FREEMIUM', 'cat-1'),
     t('t-8', 'HubSpot', 'hubspot', 'All-in-one CRM and marketing platform.', 'HubSpot is the default SMB CRM — a few platform-heavy funds run their LP and portfolio outreach on it.', 'https://hubspot.com', 'FREEMIUM', 'cat-1'),
     t('t-9', 'Notion', 'notion', 'Workspace that doubles as a CRM in early-stage funds.', 'Notion\u2019s flexible databases make it the most common home-grown CRM for small and solo-GP funds in India. Partner memos, meeting notes, portfolio pages, and LP updates all live in the same workspace \u2014 the second brain for the whole fund.', 'https://notion.so', 'FREEMIUM', 'cat-1', false, ['productivity', 'transcription']),
-    t('t-10', 'Pipedrive', 'pipedrive', 'Sales-pipeline CRM, pragmatic and fast.', 'Pipedrive is a sales-pipeline-first CRM — some platform ops teams use it for portfolio-hiring and BD outreach.', 'https://pipedrive.com', 'PAID', 'cat-1'),
     t('t-11', 'Streak', 'streak', 'CRM that lives entirely inside Gmail.', 'Streak plugs a CRM directly into Gmail — popular with solo GPs and small teams who live in their inbox.', 'https://streak.com', 'FREEMIUM', 'cat-1'),
-    t('t-12', 'Taghash', 'taghash', 'The CRM built in India, for Indian VCs.', 'Taghash is a dealflow and portfolio CRM built for Indian venture firms, with LP reporting and India-specific data sources baked in.', 'https://taghash.io', 'PAID', 'cat-1', true),
+    t('t-12', 'Taghash', 'taghash', 'The CRM built in India, for Indian VCs.', 'Taghash is a dealflow and portfolio CRM built for Indian venture firms, with LP reporting and India-specific data sources baked in.', 'https://taghash.io', 'PAID', 'cat-1', true, ['portfolio-management']),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // DATA (cat-2) — 13 tools
+    // DATA (cat-2) — 12 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-13', 'CB Insights', 'cb-insights', 'AI-driven intelligence on the private markets.', 'CB Insights is a private-markets intelligence platform covering startups, venture deals, M&A, and emerging-tech trends.', 'https://cbinsights.com', 'ENTERPRISE', 'cat-2', true),
     t('t-14', 'Crunchbase', 'crunchbase', 'The original startup-funding database.', 'Crunchbase is the go-to database for company, funding, and investor data — the default starting point for any deal search.', 'https://crunchbase.com', 'FREEMIUM', 'cat-2'),
@@ -87,19 +90,17 @@ export function buildAllTools(): Tool[] {
     t('t-18', 'PitchBook', 'pitchbook', 'The reference database for venture and private equity.', 'PitchBook is the institutional-grade data platform for private capital — funds, deals, exits, and LP activity, all indexed.', 'https://pitchbook.com', 'ENTERPRISE', 'cat-2', true),
     t('t-19', 'Preqin', 'preqin', 'Alternative-asset intelligence for LPs and GPs.', 'Preqin is the leading data source on alternative assets — PE, VC, hedge funds, real estate — used widely by LPs and fund-of-funds.', 'https://preqin.com', 'ENTERPRISE', 'cat-2'),
     t('t-20', 'Private Circle', 'private-circle', 'Unlisted-company intelligence for India.', 'Private Circle tracks unlisted Indian companies, promoters, and group structures — indispensable for India-focused diligence.', 'https://privatecircle.co', 'PAID', 'cat-2'),
-    t('t-21', 'Product Hunt', 'product-hunt', 'A daily feed of newly launched products.', 'Product Hunt is a daily launch board — many sourcing analysts scan it every morning for breakout consumer and prosumer products.', 'https://producthunt.com', 'FREE', 'cat-2'),
     t('t-22', 'Sanchi Connect', 'sanchi-connect', 'India\u2019s deeptech ecosystem platform.', 'Sanchi Connect is an Indian deeptech ecosystem platform connecting founders, investors, and research institutions.', 'https://sanchiconnect.com', 'FREEMIUM', 'cat-2'),
     t('t-23', 'Tracxn', 'tracxn', 'Sector-wide startup tracking.', 'Tracxn is an India-founded startup intelligence platform covering thousands of sectors and emerging-tech themes.', 'https://tracxn.com', 'PAID', 'cat-2'),
     t('t-24', 'Twitter', 'twitter', 'Where the VC discourse — and much of the dealflow — lives.', 'X (Twitter) is still the fastest surface for founder and investor signal — launches, memes, and round leaks all appear here first.', 'https://x.com', 'FREE', 'cat-2'),
     t('t-25', 'Venture Intelligence', 'venture-intelligence', 'The most-cited source for Indian PE/VC deal data.', 'Venture Intelligence tracks Indian PE/VC deals, M&A, and fundraising activity — the reference for most Indian fund reports.', 'https://ventureintelligence.info', 'PAID', 'cat-2'),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // RESEARCH (cat-3) — 15 tools
+    // RESEARCH (cat-3) — 14 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-26', '1Lattice', '1lattice', 'Primary research and market intelligence.', '1Lattice (formerly PGA Labs) runs primary research, expert interviews, and market-sizing studies for investors and corporates.', 'https://1lattice.com', 'ENTERPRISE', 'cat-3'),
     t('t-27', 'Ahrefs', 'ahrefs', 'SEO and web-traffic intelligence.', 'Ahrefs is an SEO and web-analytics platform used for competitive diligence on D2C, marketplace, and content businesses.', 'https://ahrefs.com', 'PAID', 'cat-3'),
     t('t-28', 'AlphaSense', 'alphasense', 'AI search across earnings, filings, and expert calls.', 'AlphaSense is an AI-powered search engine across public filings, broker research, and expert-call transcripts.', 'https://alpha-sense.com', 'ENTERPRISE', 'cat-3'),
-    t('t-29', 'Bain', 'bain', 'Consulting reports that shape the market map.', 'Bain & Company publishes industry and private-capital reports that investors routinely cite in memos and LP decks.', 'https://bain.com', 'ENTERPRISE', 'cat-3'),
     t('t-30', 'Clearbit', 'clearbit', 'Company and contact enrichment.', 'Clearbit (now part of HubSpot) enriches company and contact records — used heavily by platform and BD teams.', 'https://clearbit.com', 'PAID', 'cat-3'),
     t('t-31', 'Data AI', 'data-ai', 'App-store and mobile intelligence.', 'Data.ai (formerly App Annie) tracks app-store rankings, downloads, and revenue — the reference for mobile-app diligence.', 'https://data.ai', 'PAID', 'cat-3'),
     t('t-32', 'G2', 'g2', 'Category research via real software reviews.', 'G2 aggregates software reviews and category rankings — useful for B2B SaaS diligence and competitive mapping.', 'https://g2.com', 'FREEMIUM', 'cat-3'),
@@ -131,15 +132,14 @@ export function buildAllTools(): Tool[] {
     t('t-54', 'Entrackr', 'entrackr', 'Indian startup funding news tracker.', 'Entrackr is an Indian startup news and funding tracker — known for scoops on early- and growth-stage rounds.', 'https://entrackr.com', 'FREE', 'cat-4'),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // AI (cat-5) — 7 tools
+    // AI (cat-5) — 6 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-55', 'ChatGPT', 'chatgpt', 'OpenAI\u2019s general-purpose reasoning assistant.', 'ChatGPT is OpenAI\u2019s conversational assistant — the most widely-used AI co-pilot in the investor\u2019s daily workflow.', 'https://openai.com', 'FREEMIUM', 'cat-5', true),
     t('t-56', 'Claude', 'claude', 'Anthropic\u2019s assistant, favoured for long-form reasoning.', 'Claude is Anthropic\u2019s conversational assistant, favoured by investors for long-document analysis, memo drafting, and careful reasoning. The 1M-token context window makes it a default for diligence, memo review, and turning raw investor calls into clean writeups.', 'https://claude.ai', 'FREEMIUM', 'cat-5', true),
     t('t-57', 'Gemini', 'gemini', 'Google\u2019s AI assistant, wired into Workspace.', 'Gemini is Google\u2019s AI model family, now embedded across Gmail, Docs, and Sheets — the default for Workspace-native firms.', 'https://gemini.google.com', 'FREEMIUM', 'cat-5'),
     t('t-58', 'Manus', 'manus', 'Autonomous agent for research and execution.', 'Manus is an autonomous agent that plans and executes multi-step research and work tasks in the background.', 'https://manus.ai', 'PAID', 'cat-5'),
-    t('t-59', 'MiniMax', 'minimax', 'Multimodal AI assistant from China\u2019s MiniMax Group.', 'MiniMax is a Chinese AI-model family with strong multimodal (text, voice, video) capabilities.', 'https://minimax.io', 'FREEMIUM', 'cat-5'),
     t('t-60', 'Perplexity', 'perplexity', 'AI search with real citations.', 'Perplexity is an answer engine that cites its sources — investors use it as a faster, citation-backed alternative to Google.', 'https://perplexity.ai', 'FREEMIUM', 'cat-5', true),
-    t('t-61', 'Qwen', 'qwen', 'Alibaba\u2019s open-weight model family.', 'Qwen is Alibaba\u2019s open-weight LLM family — increasingly used in Indian and Asian AI stacks.', 'https://qwen.ai', 'FREE', 'cat-5'),
+    t('t-62', 'DeepSeek', 'deepseek', 'Open-weight models from China\u2019s DeepSeek AI.', 'DeepSeek is a Chinese AI lab releasing high-performing open-weight models — increasingly used in Indian AI stacks for cost-effective reasoning and agent work.', 'https://deepseek.com', 'FREEMIUM', 'cat-5'),
 
     // ═══════════════════════════════════════════════════════════════════════
     // PORTFOLIO MANAGEMENT (cat-6) — 2 primary tools (Carta is multi-category → see Captable)
@@ -148,18 +148,11 @@ export function buildAllTools(): Tool[] {
     t('t-64', 'Vestberry', 'vestberry', 'VC portfolio monitoring and analytics.', 'Vestberry is a portfolio-monitoring platform for VC and PE firms — dashboards, benchmarks, and LP reporting.', 'https://vestberry.com', 'PAID', 'cat-6'),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // CAPTABLE (cat-7) — 3 tools
+    // (cat-7 Captable retired — startup-stack concern; the 3 tools moved
+    //  into Other Tools below. Carta still surfaces under Portfolio
+    //  Management via its extraCategorySlugs.)
+    // (cat-8 Finance retired — payroll/HRMS tools moved into Other Tools.)
     // ═══════════════════════════════════════════════════════════════════════
-    t('t-65', 'Carta', 'carta', 'Cap-table management, the US-market standard.', 'Carta is the US-market standard for cap-table management, 409A valuations, and equity plan administration. Also acts as the portfolio-management spine for many funds — tracking fair-market-value, rounds, and exits across the book.', 'https://carta.com', 'ENTERPRISE', 'cat-7', true, ['portfolio-management']),
-    t('t-66', 'Equity List', 'equity-list', 'Cap-table and ESOP management.', 'Equity List provides cap-table and ESOP management tooling — increasingly used by Indian and cross-border startups.', 'https://equitylist.com', 'PAID', 'cat-7'),
-    t('t-67', 'Qapita', 'qapita', 'India\u2019s cap-table and ESOP leader.', 'Qapita is the dominant cap-table and ESOP-management platform across Indian startups.', 'https://qapita.com', 'PAID', 'cat-7', true),
-
-    // ═══════════════════════════════════════════════════════════════════════
-    // FINANCE (cat-8) — 3 tools
-    // ═══════════════════════════════════════════════════════════════════════
-    t('t-68', 'Darwin Box', 'darwinbox', 'HRMS platform popular with mid-sized Indian firms.', 'Darwinbox is a full-stack HR platform with payroll, performance, and talent management — widely adopted by Indian firms.', 'https://darwinbox.com', 'ENTERPRISE', 'cat-8'),
-    t('t-69', 'Keka', 'keka', 'HR, payroll, and performance, India-first.', 'Keka is an Indian HRMS covering payroll, attendance, performance, and hiring — popular with small and mid-sized firms.', 'https://keka.com', 'PAID', 'cat-8'),
-    t('t-70', 'Zoho', 'zoho', 'The sprawling SaaS suite — accounts, HR, everything.', 'Zoho is a full suite of business software — Books, Payroll, People, Expense — the back-office workhorse for many funds.', 'https://zoho.com', 'FREEMIUM', 'cat-8'),
 
     // ═══════════════════════════════════════════════════════════════════════
     // ADMIN/OPS (cat-9) — 4 tools
@@ -170,12 +163,11 @@ export function buildAllTools(): Tool[] {
     t('t-74', 'LetsVenture', 'letsventure', 'India\u2019s early-stage fundraising and syndicate platform.', 'LetsVenture powers startup fundraising, syndicates, and AngelList-style SPVs for the Indian market.', 'https://letsventure.com', 'PAID', 'cat-9'),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // AUTOMATION (cat-10) — 4 tools
+    // AUTOMATION (cat-10) — 3 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-75', 'Make', 'make', 'Visual workflow automation (formerly Integromat).', 'Make is a visual automation builder — investor ops teams use it to connect CRM, email, and spreadsheets into workflows.', 'https://make.com', 'FREEMIUM', 'cat-10'),
     t('t-76', 'Phantom Buster', 'phantombuster', 'Browser automation for lead-gen and scraping.', 'PhantomBuster runs browser automations on LinkedIn, Twitter, and other sites — widely used for sourcing and enrichment.', 'https://phantombuster.com', 'PAID', 'cat-10'),
     t('t-77', 'Zapier', 'zapier', 'The original no-code integration platform.', 'Zapier connects thousands of SaaS apps with simple trigger-action flows — still the default no-code glue.', 'https://zapier.com', 'FREEMIUM', 'cat-10'),
-    t('t-78', 'n8n', 'n8n', 'Open-source workflow automation for teams that self-host.', 'n8n is an open-source, self-hostable alternative to Zapier — favoured by technical teams who want control.', 'https://n8n.io', 'FREEMIUM', 'cat-10'),
 
     // ═══════════════════════════════════════════════════════════════════════
     // COMMUNICATION (cat-11) — 4 tools
@@ -188,7 +180,7 @@ export function buildAllTools(): Tool[] {
     // ═══════════════════════════════════════════════════════════════════════
     // MAILING (cat-12) — 4 tools
     // ═══════════════════════════════════════════════════════════════════════
-    t('t-83', 'Notion Mail', 'notion-mail', 'Notion\u2019s take on the email client.', 'Notion Mail is Notion\u2019s new email client, designed around workspace primitives — labels, views, and blocks.', 'https://notion.so', 'FREEMIUM', 'cat-12'),
+    t('t-83', 'Notion Mail', 'notion-mail', 'Notion\u2019s take on the email client.', 'Notion Mail is Notion\u2019s new email client, designed around workspace primitives — labels, views, and blocks.', 'https://mail.notion.com', 'FREEMIUM', 'cat-12'),
     t('t-84', 'Shortwave', 'shortwave', 'AI-native Gmail client.', 'Shortwave rebuilds Gmail around AI — smart summaries, triage, and a conversational search interface.', 'https://shortwave.com', 'FREEMIUM', 'cat-12'),
     t('t-85', 'Simplehuman', 'simplehuman-mail', 'A minimalist Gmail layer for fast triage.', 'Simplehuman (email) is a minimalist Gmail assistant focused on fast triage and zero-inbox workflows.', 'https://simplehuman.email', 'PAID', 'cat-12'),
     t('t-86', 'Superhuman', 'superhuman', 'The keyboard-first email client loved by GPs.', 'The keyboard-first, blazing-fast Gmail client that treats email as a power-user tool. Inbox zero feels easy; split inboxes, snippets, and AI-drafted replies are table-stakes for investors drowning in founder intros and LP threads.', 'https://superhuman.com', 'PAID', 'cat-12', true),
@@ -198,7 +190,7 @@ export function buildAllTools(): Tool[] {
     // ═══════════════════════════════════════════════════════════════════════
     t('t-87', 'Cal.com', 'cal-com', 'Open-source scheduling infrastructure.', 'Cal.com is the open-source Calendly alternative — self-hostable, extensible, and popular among technical teams.', 'https://cal.com', 'FREEMIUM', 'cat-13'),
     t('t-88', 'Calendly', 'calendly', 'The scheduling link standard.', 'Calendly is the ubiquitous scheduling link — the verb as much as the tool for booking investor calls.', 'https://calendly.com', 'FREEMIUM', 'cat-13', true),
-    t('t-89', 'Notion Calendar', 'notion-calendar', 'Calendar tied into Notion\u2019s workspace.', 'Notion Calendar (formerly Cron) is a fast keyboard-first calendar, now tied into Notion\u2019s workspace.', 'https://notion.so', 'FREEMIUM', 'cat-13'),
+    t('t-89', 'Notion Calendar', 'notion-calendar', 'Calendar tied into Notion\u2019s workspace.', 'Notion Calendar (formerly Cron) is a fast keyboard-first calendar, now tied into Notion\u2019s workspace.', 'https://calendar.notion.so', 'FREEMIUM', 'cat-13'),
     t('t-90', 'Vimcal', 'vimcal', 'Keyboard-first calendar for busy investors.', 'Vimcal is a keyboard-first, investor-favourite calendar — optimised for people in back-to-back meetings.', 'https://vimcal.com', 'PAID', 'cat-13'),
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -225,33 +217,35 @@ export function buildAllTools(): Tool[] {
     t('t-103', 'Google Sheets', 'google-sheets', 'The default modelling tool.', 'Google Sheets is the default spreadsheet for collaborative modelling, LP tracking, and quick analyses.', 'https://google.com', 'FREE', 'cat-16', true),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // VIBE CODING (cat-17) — 5 tools
+    // VIBE CODING (cat-17) — 4 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-105', 'Bolt', 'bolt', 'Browser-based AI app builder from StackBlitz.', 'Bolt generates and runs full-stack web apps from a prompt — a favourite for rapid prototyping.', 'https://bolt.new', 'FREEMIUM', 'cat-17'),
     t('t-106', 'Emergent', 'emergent', 'AI platform for generating full applications.', 'Emergent is an AI coding platform that generates complete applications from natural-language specs.', 'https://emergent.sh', 'PAID', 'cat-17'),
     t('t-107', 'Lovable', 'lovable', 'AI web-app builder driven by natural language.', 'Lovable lets anyone build and iterate on full web apps by describing what they want in plain English.', 'https://lovable.dev', 'FREEMIUM', 'cat-17', true),
     t('t-108', 'Replit', 'replit', 'Browser IDE with an AI agent built in.', 'Replit is a browser-based IDE with an AI agent that can scaffold and deploy full projects.', 'https://replit.com', 'FREEMIUM', 'cat-17'),
-    t('t-109', 'v0', 'v0', 'Vercel\u2019s generative UI tool.', 'v0 by Vercel generates React UI and full apps from a prompt — the de facto tool for AI-assisted frontend work.', 'https://v0.dev', 'FREEMIUM', 'cat-17', true),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // BROWSER (cat-18) — 6 tools
+    // BROWSER (cat-18) — 5 tools
     // ═══════════════════════════════════════════════════════════════════════
     t('t-110', 'Arc', 'arc-browser', 'The opinionated browser by The Browser Company.', 'Arc is an opinionated, design-forward browser — spaces, split views, and a radically different tab model.', 'https://arc.net', 'FREE', 'cat-18'),
     t('t-111', 'Atlas', 'atlas-browser', 'OpenAI\u2019s ChatGPT-powered browser.', 'Atlas is OpenAI\u2019s AI-native browser that puts ChatGPT at the centre of the browsing experience.', 'https://chatgpt.com', 'FREE', 'cat-18'),
     t('t-112', 'Brave', 'brave', 'Privacy-first browser with built-in ad-blocking.', 'Brave is a privacy-first browser with native ad-blocking, crypto wallet, and optional paid-search integrations.', 'https://brave.com', 'FREE', 'cat-18'),
     t('t-113', 'Comet', 'comet', 'Perplexity\u2019s AI-native browser.', 'Comet is Perplexity\u2019s AI-native browser — agents and search baked into the URL bar.', 'https://perplexity.ai', 'FREEMIUM', 'cat-18'),
-    t('t-114', 'Dia', 'dia-browser', 'AI-native browser from The Browser Company.', 'Dia is The Browser Company\u2019s AI-first successor to Arc — the browser as an AI assistant.', 'https://diabrowser.com', 'FREE', 'cat-18'),
     t('t-115', 'Google Chrome', 'google-chrome', 'The dominant browser and its extension platform.', 'Chrome is still the default — the extension ecosystem alone keeps most investors anchored to it.', 'https://chrome.google.com', 'FREE', 'cat-18'),
 
     // ═══════════════════════════════════════════════════════════════════════
-    // OTHER TOOLS (cat-19) — 23 tools
+    // OTHER TOOLS (cat-19) — 24 tools
+    //   Carta is the one ex-Captable tool that stayed — VCs use it for
+    //   portfolio management (still surfaces under Portfolio Management
+    //   via extraCategorySlugs).
+    //   Equity List / Qapita (captable) and Darwin Box / Keka / Zoho (HRMS)
+    //   removed — these are startup-stack tools, not VC-stack tools.
     // ═══════════════════════════════════════════════════════════════════════
-    t('t-116', 'Axiom', 'axiom', 'Logging and observability for modern apps.', 'Axiom is an observability platform — investors diligencing infrastructure and developer-tool companies encounter it often.', 'https://axiom.co', 'FREEMIUM', 'cat-19'),
+    t('t-65', 'Carta', 'carta', 'Cap-table management, the US-market standard.', 'Carta is the US-market standard for cap-table management, 409A valuations, and equity plan administration. Also acts as the portfolio-management spine for many funds — tracking fair-market-value, rounds, and exits across the book.', 'https://carta.com', 'ENTERPRISE', 'cat-19', true, ['portfolio-management']),
     t('t-117', 'Bardeen', 'bardeen', 'Browser automation agent.', 'Bardeen runs browser-based automations — used by sourcing and BD teams to script repetitive web work.', 'https://bardeen.ai', 'FREEMIUM', 'cat-19'),
     t('t-118', 'Canva', 'canva', 'Design platform for slides and collateral.', 'Canva is the default non-designer design tool — decks, social posts, and portfolio collateral.', 'https://canva.com', 'FREEMIUM', 'cat-19'),
     t('t-119', 'Chronicle HQ', 'chronicle-hq', 'Storytelling-focused presentation software.', 'Chronicle HQ is a next-generation presentation tool built around narrative storytelling and clean design.', 'https://chroniclehq.com', 'PAID', 'cat-19'),
     t('t-120', 'Circle', 'circle', 'Community platform for cohorts and creators.', 'Circle powers paid communities, cohorts, and portfolio founder groups.', 'https://circle.so', 'PAID', 'cat-19'),
-    t('t-121', 'Coresignal', 'coresignal', 'B2B professional and firmographic data.', 'Coresignal provides B2B data feeds — professional profiles, firmographics, and job posting signals for sourcing.', 'https://coresignal.com', 'ENTERPRISE', 'cat-19'),
     t('t-122', 'DocSend', 'docsend', 'Document sharing with viewer analytics.', 'DocSend is the standard for sending pitch decks and memos with granular viewer analytics.', 'https://docsend.com', 'PAID', 'cat-19', true),
     t('t-123', 'Exa', 'exa', 'Neural search API for AI applications.', 'Exa is a neural-search API designed for AI agents and research tools — a developer primitive for real-time retrieval.', 'https://exa.ai', 'PAID', 'cat-19'),
     t('t-124', 'Gamma', 'gamma', 'AI-powered presentation and document builder.', 'Gamma generates beautiful decks and docs from a prompt — increasingly used for investor memos and portfolio updates.', 'https://gamma.app', 'FREEMIUM', 'cat-19'),
@@ -264,7 +258,6 @@ export function buildAllTools(): Tool[] {
     t('t-131', 'Raycast', 'raycast', 'Mac productivity launcher with AI features.', 'Raycast is a macOS launcher with extensions and AI features — the keyboard command-centre for many power users.', 'https://raycast.com', 'FREEMIUM', 'cat-19'),
     t('t-132', 'Substack', 'substack', 'Newsletter publishing and subscriptions.', 'Substack is the publishing and subscription layer for most serious investor newsletters.', 'https://substack.com', 'FREEMIUM', 'cat-19', true),
     t('t-133', 'Tally', 'tally', 'Form builder that stays out of your way.', 'Tally is a minimalist form builder — popular for applications, deal submissions, and community intake.', 'https://tally.so', 'FREEMIUM', 'cat-19'),
-    t('t-134', 'Trello', 'trello', 'Kanban-style project tracker.', 'Trello is the classic Kanban tracker — still in the toolkit for light project and dealflow management.', 'https://trello.com', 'FREEMIUM', 'cat-19'),
     t('t-135', 'Typeform', 'typeform', 'Conversational form builder.', 'Typeform is the conversational form builder — surveys, applications, and founder intake.', 'https://typeform.com', 'FREEMIUM', 'cat-19'),
     t('t-136', 'Webflow', 'webflow', 'Visual website builder for VC microsites.', 'Webflow is the visual website builder behind most Indian VC microsites, portfolio pages, and fund landing sites.', 'https://webflow.com', 'FREEMIUM', 'cat-19'),
     t('t-137', 'Wizikey', 'wizikey', 'PR and media monitoring, India-focused.', 'Wizikey is a PR and media-monitoring platform widely used by Indian fund-platform teams for portfolio comms.', 'https://wizikey.com', 'PAID', 'cat-19'),

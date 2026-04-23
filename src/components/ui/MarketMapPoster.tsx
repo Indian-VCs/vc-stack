@@ -11,24 +11,48 @@ interface Props {
   categories: Category[]
 }
 
-/** 5-column desktop layout grouped by category slug, matching the printed poster. */
-const COLS: string[][] = [
-  ['crm', 'admin-ops', 'captable', 'voice-to-text', 'mailing'],
-  ['data', 'finance', 'productivity', 'calendar'],
-  ['research', 'communication', 'vibe-coding', 'automation'],
-  ['news', 'ai', 'browser'],
-  ['other-tools', 'portfolio-management', 'transcription'],
+/**
+ * Market-map layout — one block:
+ *
+ *   GRID_BLOCK: cols 1–3 normal + right-block covering cols 4+5.
+ *     Right-block: [Transcription/Voice-to-Text col] [News col] on top,
+ *     then Other Tools spanning the full 2-col width,
+ *     then Automation (3 tools, single row) spanning the full 2-col width.
+ */
+
+/** Cols 1–3 rendered as regular flex columns. */
+const LEFT_COLS: string[][] = [
+  ['ai', 'mailing', 'calendar', 'admin-ops', 'productivity'],
+  ['crm', 'research', 'browser'],
+  ['data', 'communication', 'portfolio-management', 'vibe-coding'],
 ]
 
-/** Mobile: flat vertical order following a VC workflow. */
+/** Cols 4–5: sit side-by-side in the top of the right-block. */
+const RIGHT_TOP_COLS: string[][] = [
+  ['transcription', 'voice-to-text'],
+  ['news'],
+]
+
+/** Categories that span the full width of the right-block, stacked below right-top. */
+const RIGHT_BOTTOM_STACK: string[] = ['automation', 'other-tools']
+
+/**
+ * Categories with a wider internal pill grid than the default 2-col.
+ *   automation : 3-col pill grid → 3 tools fit in 1 row (bottom of right-block)
+ *   other-tools: 3-col pill grid → 24 tools in 8 rows spanning cols 4+5 width
+ */
+const WIDE_PILL_CATS: Record<string, number> = {
+  'automation': 3,
+  'other-tools': 3,
+}
+
+/** Mobile: flat vertical order — priority-heavy cats first. */
 const MOBILE_ORDER = [
-  'crm', 'data', 'research', 'news', 'ai',
-  'portfolio-management', 'captable', 'finance',
-  'admin-ops', 'automation',
-  'communication', 'mailing', 'calendar',
-  'transcription', 'voice-to-text',
-  'productivity', 'vibe-coding', 'browser',
-  'other-tools',
+  'ai', 'crm', 'data', 'transcription', 'news',
+  'research', 'other-tools',
+  'mailing', 'voice-to-text', 'calendar', 'communication',
+  'portfolio-management', 'admin-ops', 'automation',
+  'productivity', 'browser', 'vibe-coding',
 ]
 
 const GRAD_PAIRS = [
@@ -91,10 +115,13 @@ function CategoryCard({
   catName,
   tools,
   index,
+  pillCols = 2,
 }: {
   catName: string
   tools: Tool[]
   index: number
+  /** Columns inside the pill grid. Most cards stay 2; Other Tools uses 3. */
+  pillCols?: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -119,9 +146,14 @@ function CategoryCard({
     <div
       ref={ref}
       className={`card ${visible ? 'is-in' : ''}`}
-      style={{ transitionDelay: `${Math.min(index, 8) * 40}ms` }}
+      style={{
+        transitionDelay: `${Math.min(index, 8) * 40}ms`,
+        '--pill-cols': pillCols,
+      } as React.CSSProperties}
     >
-      <div className="card-head"><span className="name">{catName}</span></div>
+      <div className="card-head">
+        <span className="name">{catName}</span>
+      </div>
       <div className="tools">
         {tools.map((t) => <ToolPill key={t.id} t={t} />)}
       </div>
@@ -196,6 +228,25 @@ export default function MarketMapPoster({ tools, categories }: Props) {
     return { bySlug, slugToName, totalAppearances, totalCats }
   }, [tools, categories])
 
+  /**
+   * Build a CategoryCard for a given slug + index, or null if the category
+   * has no tools. Used by every render slot (desktop cols, right-block, mobile)
+   * so the shape is identical across layouts.
+   */
+  const renderCard = (slug: string, index: number) => {
+    const list = bySlug[slug] || []
+    if (!list.length) return null
+    return (
+      <CategoryCard
+        key={slug}
+        catName={slugToName[slug] || slug}
+        tools={list}
+        index={index}
+        pillCols={WIDE_PILL_CATS[slug] ?? 2}
+      />
+    )
+  }
+
   return (
     <>
       <div
@@ -213,39 +264,35 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           <span>{totalAppearances} tools · {totalCats} categories</span>
         </div>
 
-        {/* ── Columns ── */}
+        {/* ── Desktop: cols 1–3 + right-block (cols 4+5 top, Other Tools + Automation stacked below) ── */}
         <div className="landscape landscape-desktop">
-          {COLS.map((catList, idx) => (
-            <div key={idx} className="col">
-              {catList.map((slug, i) => {
-                const list = bySlug[slug] || []
-                if (!list.length) return null
-                return (
-                  <CategoryCard
-                    key={slug}
-                    catName={slugToName[slug] || slug}
-                    tools={list}
-                    index={idx * 5 + i}
-                  />
-                )
-              })}
+          <div className="grid-block">
+            {/* Left: cols 1–3 */}
+            {LEFT_COLS.map((catList, idx) => (
+              <div key={idx} className="col">
+                {catList.map((slug, i) => renderCard(slug, idx * 5 + i))}
+              </div>
+            ))}
+
+            {/* Right-block: cols 4+5 on top, then Other Tools + Automation stacked full-width */}
+            <div className="right-block">
+              <div className="right-top">
+                {RIGHT_TOP_COLS.map((catList, idx) => (
+                  <div key={idx} className="col">
+                    {catList.map((slug, i) =>
+                      renderCard(slug, LEFT_COLS.length * 5 + idx * 3 + i),
+                    )}
+                  </div>
+                ))}
+              </div>
+              {/* Other Tools + Automation stacked, each spans full right-block width (cols 4+5) */}
+              {RIGHT_BOTTOM_STACK.map((slug, i) => renderCard(slug, 20 + i))}
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="landscape landscape-mobile">
-          {MOBILE_ORDER.map((slug, i) => {
-            const list = bySlug[slug] || []
-            if (!list.length) return null
-            return (
-              <CategoryCard
-                key={slug}
-                catName={slugToName[slug] || slug}
-                tools={list}
-                index={i}
-              />
-            )
-          })}
+          {MOBILE_ORDER.map((slug, i) => renderCard(slug, i))}
         </div>
 
         <div className="disclaimer">
@@ -272,27 +319,51 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         .poster-counter {
           display: flex;
           justify-content: flex-end;
-          padding: 0 0 12px;
+          padding: 0 0 10px;
           font-family: var(--mono);
           font-size: 0.66rem;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
           color: var(--ink-muted);
         }
 
         .landscape {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
           padding: 0;
         }
-        .landscape-desktop { display: flex; }
+        /* Desktop: grid block on top, full-width banners below */
+        .landscape-desktop {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .grid-block {
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+        }
+        .right-block {
+          flex: 2;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          min-width: 0;
+        }
+        .right-top {
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+        }
+        .banners {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
         .landscape-mobile  { display: none; flex-direction: column; gap: 12px; }
         .col {
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 10px;
           min-width: 0;
         }
 
@@ -313,22 +384,25 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           transform: translateY(0);
         }
         :global(.poster .card-head) {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           background: var(--ink);
-          padding: 6px 10px;
+          padding: 4px 10px;
         }
         :global(.poster .card-head .name) {
           font-family: var(--mono);
           font-size: 0.66rem;
           font-weight: 700;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
           color: var(--paper);
         }
         :global(.poster .tools) {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 3px 6px;
-          padding: 8px 8px 10px;
+          grid-template-columns: repeat(var(--pill-cols, 2), minmax(0, 1fr));
+          gap: 4px 6px;
+          padding: 7px 8px 9px;
           background: var(--paper-alt);
         }
 
@@ -338,7 +412,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           font-size: 0.72rem;
           color: var(--ink-muted);
           text-align: center;
-          padding: 18px 24px 4px;
+          padding: 14px 24px 2px;
           line-height: 1.5;
         }
       `}</style>
@@ -349,7 +423,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           align-items: center;
           gap: 6px;
           border: 1px solid var(--rule);
-          border-radius: 3px;
+          border-radius: 4px;
           padding: 4px 6px;
           background: var(--paper);
           white-space: nowrap;
@@ -359,9 +433,9 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           color: inherit;
           cursor: pointer;
           transition:
-            border-color 180ms ease,
-            background 180ms ease,
-            transform 180ms ease;
+            border-color 140ms ease,
+            background 140ms ease,
+            transform 140ms ease;
         }
         .poster .t:hover {
           border-color: var(--ink);
@@ -371,17 +445,17 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         .poster .t img {
           width: 18px;
           height: 18px;
-          border-radius: 2px;
+          border-radius: 3px;
           object-fit: contain;
           flex-shrink: 0;
           background: #fff;
-          transition: transform 180ms ease;
+          transition: transform 140ms ease;
         }
         .poster .t:hover img { transform: scale(1.08); }
         .poster .t-fb {
           width: 18px;
           height: 18px;
-          border-radius: 2px;
+          border-radius: 3px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
@@ -407,7 +481,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           .poster .tools {
             display: grid !important;
             grid-template-columns: 1fr 1fr;
-            gap: 6px 8px;
+            gap: 5px 6px;
           }
           /* Bigger touch targets on mobile — WCAG recommends 44px min */
           .poster .t {

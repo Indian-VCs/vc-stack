@@ -14,8 +14,6 @@ const CATEGORIES_PRIMARY: Cat[] = [
   { name: 'News',                slug: 'news' },
   { name: 'AI',                  slug: 'ai' },
   { name: 'Portfolio Mgmt',      slug: 'portfolio-management' },
-  { name: 'Captable',            slug: 'captable' },
-  { name: 'Finance',             slug: 'finance' },
   { name: 'Admin & Ops',         slug: 'admin-ops' },
   { name: 'Automation',          slug: 'automation' },
 ]
