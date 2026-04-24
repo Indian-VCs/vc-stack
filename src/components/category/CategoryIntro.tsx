@@ -18,23 +18,11 @@ export default function CategoryIntro({ intro }: Props) {
     >
       <div
         style={{
-          fontFamily: 'var(--mono)',
-          fontSize: 'var(--fs-tag)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.24em',
-          color: 'var(--ink-muted)',
-          marginBottom: 14,
-        }}
-      >
-        The Brief
-      </div>
-      <div
-        style={{
           fontFamily: 'var(--body)',
           fontSize: '1.05rem',
-          lineHeight: 1.65,
+          lineHeight: 1.7,
           color: 'var(--ink)',
-          maxWidth: 760,
+          maxWidth: 'none',
         }}
       >
         {paragraphs.map((p, i) => (

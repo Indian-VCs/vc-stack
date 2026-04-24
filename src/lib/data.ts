@@ -17,8 +17,6 @@ function withPseoContent(cat: Category | null): Category | null {
     ...cat,
     intro: content.intro ?? null,
     buyingCriteria: content.buyingCriteria ?? null,
-    faqs: content.faqs ?? null,
-    topPicks: content.topPicks ?? null,
     relatedSlugs: content.relatedSlugs ?? null,
     seoTitle: content.seoTitle ?? null,
     seoDescription: content.seoDescription ?? null,
@@ -36,60 +34,14 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   return withPseoContent(STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null)
 }
 
-type PrismaToolOrderBy = Array<Record<string, 'asc' | 'desc'> | { reviews: { _count: 'asc' | 'desc' } }>
-
-function orderByForSort(sort: SearchFilters['sort']): PrismaToolOrderBy {
-  switch (sort) {
-    case 'alpha':
-      return [{ name: 'asc' }]
-    case 'reviews':
-      return [{ reviews: { _count: 'desc' } }, { isFeatured: 'desc' }, { name: 'asc' }]
-    case 'featured':
-    default:
-      return [{ isFeatured: 'desc' }, { name: 'asc' }]
-  }
-}
-
-function sortStatic(list: Tool[], sort: SearchFilters['sort']): Tool[] {
-  const out = [...list]
-  switch (sort) {
-    case 'alpha':
-      return out.sort((a, b) => a.name.localeCompare(b.name))
-    case 'reviews':
-      return out.sort((a, b) => {
-        const ra = a._count?.reviews ?? a.reviews?.length ?? 0
-        const rb = b._count?.reviews ?? b.reviews?.length ?? 0
-        if (rb !== ra) return rb - ra
-        if (a.isFeatured !== b.isFeatured) return Number(b.isFeatured) - Number(a.isFeatured)
-        return a.name.localeCompare(b.name)
-      })
-    case 'featured':
-    default:
-      return out.sort(
-        (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name)
-      )
-  }
-}
-
 export async function getToolsByCategory(
   categorySlug: string,
-  filters: SearchFilters = {}
+  filters: { page?: number; pageSize?: number } = {}
 ): Promise<PaginatedResult<Tool>> {
-  const { page = 1, pageSize = 24, pricing, query, sort = 'featured' } = filters
-  let filtered = STATIC_TOOLS.filter(
-    (t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug)
-  )
-  if (pricing) filtered = filtered.filter((t) => t.pricingModel === pricing)
-  if (query) {
-    const q = query.toLowerCase()
-    filtered = filtered.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        (t.shortDesc ?? '').toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q)
-    )
-  }
-  filtered = sortStatic(filtered, sort)
+  const { page = 1, pageSize = 24 } = filters
+  const filtered = STATIC_TOOLS
+    .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
+    .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
   const total = filtered.length
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const data = filtered.slice((page - 1) * pageSize, page * pageSize)

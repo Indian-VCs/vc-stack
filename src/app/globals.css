@@ -380,15 +380,20 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
 }
 
 /* Scroll-in grid reveal — used by <RevealStagger>. Each child animates
-   in with a 60ms cascade, capped so large grids don't feel laggy. */
+   in with a cascade when it enters view. Default state is VISIBLE so
+   content never stays invisible if JS fails or the observer misses. */
 .reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(12px);
+  opacity: 1;
+  transform: none;
   transition:
     opacity 520ms var(--ease-out),
     transform 520ms var(--ease-out);
 }
-.reveal-stagger.is-in > * {
+.reveal-stagger.is-primed > * {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.reveal-stagger.is-primed.is-in > * {
   opacity: 1;
   transform: translateY(0);
 }

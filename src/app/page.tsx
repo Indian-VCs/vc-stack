@@ -2,7 +2,6 @@ import PageLayout from '@/components/layout/PageLayout'
 import CategoryCard from '@/components/cards/CategoryCard'
 import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
-import HeroSearchCTA from '@/components/ui/HeroSearchCTA'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import FaqSection from '@/components/ui/FaqSection'
 import RevealStagger from '@/components/ui/RevealStagger'
@@ -68,13 +67,8 @@ export default async function HomePage() {
             Browse {stats.totalTools} tools across {stats.totalCategories} categories — from sourcing and research to portfolio ops and back office.
           </p>
 
-          {/* Primary CTA — search + browse */}
-          <div className="hero-enter" style={{ animationDelay: '200ms' }}>
-            <HeroSearchCTA totalTools={stats.totalTools} />
-          </div>
-
-          {/* Inline newsletter embed — secondary CTA below the fold of the hero */}
-          <div className="hero-enter" style={{ animationDelay: '300ms' }}>
+          {/* Inline newsletter embed — primary CTA below the subtitle */}
+          <div className="hero-enter" style={{ animationDelay: '220ms' }}>
             <div
               style={{
                 fontFamily: 'var(--mono)',

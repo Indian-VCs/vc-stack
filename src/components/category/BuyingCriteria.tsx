@@ -11,36 +11,21 @@ export default function BuyingCriteria({ criteria, categoryName }: Props) {
   return (
     <section
       style={{
-        borderTop: '2px solid var(--ink)',
-        padding: '24px 0',
-        marginBottom: 32,
+        padding: '8px 0 4px',
       }}
     >
-      <div
+      <p
         style={{
-          fontFamily: 'var(--mono)',
-          fontSize: 'var(--fs-tag)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.24em',
-          color: 'var(--red)',
-          marginBottom: 8,
+          fontFamily: 'var(--body)',
+          fontSize: '1rem',
+          color: 'var(--ink-muted)',
+          fontStyle: 'italic',
+          marginBottom: 18,
+          maxWidth: 'none',
         }}
       >
-        What to look for
-      </div>
-      <h2
-        style={{
-          fontFamily: 'var(--serif)',
-          fontWeight: 700,
-          fontSize: '1.5rem',
-          lineHeight: 1.2,
-          color: 'var(--ink)',
-          marginBottom: 20,
-          letterSpacing: '-0.01em',
-        }}
-      >
-        Buying a {categoryName.toLowerCase()} for a venture fund
-      </h2>
+        What separates a good {categoryName.toLowerCase()} from a bad one for a venture fund.
+      </p>
       <ol
         style={{
           listStyle: 'none',

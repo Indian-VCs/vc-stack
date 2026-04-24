@@ -4,22 +4,15 @@ import Link from 'next/link'
 import Script from 'next/script'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
-import CategoryControls from '@/components/ui/CategoryControls'
 import Pagination from '@/components/ui/Pagination'
 import CategoryIntro from '@/components/category/CategoryIntro'
 import BuyingCriteria from '@/components/category/BuyingCriteria'
-import TopPicks from '@/components/category/TopPicks'
-import CategoryFAQ from '@/components/category/CategoryFAQ'
 import RelatedCategories from '@/components/category/RelatedCategories'
 import RevealStagger from '@/components/ui/RevealStagger'
-import type { PricingModel, SortOrder } from '@/lib/types'
-
-const VALID_PRICING = new Set(['FREE', 'FREEMIUM', 'PAID', 'ENTERPRISE'])
-const VALID_SORT = new Set<SortOrder>(['featured', 'alpha', 'reviews'])
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ page?: string; pricing?: string; sort?: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,7 +22,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const path = `/vc-stack/category/${category.slug}`
   const url = `https://www.indianvcs.com${path}`
   const count = category._count?.tools ?? 0
-  // pSEO overrides come first; fall back to the count-based template.
   const title = category.seoTitle ?? `${category.name} Tools for VCs — ${count}+ curated`
   const description =
     category.seoDescription ??
@@ -66,82 +58,61 @@ export const revalidate = 3600
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { page: pageStr, pricing: pricingStr, sort: sortStr } = await searchParams
+  const { page: pageStr } = await searchParams
   const rawPage = Number(pageStr ?? 1)
   const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1
-  const pricing = VALID_PRICING.has(pricingStr ?? '')
-    ? (pricingStr as PricingModel)
-    : ''
-  const sort: SortOrder = VALID_SORT.has(sortStr as SortOrder)
-    ? (sortStr as SortOrder)
-    : 'featured'
 
-  const [category, result, unfilteredResult] = await Promise.all([
+  const [category, result] = await Promise.all([
     getCategoryBySlug(slug),
-    getToolsByCategory(slug, { page, pageSize: 24, pricing, sort }),
-    // When filtered, we also fetch the unfiltered count to show "N of M".
-    // Skipped when no filter applied (same total either way).
-    pricing
-      ? getToolsByCategory(slug, { page: 1, pageSize: 1, sort })
-      : Promise.resolve(null),
+    getToolsByCategory(slug, { page, pageSize: 24 }),
   ])
 
   if (!category) notFound()
 
   const { data: tools, total, totalPages } = result
-  const totalUnfiltered = unfilteredResult?.total ?? total
-
-  const allCategories = category.faqs || category.relatedSlugs ? await getCategories() : []
+  const allCategories = category.relatedSlugs ? await getCategories() : []
+  const hasAccordionContent = Boolean(category.intro || (category.buyingCriteria && category.buyingCriteria.length > 0))
 
   const categoryUrl = `https://www.indianvcs.com/vc-stack/category/${category.slug}`
-  type JsonLdNode = Record<string, unknown>
-  const graph: JsonLdNode[] = [
-    {
-      '@type': 'CollectionPage',
-      '@id': `${categoryUrl}#page`,
-      url: categoryUrl,
-      name: `${category.name} tools for VCs`,
-      description:
-        category.heroAngle ??
-        category.description ??
-        `Curated ${category.name} tools used by Indian venture capital firms.`,
-      isPartOf: { '@id': 'https://www.indianvcs.com/#website' },
-      mainEntity: {
-        '@type': 'ItemList',
-        numberOfItems: total,
-        itemListElement: tools.map((t, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          name: t.name,
-          url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
-        })),
-      },
-    },
-    {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'All Categories',
-          item: 'https://www.indianvcs.com/vc-stack/all-categories',
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${categoryUrl}#page`,
+        url: categoryUrl,
+        name: `${category.name} tools for VCs`,
+        description:
+          category.heroAngle ??
+          category.description ??
+          `Curated ${category.name} tools used by Indian venture capital firms.`,
+        isPartOf: { '@id': 'https://www.indianvcs.com/#website' },
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: total,
+          itemListElement: tools.map((t, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: t.name,
+            url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
+          })),
         },
-        { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
-      ],
-    },
-  ]
-  if (category.faqs && category.faqs.length > 0) {
-    graph.push({
-      '@type': 'FAQPage',
-      mainEntity: category.faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.question,
-        acceptedAnswer: { '@type': 'Answer', text: f.answer },
-      })),
-    })
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'All Categories',
+            item: 'https://www.indianvcs.com/vc-stack/all-categories',
+          },
+          { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
+        ],
+      },
+    ],
   }
-  const jsonLd = { '@context': 'https://schema.org', '@graph': graph }
 
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
@@ -227,22 +198,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             animationDelay: '240ms',
           }}
         >
-          {totalUnfiltered} {totalUnfiltered === 1 ? 'tool' : 'tools'} in this beat
+          {total} {total === 1 ? 'tool' : 'tools'} in this beat
         </div>
       </header>
-
-      {/* pSEO sections — silently skip when the category has no content */}
-      <CategoryIntro intro={category.intro} />
-      <BuyingCriteria criteria={category.buyingCriteria} categoryName={category.name} />
-      <TopPicks picks={category.topPicks} tools={tools} categoryName={category.name} />
-
-      <CategoryControls
-        basePath={`/category/${slug}`}
-        pricing={pricing}
-        sort={sort}
-        filteredCount={total}
-        totalCount={totalUnfiltered}
-      />
 
       {/* Subcategory tabs */}
       {category.subCategories && category.subCategories.length > 0 && (
@@ -270,18 +228,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       )}
 
+      {/* ── Tools grid (top of page) ──────────────────────────────── */}
       {tools.length === 0 ? (
         <div className="empty">
           <p style={{ fontFamily: 'var(--serif)', fontSize: '1.2rem', marginBottom: 10 }}>
-            {pricing
-              ? `No ${pricing.toLowerCase()} tools in this beat yet.`
-              : 'No tools in this beat yet.'}
+            No tools in this beat yet.
           </p>
-          {pricing && (
-            <Link href={`/category/${slug}`} className="btn btn--ghost">
-              Clear filter
-            </Link>
-          )}
         </div>
       ) : (
         <>
@@ -296,19 +248,99 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <Pagination
             page={page}
             totalPages={totalPages}
-            hrefFor={(p) => {
-              const qs = new URLSearchParams()
-              if (pricing) qs.set('pricing', pricing)
-              if (sort !== 'featured') qs.set('sort', sort)
-              if (p !== 1) qs.set('page', String(p))
-              const str = qs.toString()
-              return str ? `/category/${slug}?${str}` : `/category/${slug}`
-            }}
+            hrefFor={(p) => (p === 1 ? `/category/${slug}` : `/category/${slug}?page=${p}`)}
           />
         </>
       )}
 
-      <CategoryFAQ faqs={category.faqs} categoryName={category.name} />
+      {/* ── Accordion: Brief + What to look for (below tools) ─────── */}
+      {hasAccordionContent && (
+        <section className="cat-accordion">
+          <div className="cat-accordion-header">About this category</div>
+          {category.intro && (
+            <details className="cat-accordion-item">
+              <summary>
+                <span>The Brief</span>
+                <span aria-hidden="true" className="cat-accordion-icon">+</span>
+              </summary>
+              <div className="cat-accordion-body">
+                <CategoryIntro intro={category.intro} />
+              </div>
+            </details>
+          )}
+          {category.buyingCriteria && category.buyingCriteria.length > 0 && (
+            <details className="cat-accordion-item">
+              <summary>
+                <span>What to look for when buying</span>
+                <span aria-hidden="true" className="cat-accordion-icon">+</span>
+              </summary>
+              <div className="cat-accordion-body">
+                <BuyingCriteria
+                  criteria={category.buyingCriteria}
+                  categoryName={category.name}
+                />
+              </div>
+            </details>
+          )}
+
+          <style>{`
+            .cat-accordion {
+              margin-top: 48px;
+              border-top: 2px solid var(--ink);
+              padding-top: 4px;
+            }
+            .cat-accordion-header {
+              font-family: var(--mono);
+              font-size: var(--fs-tag);
+              letter-spacing: 0.24em;
+              text-transform: uppercase;
+              color: var(--ink-muted);
+              padding: 14px 0 6px;
+            }
+            .cat-accordion-item {
+              border-top: 1px solid var(--rule);
+            }
+            .cat-accordion-item:last-child {
+              border-bottom: 1px solid var(--rule);
+            }
+            .cat-accordion-item summary {
+              list-style: none;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 16px;
+              padding: 18px 2px;
+              font-family: var(--serif);
+              font-weight: 700;
+              font-size: 1.15rem;
+              color: var(--ink);
+              letter-spacing: -0.005em;
+              transition: color var(--dur-fast);
+            }
+            .cat-accordion-item summary::-webkit-details-marker { display: none; }
+            .cat-accordion-item summary:hover { color: var(--red); }
+            .cat-accordion-icon {
+              font-family: var(--mono);
+              font-size: 1rem;
+              color: var(--ink-muted);
+              transition: transform var(--dur-fast);
+            }
+            .cat-accordion-item[open] summary { color: var(--red); }
+            .cat-accordion-item[open] .cat-accordion-icon { transform: rotate(45deg); }
+            .cat-accordion-body {
+              padding-bottom: 8px;
+            }
+            /* Neutralise the nested section margins so they sit inside the accordion panel cleanly. */
+            .cat-accordion-body > section {
+              border: 0 !important;
+              margin: 0 !important;
+              padding: 4px 0 20px !important;
+            }
+          `}</style>
+        </section>
+      )}
+
       <RelatedCategories
         relatedSlugs={category.relatedSlugs}
         allCategories={allCategories}

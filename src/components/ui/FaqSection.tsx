@@ -2,28 +2,28 @@ import Script from 'next/script'
 
 const FAQS: { q: string; a: string }[] = [
   {
-    q: 'What is VC Stack?',
-    a: 'The definitive visual market map of the tools Indian venture capital firms actually use — 119 tools across 17 categories, researched per-tool from each company\'s own website. Browse by category, search instantly with ⌘K, or start with the market map for a single-screen overview.',
+    q: 'Which tools should a new fund start with?',
+    a: 'Most funds under five people get away with five tools: a CRM for dealflow (Affinity, Attio, or Taghash), a data provider for diligence (Tracxn or Crunchbase), a shared workspace (Notion or Google Workspace), a meeting + transcription layer (Granola or Fireflies), and a portfolio tracker once you have more than ten positions (Carta, Rundit, or AngelList). Everything else — AI copilots, news feeds, fund admin — layers on as the team grows and the stack stops fitting in one head.',
   },
   {
-    q: 'Who built this?',
-    a: 'Curated by Indian VCs, built by DealQuick Labs Private Limited. Free to use, not a sponsored directory. Tools are included because venture teams actually run on them, not because they paid to be listed.',
+    q: 'How are the tools chosen?',
+    a: 'Every entry is researched from the tool\'s own website and cross-checked against what Indian VCs actually report using in 2026. Nothing is paid placement — there are no sponsored slots, affiliate links, or "featured for a fee" tiers. If a tool appears, it\'s because venture teams here are meaningfully running on it, not because a vendor wrote a cheque. The criteria tilt toward tools used daily by investment teams, ops, or portfolio, rather than one-off experiments.',
   },
   {
-    q: 'How is this different from vcstack.io?',
-    a: 'vcstack.io is the original global catalogue. VC Stack is India-first: the content, tone, and examples centre on how Indian funds — from solo GPs to institutional firms — actually assemble their stack today. Tools like Taghash, AngelList India, LetsVenture, Inc42, The Ken, Private Circle, and Tracxn appear alongside the global defaults because they are the global defaults here.',
+    q: 'What makes this India-first?',
+    a: 'The global VC catalogues optimise for Silicon Valley workflows, which miss half the stack an Indian fund runs. This list weights the tools that actually matter here: Taghash and LetsVenture for cap-table and syndicate mechanics, Inc42 and The Ken for the news beat, AngelList India for SPVs, Tracxn and Private Circle for local dealflow data, plus the regional admin and compliance layer no global directory covers. Global defaults (Affinity, Notion, Slack, ChatGPT) still sit alongside — because they\'re the global defaults here too.',
   },
   {
-    q: 'Can I submit a tool?',
-    a: 'Yes. A submissions page is queued for v2. In the meantime, email hello@indianvcs.com with the tool, the website, and one line on how venture teams use it.',
+    q: 'How often is the list updated?',
+    a: 'The catalog is reviewed quarterly for description freshness and new additions happen continuously between. The stack meaningfully shifts once or twice a year — a new AI research tool breaks into daily use, a portfolio platform wins mindshare, a category consolidates — and those shifts land here as they happen. The underlying data lives in a single versioned file on GitHub, so every change is traceable and dated.',
   },
   {
-    q: 'How often is the catalog updated?',
-    a: 'The core catalogue refreshes when the stack meaningfully moves. Expect a quarterly refresh of descriptions, with new tools added continuously between. The underlying data lives in a single versioned file, so every change is traceable on GitHub.',
+    q: 'How do I suggest a tool that isn\'t listed?',
+    a: 'Email hello@indianvcs.com with the tool name, the website, and one line on how Indian venture teams use it. Include your role (GP, analyst, ops) — that context helps decide which category it fits. Tools that are genuinely in use at two or more Indian funds almost always make it in; vendor pitches and "we just launched" submissions generally do not.',
   },
   {
-    q: 'Is it free?',
-    a: 'Free to browse. No paywalls, no logins, no email gate. You are not the product.',
+    q: 'Is it free to use?',
+    a: 'Yes — free to browse, no logins, no email gate, no paywall. The Dispatch (our weekly newsletter) is also free. The project is run by DealQuick Labs as a public good for the Indian VC community, not a lead-gen funnel, so nothing you do on this site is tracked beyond standard anonymous analytics.',
   },
 ]
 
@@ -82,7 +82,7 @@ export default function FaqSection() {
             margin: 0,
           }}
         >
-          Six things people ask before they start browsing.
+          The questions we hear most from funds looking at this list.
         </p>
       </div>
 
@@ -136,9 +136,9 @@ export default function FaqSection() {
                 fontFamily: 'var(--body)',
                 fontSize: 'var(--fs-body)',
                 color: 'var(--ink-light)',
-                lineHeight: 1.6,
+                lineHeight: 1.65,
                 marginTop: 12,
-                maxWidth: 720,
+                maxWidth: 900,
               }}
             >
               {f.a}
