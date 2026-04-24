@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import { getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
 import LogoCard from '@/components/ui/LogoCard'
 
@@ -12,9 +13,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
   if (!tool) return {}
+  const path = `/vc-stack/product/${tool.slug}`
+  const url = `https://indianvcs.com${path}`
+  const description = tool.shortDesc ?? tool.description.slice(0, 160)
+  const title = `${tool.name} — ${tool.category?.name ?? 'Tool'} for VCs`
   return {
-    title: tool.name,
-    description: tool.shortDesc ?? tool.description.slice(0, 160),
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Indian VCs',
+      type: 'article',
+      locale: 'en_IN',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      creator: '@indianvcs',
+    },
   }
 }
 
@@ -28,8 +48,73 @@ export default async function ToolDetailPage({ params }: Props) {
   const spotlightShown = spotlight.slice(0, FEATURED_CAP)
   const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
 
+  // Structured data: SoftwareApplication + BreadcrumbList
+  const toolUrl = `https://indianvcs.com/vc-stack/product/${tool.slug}`
+  const categoryUrl = tool.category
+    ? `https://indianvcs.com/vc-stack/category/${tool.category.slug}`
+    : undefined
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'SoftwareApplication',
+        '@id': `${toolUrl}#software`,
+        name: tool.name,
+        description: tool.description,
+        url: tool.websiteUrl,
+        applicationCategory: tool.category?.name ?? 'BusinessApplication',
+        ...(tool.logoUrl ? { image: tool.logoUrl } : {}),
+        offers: {
+          '@type': 'Offer',
+          category:
+            tool.pricingModel === 'FREE'
+              ? 'Free'
+              : tool.pricingModel === 'FREEMIUM'
+                ? 'Freemium'
+                : tool.pricingModel === 'ENTERPRISE'
+                  ? 'Enterprise'
+                  : 'Paid',
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://indianvcs.com/vc-stack',
+          },
+          ...(tool.category && categoryUrl
+            ? [
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: tool.category.name,
+                  item: categoryUrl,
+                },
+              ]
+            : []),
+          {
+            '@type': 'ListItem',
+            position: tool.category ? 3 : 2,
+            name: tool.name,
+            item: toolUrl,
+          },
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
+      <Script
+        id={`tool-jsonld-${tool.slug}`}
+        type="application/ld+json"
+        strategy="beforeInteractive"
+      >
+        {JSON.stringify(jsonLd)}
+      </Script>
       <nav className="breadcrumb" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         {tool.category && (

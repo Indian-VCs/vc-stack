@@ -12,3 +12,12 @@ export const TOTAL_TOOL_APPEARANCES = STATIC_TOOLS.reduce(
   (acc, t) => acc + categorySlugsForTool(t).length,
   0,
 )
+
+/** Category name + tool count pairs, sorted by count (desc). Used for JSON-LD ItemList. */
+export const CATEGORY_COUNTS: { name: string; slug: string; count: number }[] = STATIC_CATEGORIES
+  .map((c) => ({
+    name: c.name,
+    slug: c.slug,
+    count: STATIC_TOOLS.filter((t) => categorySlugsForTool(t).includes(c.slug)).length,
+  }))
+  .sort((a, b) => b.count - a.count)

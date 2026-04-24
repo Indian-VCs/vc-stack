@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
 
@@ -13,9 +14,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const category = await getCategoryBySlug(slug)
   if (!category) return {}
+  const path = `/vc-stack/category/${category.slug}`
+  const url = `https://indianvcs.com${path}`
+  const count = category._count?.tools ?? 0
+  const description =
+    category.description ??
+    `Browse ${count} ${category.name} tools used by Indian venture capital firms.`
+  const title = `${category.name} Tools for VCs — ${count}+ curated`
   return {
-    title: category.name,
-    description: category.description ?? `Browse ${category.name} tools for VC firms.`,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Indian VCs',
+      type: 'website',
+      locale: 'en_IN',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      creator: '@indianvcs',
+    },
   }
 }
 
@@ -40,8 +63,55 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const { data: tools, total, totalPages } = result
 
+  const categoryUrl = `https://indianvcs.com/vc-stack/category/${category.slug}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${categoryUrl}#page`,
+        url: categoryUrl,
+        name: `${category.name} tools for VCs`,
+        description:
+          category.description ??
+          `Curated ${category.name} tools used by Indian venture capital firms.`,
+        isPartOf: { '@id': 'https://indianvcs.com/#website' },
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: total,
+          itemListElement: tools.map((t, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: t.name,
+            url: `https://indianvcs.com/vc-stack/product/${t.slug}`,
+          })),
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://indianvcs.com/vc-stack' },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'All Categories',
+            item: 'https://indianvcs.com/vc-stack/all-categories',
+          },
+          { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
+      <Script
+        id={`category-jsonld-${category.slug}`}
+        type="application/ld+json"
+        strategy="beforeInteractive"
+      >
+        {JSON.stringify(jsonLd)}
+      </Script>
       {/* Breadcrumb */}
       <div className="breadcrumb">
         <Link href="/">Home</Link>
