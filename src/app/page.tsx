@@ -5,6 +5,7 @@ import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
 import HeroSearchCTA from '@/components/ui/HeroSearchCTA'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import FaqSection from '@/components/ui/FaqSection'
+import RevealStagger from '@/components/ui/RevealStagger'
 import Link from 'next/link'
 import {
   getCategories,
@@ -37,6 +38,7 @@ export default async function HomePage() {
       >
         <div>
           <h1
+            className="hero-enter"
             style={{
               fontFamily: 'var(--serif)',
               fontWeight: 900,
@@ -45,12 +47,14 @@ export default async function HomePage() {
               color: 'var(--ink)',
               letterSpacing: '-0.02em',
               margin: '0 0 16px',
+              animationDelay: '0ms',
             }}
           >
             The Indian VC{' '}
             <span style={{ color: 'var(--red)' }}>tech stack.</span>
           </h1>
           <p
+            className="hero-enter"
             style={{
               fontFamily: 'var(--body)',
               fontSize: '1.1rem',
@@ -58,16 +62,19 @@ export default async function HomePage() {
               color: 'var(--ink-light)',
               maxWidth: 520,
               margin: '0 0 24px',
+              animationDelay: '120ms',
             }}
           >
             Browse {stats.totalTools} tools across {stats.totalCategories} categories — from sourcing and research to portfolio ops and back office.
           </p>
 
           {/* Primary CTA — search + browse */}
-          <HeroSearchCTA totalTools={stats.totalTools} />
+          <div className="hero-enter" style={{ animationDelay: '200ms' }}>
+            <HeroSearchCTA totalTools={stats.totalTools} />
+          </div>
 
           {/* Inline newsletter embed — secondary CTA below the fold of the hero */}
-          <div>
+          <div className="hero-enter" style={{ animationDelay: '300ms' }}>
             <div
               style={{
                 fontFamily: 'var(--mono)',
@@ -84,7 +91,7 @@ export default async function HomePage() {
             <SubstackEmbed wide />
           </div>
         </div>
-        <div>
+        <div className="hero-enter" style={{ animationDelay: '360ms' }}>
           <HeroFeaturedTool tools={heroRotation} />
         </div>
 
@@ -101,6 +108,7 @@ export default async function HomePage() {
               gap: 48px;
             }
           }
+
         `}</style>
       </section>
 
@@ -173,7 +181,10 @@ export default async function HomePage() {
             All categories →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0" style={{ gap: 0 }}>
+        <RevealStagger
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0"
+          style={{ gap: 0 }}
+        >
           {categories.map((cat, i) => (
             <div key={cat.id} style={{ marginLeft: -1, marginTop: -1 }}>
               <CategoryCard
@@ -184,7 +195,7 @@ export default async function HomePage() {
               />
             </div>
           ))}
-        </div>
+        </RevealStagger>
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}

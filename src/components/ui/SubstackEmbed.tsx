@@ -61,7 +61,7 @@ export default function SubstackEmbed({
 
   return (
     <div style={{ maxWidth: resolvedMaxWidth, width: '100%' }}>
-      <form onSubmit={handleSubmit} className="ssb-form" noValidate>
+      <form onSubmit={handleSubmit} className="ssb-form" noValidate aria-label="Newsletter signup">
         <input
           type="email"
           value={email}
@@ -71,6 +71,7 @@ export default function SubstackEmbed({
           }}
           placeholder="name@fund.com"
           required
+          aria-label="Email address"
           aria-invalid={Boolean(err)}
           aria-describedby={err ? 'ssb-err' : undefined}
           className="ssb-input"
@@ -108,6 +109,7 @@ export default function SubstackEmbed({
           color: var(--ink);
           line-height: 1.4;
           outline: none;
+          transition: background var(--dur-fast) var(--ease-out);
         }
         .ssb-input::placeholder {
           color: var(--ink-muted);

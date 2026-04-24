@@ -24,17 +24,26 @@ function Logo({ name, logoUrl, size = 40 }: { name: string; logoUrl?: string | n
     return (
       <img
         src={logoUrl}
-        alt={name}
+        alt=""
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
         style={{
           width: size,
           height: size,
           objectFit: 'contain',
-          background: 'var(--paper)',
+          background: 'var(--surface-logo)',
           border: '1px solid var(--rule)',
           padding: 4,
           flexShrink: 0,
         }}
-        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+        onError={(e) => {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(`[ToolCard] logo failed for ${name}: ${logoUrl}`)
+          }
+          ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+        }}
       />
     )
   }
@@ -174,6 +183,7 @@ export default function ToolCard({ tool, variant = 'default', index }: ToolCardP
   /* ── Default card ─────────────────────────────────────────────── */
   return (
     <div
+      className="tool-card"
       style={{
         position: 'relative',
         display: 'flex',
@@ -182,7 +192,6 @@ export default function ToolCard({ tool, variant = 'default', index }: ToolCardP
         border: '1px solid var(--rule)',
         padding: 20,
         height: '100%',
-        transition: 'border-color var(--dur-fast)',
       }}
     >
       <Link

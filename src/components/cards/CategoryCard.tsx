@@ -81,6 +81,10 @@ export default function CategoryCard({
                 <img
                   src={t.logoUrl}
                   alt=""
+                  width={14}
+                  height={14}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: 14, height: 14, objectFit: 'contain' }}
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).style.display = 'none'

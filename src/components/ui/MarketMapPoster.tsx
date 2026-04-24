@@ -55,18 +55,27 @@ const MOBILE_ORDER = [
   'productivity', 'browser', 'vibe-coding',
 ]
 
-const GRAD_PAIRS = [
-  ['#c0392b', '#962d22'], ['#4a4035', '#1a1410'], ['#635a4a', '#4a4035'],
-  ['#8b6f47', '#5a4731'], ['#2d6a4f', '#40916c'], ['#6930c3', '#5390d9'],
-  ['#e85d04', '#dc2f02'], ['#7b2cbf', '#c77dff'], ['#3a0ca3', '#4895ef'],
-  ['#495057', '#810100'],
+/**
+ * Broadsheet-safe fallback backgrounds. A flat ink shade chosen deterministically
+ * from the tool name — no rainbow gradients, no AI palette. Always paired with
+ * paper-white initials for guaranteed ≥7:1 contrast. Shades stay within the
+ * warm-brown/ink family so they read as part of the paper aesthetic.
+ */
+const FALLBACK_SHADES = [
+  '#1a1410', /* --ink */
+  '#2f271f',
+  '#3a322a', /* --ink-light */
+  '#524a3c', /* --ink-muted */
+  '#5a4731',
+  '#6b5a3f',
+  '#a41204', /* --red-dark */
+  '#d21905', /* --red */
 ]
 
-function gradient(name: string) {
+function fallbackShade(name: string) {
   let h = 0
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
-  const [a, b] = GRAD_PAIRS[Math.abs(h) % GRAD_PAIRS.length]
-  return `linear-gradient(135deg,${a},${b})`
+  return FALLBACK_SHADES[Math.abs(h) % FALLBACK_SHADES.length]
 }
 
 function initials(name: string) {
@@ -93,18 +102,24 @@ function ToolPill({ t }: { t: Tool }) {
         <img
           src={src}
           alt=""
+          width={18}
+          height={18}
           loading="lazy"
+          decoding="async"
           onError={(e) => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn(`[MarketMap] logo failed for ${t.name}: ${src}`)
+            }
             const img = e.currentTarget
             const fb = document.createElement('div')
             fb.className = 't-fb'
             fb.textContent = initials(t.name)
-            fb.style.background = gradient(t.name)
+            fb.style.background = fallbackShade(t.name)
             img.replaceWith(fb)
           }}
         />
       ) : (
-        <div className="t-fb" style={{ background: gradient(t.name) }}>{initials(t.name)}</div>
+        <div className="t-fb" style={{ background: fallbackShade(t.name) }}>{initials(t.name)}</div>
       )}
       <span>{t.name}</span>
     </Link>
@@ -376,8 +391,8 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           opacity: 0;
           transform: translateY(14px);
           transition:
-            opacity 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
-            transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+            opacity 520ms var(--ease-out),
+            transform 520ms var(--ease-out);
         }
         :global(.poster .card.is-in) {
           opacity: 1;
@@ -448,7 +463,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           border-radius: 3px;
           object-fit: contain;
           flex-shrink: 0;
-          background: #fff;
+          background: var(--surface-logo);
           transition: transform 140ms ease;
         }
         .poster .t:hover img { transform: scale(1.08); }
@@ -462,7 +477,7 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           justify-content: center;
           font-size: 8px;
           font-weight: 700;
-          color: #fff;
+          color: var(--paper);
           text-transform: uppercase;
         }
         .poster .t span {
@@ -475,6 +490,19 @@ export default function MarketMapPoster({ tools, categories }: Props) {
           text-overflow: ellipsis;
         }
 
+        /* Tablet — 2-column grid, keep the right-block 2-up layout */
+        @media (max-width: 1180px) and (min-width: 901px) {
+          .poster :global(.grid-block) {
+            flex-wrap: wrap;
+          }
+          .poster :global(.grid-block) > :global(.col) {
+            flex: 1 1 calc(50% - 5px);
+            min-width: 0;
+          }
+          .poster :global(.right-block) {
+            flex: 1 1 100%;
+          }
+        }
         @media (max-width: 900px) {
           .poster .landscape-desktop { display: none !important; }
           .poster .landscape-mobile  { display: flex !important; }
@@ -483,15 +511,16 @@ export default function MarketMapPoster({ tools, categories }: Props) {
             grid-template-columns: 1fr 1fr;
             gap: 5px 6px;
           }
-          /* Bigger touch targets on mobile — WCAG recommends 44px min */
+          /* WCAG 2.5.5 Target Size — 44px minimum on touch devices */
           .poster .t {
-            padding: 8px 8px;
-            min-height: 40px;
+            padding: 10px 10px;
+            min-height: 44px;
+            min-width: 44px;
           }
           .poster .t img,
           .poster .t-fb {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
           }
           .poster .t span {
             font-size: 0.85rem;

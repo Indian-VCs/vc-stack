@@ -11,6 +11,7 @@ import BuyingCriteria from '@/components/category/BuyingCriteria'
 import TopPicks from '@/components/category/TopPicks'
 import CategoryFAQ from '@/components/category/CategoryFAQ'
 import RelatedCategories from '@/components/category/RelatedCategories'
+import RevealStagger from '@/components/ui/RevealStagger'
 import type { PricingModel, SortOrder } from '@/lib/types'
 
 const VALID_PRICING = new Set(['FREE', 'FREEMIUM', 'PAID', 'ENTERPRISE'])
@@ -170,6 +171,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         }}
       >
         <div
+          className="hero-enter"
           style={{
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
@@ -177,11 +179,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             letterSpacing: '0.24em',
             color: 'var(--red)',
             marginBottom: 8,
+            animationDelay: '0ms',
           }}
         >
           Section · {category.slug}
         </div>
         <h1
+          className="hero-enter"
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
@@ -189,12 +193,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             lineHeight: 1.1,
             color: 'var(--ink)',
             letterSpacing: '-0.01em',
+            animationDelay: '80ms',
           }}
         >
           {category.name}
         </h1>
         {(category.heroAngle ?? category.description) && (
           <p
+            className="hero-enter"
             style={{
               fontFamily: 'var(--body)',
               fontSize: '1rem',
@@ -203,12 +209,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               marginTop: 10,
               maxWidth: 760,
               fontStyle: 'italic',
+              animationDelay: '160ms',
             }}
           >
             {category.heroAngle ?? category.description}
           </p>
         )}
         <div
+          className="hero-enter"
           style={{
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
@@ -216,6 +224,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             letterSpacing: '0.14em',
             color: 'var(--ink-muted)',
             marginTop: 14,
+            animationDelay: '240ms',
           }}
         >
           {totalUnfiltered} {totalUnfiltered === 1 ? 'tool' : 'tools'} in this beat
@@ -276,13 +285,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       ) : (
         <>
-          <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <RevealStagger className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {tools.map((tool, i) => (
               <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
                 <ToolCard tool={tool} index={i} />
               </div>
             ))}
-          </div>
+          </RevealStagger>
 
           <Pagination
             page={page}

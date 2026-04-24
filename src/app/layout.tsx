@@ -1,7 +1,29 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Playfair_Display, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES, CATEGORY_COUNTS } from "@/lib/stats";
 import "./globals.css";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-source-serif",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -130,7 +152,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
         {/* JSON-LD Structured Data */}
         <script
@@ -145,16 +171,6 @@ export default function RootLayout({
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-P2Z77C6G');
         `}</Script>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Arapey:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body>
         {/* Google Tag Manager (noscript fallback) */}

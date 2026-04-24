@@ -28,6 +28,7 @@ export default function SearchBox({
     <form
       onSubmit={handleSubmit}
       className={className}
+      role="search"
       style={{ display: 'flex', gap: 8, maxWidth: 560, margin: '0 auto' }}
     >
       <input
@@ -35,6 +36,7 @@ export default function SearchBox({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
+        aria-label="Search tools and categories"
         className="input"
         style={{ flex: 1 }}
       />
