@@ -7,15 +7,33 @@
 import type { Category, Tool, PaginatedResult, SearchFilters } from './types'
 import type { PreviewTool } from '@/components/cards/CategoryCard'
 import { setCategoryResolver, buildAllTools } from './tools-data'
+import { getCategoryContent } from './category-content'
+
+/** Merge static pSEO content (docs/pseo-strategy.md) into a Category. */
+function withPseoContent(cat: Category | null): Category | null {
+  if (!cat) return cat
+  const content = getCategoryContent(cat.slug)
+  return {
+    ...cat,
+    intro: content.intro ?? null,
+    buyingCriteria: content.buyingCriteria ?? null,
+    faqs: content.faqs ?? null,
+    topPicks: content.topPicks ?? null,
+    relatedSlugs: content.relatedSlugs ?? null,
+    seoTitle: content.seoTitle ?? null,
+    seoDescription: content.seoDescription ?? null,
+    heroAngle: content.heroAngle ?? null,
+  }
+}
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  return STATIC_CATEGORIES
+  return STATIC_CATEGORIES.map((c) => withPseoContent(c)!)
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  return STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
+  return withPseoContent(STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null)
 }
 
 type PrismaToolOrderBy = Array<Record<string, 'asc' | 'desc'> | { reviews: { _count: 'asc' | 'desc' } }>
