@@ -1,210 +1,179 @@
-# VCStack — VC Tool Directory Clone
+# VC Stack
 
-A full-stack clone of [vcstack.io](https://vcstack.io) — the largest directory of tools and resources for venture capital and angel investors. Built with Next.js 16, TailwindCSS v4, Prisma, and Clerk.
+The definitive tool catalog for Indian venture capital firms.
 
----
+**Live:** [`indianvcs.com/vc-stack`](https://indianvcs.com/vc-stack)
 
-## Tech Stack
+119 tools across 17 categories — every entry researched from the tool's own website and written in the Indian VCs editorial voice. Covers the full VC operating stack: CRM, dealflow data, research, portfolio management, AI, communication, transcription, mailing, calendar, and the rest.
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Styling | TailwindCSS v4 |
-| Auth | Clerk |
-| Database | Prisma + SQLite (dev) / PostgreSQL (prod) |
-| Language | TypeScript |
-| Icons | Lucide React |
+Curated by **Indian VCs**, built by **DealQuick Labs Private Limited**.
 
 ---
 
-## Getting Started
+## Stack
 
-### 1. Install dependencies
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Runtime | Cloudflare Workers (via OpenNext) |
+| Hosting | Webflow Cloud |
+| Language | TypeScript 5 |
+| Styling | Tailwind 4 + CSS custom properties |
+| Auth | Lightweight cookie-based (edge middleware) |
+| Data | Static catalog (`src/lib/tools-data.ts`), with optional Prisma/SQLite fallback for local admin |
+
+The site is mounted at `/vc-stack` on `indianvcs.com`. Every route, `<Link>`, and static asset is automatically prefixed with that basePath (see `next.config.ts`).
+
+---
+
+## Repo layout
+
+```
+src/
+├── app/
+│   ├── (main)/                    # Public routes — all mounted under /vc-stack
+│   │   ├── category/[slug]/       # Category page + dynamic OG image
+│   │   ├── product/[slug]/        # Tool detail page + dynamic OG image
+│   │   ├── all-categories/        # Category index grid
+│   │   ├── market-map/            # Full visual poster
+│   │   ├── search/                # Full-page results
+│   │   ├── submit-product/        # Tool-suggestion form (v2)
+│   │   └── layout.tsx             # Navbar + Footer + CommandK
+│   ├── admin/                     # Password-protected admin (internal)
+│   ├── opengraph-image.tsx        # Default site OG image (1200×630)
+│   ├── sitemap.ts                 # Dynamic sitemap (139 URLs)
+│   ├── robots.ts                  # robots.txt
+│   ├── layout.tsx                 # Root metadata, JSON-LD, GTM
+│   ├── page.tsx                   # Home (hero + market-map + categories + FAQ)
+│   ├── icon.svg                   # Favicon
+│   └── middleware.ts              # Edge middleware — admin auth gate
+├── components/
+│   ├── layout/   (Navbar, Footer, PageLayout)
+│   ├── cards/    (ToolCard, CategoryCard, ProductCard)
+│   └── ui/       (CommandK, HeroFeaturedTool, MarketMapPoster,
+│                  FeaturedToolStrip, LogoCard, IndianVCsLogo,
+│                  FaqSection, …)
+├── lib/
+│   ├── tools-data.ts              # 👈 source of truth for the 119-tool catalog
+│   ├── data.ts                    # Fetch helpers + FEATURED_TOOL_SLUGS canonical list
+│   ├── types.ts                   # Tool / Category / Review / Submission types
+│   └── stats.ts                   # Exported counts + CATEGORY_COUNTS for SEO
+└── app/api/admin/                 # Password-check endpoints
+```
+
+Brand assets (primary logo SVG, favicon variants) live at `/Users/pc/Documents/Indian VCs Logo Kit/` and are inlined into React via [`src/components/ui/IndianVCsLogo.tsx`](src/components/ui/IndianVCsLogo.tsx).
+
+---
+
+## Running locally
 
 ```bash
-cd vcstack-clone
 npm install
-```
-
-### 2. Set up environment variables
-
-Copy the example file and fill in your keys:
-
-```bash
-cp .env.example .env
-```
-
-Required variables:
-
-```env
-# Clerk (get from https://dashboard.clerk.com)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# Database
-DATABASE_URL="file:./dev.db"
-```
-
-### 3. Run the dev server
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:5000/vc-stack](http://localhost:5000/vc-stack).
 
----
+The `/vc-stack` prefix is mandatory — hitting `/` returns 404. Internal navigation via Next.js `<Link>` handles the prefix automatically.
 
-## Setting Up Clerk (Admin Auth)
+### Environment variables (for local dev)
 
-1. Go to [dashboard.clerk.com](https://dashboard.clerk.com) and create a new application
-2. Choose **Email + Password** as the sign-in method
-3. Copy your **Publishable Key** and **Secret Key** from the API Keys page
-4. Paste them into `.env`:
-   ```env
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-   CLERK_SECRET_KEY=sk_test_...
-   ```
-5. In your Clerk dashboard, create a user with your email/password — this becomes the admin account
-6. Restart the dev server: `npm run dev`
-7. Go to [http://localhost:3000/admin/login](http://localhost:3000/admin/login) and sign in
+```env
+# Optional — only needed if you want the admin UI
+ADMIN_PASSWORD=admin123
 
-> **Note:** Clerk handles all auth — no hardcoded credentials needed. Any user you create in your Clerk dashboard can log in to the admin panel.
+# Optional — if unset, the home-page newsletter CTA shows a "Launching soon" state
+NEXT_PUBLIC_SUBSTACK_URL=https://breakingvc.substack.com
 
----
-
-## Admin Panel
-
-### Login
-
-**URL:** [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-
-Sign in with the email/password you created in the Clerk dashboard.
-
-### Admin Routes
-
-| Route | Description |
-|-------|-------------|
-| `/admin/login` | Clerk-powered sign-in page |
-| `/admin/dashboard` | Overview stats — total tools, categories, pending submissions, reviews |
-| `/admin/tools` | Browse and manage all tools in the directory |
-| `/admin/categories` | View all categories with tool counts |
-| `/admin/submissions` | Review user-submitted tools (Approve / Reject) |
-| `/admin/reviews` | Manage user reviews |
-
-All `/admin/*` routes (except `/admin/login`) are protected by Clerk middleware — unauthenticated users are redirected to the login page automatically.
-
----
-
-## Project Structure
-
-```
-vcstack-clone/
-├── src/
-│   ├── app/
-│   │   ├── (main)/               # Public-facing routes
-│   │   │   ├── page.tsx          # Homepage
-│   │   │   ├── category/[slug]/  # Category listing page
-│   │   │   ├── product/[slug]/   # Tool detail page
-│   │   │   ├── all-categories/   # All categories grid
-│   │   │   ├── search/           # Search results
-│   │   │   ├── submit-product/   # Submit a new tool
-│   │   │   └── review/           # Write a review
-│   │   ├── admin/                # Admin panel (Clerk-protected)
-│   │   │   ├── login/            # Clerk SignIn component
-│   │   │   ├── dashboard/        # Stats overview
-│   │   │   ├── tools/            # Tool management
-│   │   │   ├── categories/       # Category management
-│   │   │   ├── submissions/      # Submission review
-│   │   │   └── AdminSidebar.tsx  # Sidebar with UserButton
-│   │   ├── layout.tsx            # Root layout (ClerkProvider)
-│   │   └── globals.css
-│   ├── components/
-│   │   ├── cards/
-│   │   │   ├── ToolCard.tsx      # Tool card (default + compact variants)
-│   │   │   └── CategoryCard.tsx  # Category card with gradient fallback
-│   │   ├── layout/
-│   │   │   ├── Navbar.tsx
-│   │   │   ├── Footer.tsx
-│   │   │   └── PageLayout.tsx
-│   │   └── ui/
-│   │       ├── SearchBox.tsx
-│   │       └── NewsletterForm.tsx
-│   ├── lib/
-│   │   ├── data.ts               # Data access layer (Prisma → static fallback)
-│   │   ├── tools-data.ts         # Static tool catalog (~500 tools)
-│   │   ├── types.ts              # TypeScript types
-│   │   └── db/
-│   │       └── prisma.ts         # Prisma client singleton
-│   └── middleware.ts             # Clerk route protection
-├── public/
-│   └── images/
-│       └── categories/           # Downloaded category header images
-├── prisma/
-│   └── schema.prisma             # Database schema
-├── .env                          # Local environment variables
-├── .env.example                  # Environment variable template
-└── ADMIN.md                      # Detailed admin documentation
+# Optional — SQLite fallback for Prisma. App works fine without this.
+DATABASE_URL="file:./dev.db"
 ```
 
----
-
-## Data Architecture
-
-The app uses a **Prisma → static fallback** pattern:
-
-1. On each request, it tries to fetch data from the database via Prisma
-2. If Prisma fails (no DB connected), it falls back to the static `STATIC_TOOLS` and `STATIC_CATEGORIES` arrays in `src/lib/tools-data.ts`
-3. This means the site works fully in dev without any database setup
-
-The static catalog contains ~500 tools across 26 categories, sourced from the real vcstack.io.
+`.env` is gitignored. In production these are set in the Webflow Cloud project settings, not committed.
 
 ---
 
-## Category Images
+## Deploying
 
-Category header images are downloaded from the Webflow CDN and served locally:
+Pushes to `main` are picked up automatically by Webflow Cloud:
 
 ```bash
-cd ..  # back to VCstack.io root
-python3 download_cat_images.py
+git push origin main
+# → Webflow Cloud auto-detects webflow.json, runs the OpenNext build,
+#   ships the Cloudflare Worker under indianvcs.com/vc-stack.
 ```
 
-Images are saved to `public/images/categories/`.
+Useful local commands:
+
+```bash
+npm run dev       # dev server on port 5000, with hot reload
+npm run build     # Next production build
+npm run preview   # local Cloudflare Worker preview via OpenNext
+npm run deploy    # direct deploy to Cloudflare (needs `wrangler login` once)
+npx tsc --noEmit  # type check
+```
 
 ---
 
-## Environment Variables Reference
+## Adding or editing a tool
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | Clerk publishable key (from dashboard) |
-| `CLERK_SECRET_KEY` | Yes | Clerk secret key (from dashboard) |
-| `DATABASE_URL` | No | Database URL (SQLite default, PostgreSQL for prod) |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | No | Sign-in page path (default: `/admin/login`) |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | No | Redirect after login (default: `/admin/dashboard`) |
+All 119 tools live in [`src/lib/tools-data.ts`](src/lib/tools-data.ts). Each entry is a single `t(...)` call with positional args:
+
+```ts
+t('t-123', 'Name', 'slug',
+  'Punchy ≤80-char tagline used on cards',
+  'Full description (2–4 sentences, 40–70 words). 80% plain product explanation, 20% VC-use clause at the end.',
+  'https://example.com',
+  'FREEMIUM',            // FREE | FREEMIUM | PAID | ENTERPRISE
+  'cat-1',               // primary category ID
+  true,                  // isFeatured?
+  ['productivity'],      // extraCategorySlugs
+  [                      // useCases — exactly 2, verb-first, 12-20 words
+    'Verb-first bullet about how VCs use this',
+    'Second bullet',
+  ],
+)
+```
+
+The rules of the house voice (banned phrases, structure, examples) live in [`CLAUDE.md`](CLAUDE.md). Edit the file, run `npm run dev`, eyeball the tool detail page, commit.
+
+Every surface — home hero, category pages, Cmd+K search, OG share cards, JSON-LD — reads from this one file. There is no other "database" to sync.
+
+### Featured tools
+
+The canonical featured-tool list is the `FEATURED_TOOL_SLUGS` constant exported from `src/lib/data.ts`. Edit that array to change which tools rotate in the homepage hero and appear in the "Featured Tools" strip under every tool page.
 
 ---
 
-## Scripts
+## Content workflow
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server at localhost:3000 |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
+1. Research from the tool's own website (primary source)
+2. Cross-reference `vcstack.io` listings where they exist, paraphrase only
+3. Write per the tone rules in `CLAUDE.md`
+4. Validate: 40–70 words, 2 bullets per `useCases`, no banned phrases
+5. `npx tsc --noEmit`
+6. Dev-server review
+7. Commit — descriptive subject, detail what changed
+
+For bulk rewrites (more than ~10 tools at once), use the `/tmp/vcstack-copy/apply_copy.py` pattern from prior refresh passes — it preserves every entry's existing id / url / categoryId / isFeatured while updating `shortDesc`, `description`, and `useCases`.
 
 ---
 
-## Deployment
+## SEO
 
-Deploy to Vercel in one click:
+- Root + per-page metadata in `src/app/layout.tsx` and each `generateMetadata`
+- Dynamic sitemap at `/vc-stack/sitemap.xml` (139 URLs)
+- `robots.txt` at `/vc-stack/robots.txt` with sitemap pointer
+- Per-tool and per-category OG images (1200×630, served via Next.js `ImageResponse`)
+- JSON-LD: `WebPage`, `Organization`, `WebSite`, `ItemList`, `SoftwareApplication`, `BreadcrumbList`, `CollectionPage`, `FAQPage`
+- Canonical URLs respect `/vc-stack` basePath
 
-1. Push to GitHub
-2. Import repo at [vercel.com/new](https://vercel.com/new)
-3. Add environment variables in the Vercel dashboard
-4. Set `DATABASE_URL` to a PostgreSQL connection string (e.g. Neon, Supabase)
-5. Deploy
+After deploy, submit `https://indianvcs.com/vc-stack/sitemap.xml` in Google Search Console once. GSC covers the sub-path automatically since `indianvcs.com` is already a verified property.
 
-For the Clerk keys, copy them from your Clerk dashboard's **Production** instance (not the Development instance).
+---
+
+## License
+
+Content curated by Indian VCs.
+Code owned by DealQuick Labs Private Limited.
+All tool names and logos belong to their respective owners.

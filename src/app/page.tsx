@@ -4,6 +4,7 @@ import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
 import HeroSearchCTA from '@/components/ui/HeroSearchCTA'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
+import FaqSection from '@/components/ui/FaqSection'
 import Link from 'next/link'
 import {
   getCategories,
@@ -185,6 +186,9 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── FAQ ──────────────────────────────────────────────────── */}
+      <FaqSection />
 
     </PageLayout>
   )
