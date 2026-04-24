@@ -5,8 +5,6 @@
  * Each entry enriches a category page with:
  *   - intro        — 150–250 word unique paragraph (markdown ok)
  *   - buyingCriteria — 3–5 "what to look for" items
- *   - faqs         — 3 Q&As for the FAQ section (also rendered as FAQPage schema)
- *   - topPicks     — 3 editorial tool picks with rationale (slugs must exist in STATIC_TOOLS)
  *   - relatedSlugs — 3–4 adjacent categories to cross-link
  *   - seoTitle / seoDescription / heroAngle — metadata overrides
  *
@@ -14,13 +12,11 @@
  * tools grid (no thin-content risk — pSEO sections are silently skipped).
  */
 
-import type { BuyingCriterion, CategoryFAQ, TopPick } from './types'
+import type { BuyingCriterion } from './types'
 
 export interface CategoryContent {
   intro?: string
   buyingCriteria?: BuyingCriterion[]
-  faqs?: CategoryFAQ[]
-  topPicks?: TopPick[]
   relatedSlugs?: string[]
   seoTitle?: string
   seoDescription?: string
@@ -62,40 +58,6 @@ This page is the working list. Pricing, feature depth, and India-specific fit va
           'Crunchbase and PitchBook thin out for pre-seed Indian founders. Check native integrations with Venture Intelligence, Tracxn, Inc42 Data Labs, and MCA filings.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'affinity',
-        rationale:
-          'The default for mid-sized Indian funds ($100M–$1B AUM). Best-in-class auto-enrichment from email and calendar, deep LP workflows, but priced for teams of 10+ and clunky for custom portfolio fields.',
-      },
-      {
-        slug: 'attio',
-        rationale:
-          'The modern alternative. Cleaner UI, flexible data model, fair pricing for emerging-manager funds. Weaker on VC-specific workflows out of the box, but closing the gap fast — worth a serious look in 2026.',
-      },
-      {
-        slug: 'taghash',
-        rationale:
-          'The India-first pick. An integrated fund OS covering dealflow, portfolio, fund accounting, and LP reporting in one platform. Used by Kalaari and Blume; strong if you want a single system instead of stitching five together.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What CRM do Indian VCs use most?',
-        answer:
-          'Affinity dominates among funds managing $100M+. Attio is rising fast among emerging managers for its modern UX and fair pricing. Taghash is the India-specific choice, used by Kalaari and Blume. Airtable-based custom stacks remain common under $50M AUM. Salesforce and HubSpot are legacy choices being phased out as purpose-built investor CRMs have matured.',
-      },
-      {
-        question: 'How much does a VC CRM cost in 2026?',
-        answer:
-          'Affinity is typically $150–$300 per user per month on annual contracts, with minimums around 10 seats. Attio starts at $29 per user per month and scales with feature tiers. Taghash is custom-quoted, usually bundled with portfolio and LP reporting. Airtable runs $20–$45 per user. Budget $50K–$150K per year for a fund of 10 — less if you DIY on Airtable.',
-      },
-      {
-        question: 'Is it worth switching CRMs mid-fund?',
-        answer:
-          'Rarely. Migration pain is real — relationship history is the asset, and exports lose fidelity on activity logs, attachments, and custom fields. Switch at fund closes, not mid-deployment. If you are on Salesforce or HubSpot and considering a move, time it to your next fund cycle and run the two systems in parallel for three months.',
-      },
-    ],
     relatedSlugs: ['data', 'research', 'portfolio-management', 'admin-ops'],
   },
 
@@ -133,40 +95,6 @@ This page is the working stack. Pricing ranges from free to $50K+/year. Stack br
         label: 'Pricing tier vs team size',
         description:
           'PitchBook and CB Insights are enterprise-priced; Crunchbase Pro is accessible. Match the contract size to how many analysts will actually log in weekly — seat minimums bite.',
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'harmonic',
-        rationale:
-          'Our pick for stealth-founder discovery. 30M companies, 190M people, natural-language Scout agent for sector maps. Catches founders at formation — weeks ahead of Crunchbase — and syncs with email/calendar for warm paths.',
-      },
-      {
-        slug: 'pitchbook',
-        rationale:
-          'The institutional benchmark. Round-by-round cap tables, fund performance, and LP research that no India-native platform matches yet. Expensive, but the default for IC memos at $200M+ funds and essential for LP fundraising prep.',
-      },
-      {
-        slug: 'venture-intelligence',
-        rationale:
-          'The India-specific pick. 25,000+ PE/VC deals going back to 1999, plus financials on 800,000+ unlisted Indian companies. Irreplaceable for historical comps in Indian investment memos and league-table benchmarking.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What data platforms do Indian VCs use for dealflow?',
-        answer:
-          'Most Indian funds run a two-layer stack: a global database (PitchBook, Crunchbase, or CB Insights) for benchmark and LP work, plus an India-specific source (Venture Intelligence, Inc42 Data Labs, Tracxn, or Private Circle) for local coverage. Early-stage funds increasingly add a detection layer — Harmonic or EverTrace — to reach founders before they appear on the public databases at all.',
-      },
-      {
-        question: 'Is Crunchbase enough for a VC firm?',
-        answer:
-          'For surface-level founder checks and round history, yes. For diligence, LP fundraising, or India-focused sector theses, no. Crunchbase Pro misses Indian pre-seed coverage, lacks cap-table detail, and has thin fund-performance data. Pair it with PitchBook or a domestic platform depending on your focus. Solo GPs can start on Crunchbase + one Indian source; institutional funds need PitchBook.',
-      },
-      {
-        question: 'How expensive are these data tools?',
-        answer:
-          'Crunchbase Pro starts around $49/user/month. PitchBook and CB Insights are enterprise-quoted, typically $25K–$75K/year for a small team. Venture Intelligence and Inc42 Data Labs are annual subscriptions in the $5K–$20K range. Harmonic and EverTrace are custom-quoted with seat-based pricing. Budget $30K–$100K/year for a full stack at a 5–10 person fund.',
       },
     ],
     relatedSlugs: ['crm', 'research', 'news', 'portfolio-management'],
@@ -208,40 +136,6 @@ The working rule: use AI tools for speed, expert networks for depth, and traffic
           'Gartner and Statista thin out for Indian consumer or fintech specifics. RedSeer, 1Lattice, and Kavi fill that gap — worth the separate subscription if you invest in India-native categories.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'alphasense',
-        rationale:
-          'Best-in-class for secondary desk research. Indexes SEC filings, broker research, earnings transcripts, and the Tegus expert-call library with generative search and citations. Pulls quoted insights straight into memos without chasing PDFs.',
-      },
-      {
-        slug: 'redseer',
-        rationale:
-          'The India-specific pick for strategy research. Deep coverage of Indian consumer, fintech, and B2B markets with bespoke sizing and share data you cannot source elsewhere. Expensive but the default for Indian consumer diligence at serious funds.',
-      },
-      {
-        slug: 'kavi-research',
-        rationale:
-          'The fast, affordable expert-network layer. India-focused operators across consumer, fintech, and B2B, booked without GLG-tier rates. Recorded investor-led interviews shortcut the first pass of diligence before paying for custom calls.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Which research tool do VCs use for diligence calls?',
-        answer:
-          'GLG is the global default — the largest expert network with over a million vetted specialists. For India-focused diligence, Kavi Research is significantly more affordable and has better coverage of Indian operators. Many funds run both: GLG for enterprise software or global healthcare, Kavi for Indian consumer and fintech calls. AlphaSense Tegus covers the recorded-library layer without booking live calls.',
-      },
-      {
-        question: 'Is Perplexity or ChatGPT enough for VC research?',
-        answer:
-          'For first-pass scans and speed, yes. For diligence, no. AI answer engines are excellent at sector overviews and cited quick answers, but miss paywalled research (broker reports, filings, Gartner), expert-call nuance, and traffic-estimate ground truth. Use Perplexity and ChatGPT Deep Research to cut prep time 3x, then layer AlphaSense, expert networks, and Similarweb for the real diligence.',
-      },
-      {
-        question: 'How do VCs verify founder growth claims?',
-        answer:
-          'Similarweb and Semrush estimate website and app traffic on private companies without portal access. G2 and Capterra show review velocity and buyer-intent signals for SaaS. LinkedIn Sales Navigator tracks hiring patterns. For Indian companies, Private Circle exposes MCA financials. The working method: triangulate three independent sources before trusting any single traffic or growth number from a pitch deck.',
-      },
-    ],
     relatedSlugs: ['data', 'ai', 'news', 'crm'],
   },
 
@@ -281,40 +175,6 @@ The working stack: two India paid, one global paid, and three free aggregators. 
           "Entrackr, VCCircle, and Inc42 overlap heavily on funded-round announcements. Pick one primary for deal alerts; duplicate subscriptions just fill inboxes.",
       },
     ],
-    topPicks: [
-      {
-        slug: 'the-ken',
-        rationale:
-          "India's deepest business journalism. Subscription-only, heavily reported, with investigative stories that routinely break a consensus view before the founder admits it publicly. The single most-cited source in Indian VC IC discussions.",
-      },
-      {
-        slug: 'the-generalist',
-        rationale:
-          "The default global VC narrative subscription. Long-form thesis essays and company deep dives from Mario Gabriele and guests — closer to a working think-tank than a news site. Cited in thesis memos across Indian and global funds.",
-      },
-      {
-        slug: 'inc42',
-        rationale:
-          'The broadest free India startup news surface, with Inc42 Data Labs layering in sector research for paid subscribers. Strong for daily deal flow, regulatory news, and ecosystem context you cannot get outside India.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What news sources do Indian VCs read daily?',
-        answer:
-          'The morning mix for most Indian investors is Twitter plus two or three paid subscriptions. On the India side: The Ken for depth, The Morning Context for scoops, Entrackr or VCCircle for deal-round news. Global reading is usually The Generalist, TechCrunch, and whichever Substacks they follow in their sectors. Inc42 and YourStory cover the broader ecosystem for free.',
-      },
-      {
-        question: 'Is a news subscription actually worth it for a VC?',
-        answer:
-          "Yes, at small amounts. A full stack of 2–3 paid subs (The Ken + The Morning Context + The Generalist) runs $500–$1,500 per year. Against one missed diligence flag or one scoop on a competitor's raise, it pays back immediately. The mistake is subscribing to 10 and reading none — pick the two you will actually open each morning.",
-      },
-      {
-        question: 'How do VCs get deal-round alerts?',
-        answer:
-          'Most Indian investors rely on Entrackr, VCCircle, and Inc42 for daily funding-round coverage; Crunchbase and PitchBook send their own alerts. A meaningful share of Indian pre-seed and seed rounds never hit the news at all — which is why deal-discovery tools like Harmonic, EverTrace, and Tracxn matter alongside news subscriptions.',
-      },
-    ],
     relatedSlugs: ['data', 'research', 'ai', 'crm'],
   },
 
@@ -350,40 +210,6 @@ The unlock for most funds isn't picking one model — it's setting up Projects (
         label: 'Data handling and privacy',
         description:
           "Confidential founder decks and LP materials should not train frontier models. Enterprise plans (ChatGPT Business, Claude for Enterprise) disable training and add audit logs. Check before uploading a data room.",
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'claude',
-        rationale:
-          "Our pick for diligence and writing. Strongest long-context reading for data rooms and filings, best memo-critique voice, and Projects keep per-deal context together. Artifacts render charts and diagrams inline. Investors who write long memos live in Claude.",
-      },
-      {
-        slug: 'chatgpt',
-        rationale:
-          'The broad default. Largest ecosystem, best Custom GPT plug-in library, strong at structured outputs and code. Deep Research runs autonomous multi-hour investigations. The fund-wide standard when you want one assistant everyone knows.',
-      },
-      {
-        slug: 'perplexity',
-        rationale:
-          'The answer engine for sector scans. Every response cites sources — drop the output straight into a memo appendix. Spaces save context per thesis; Comet adds an AI browser. The complement to Claude or ChatGPT, not a replacement.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Which AI tool is best for venture capital?',
-        answer:
-          "No single winner — most funds run two or three. Claude is the default for careful reading and memo writing. ChatGPT has the broadest ecosystem and Custom GPTs for reusable firm context. Perplexity leads for sourced sector research. Gemini matters if you live in Google Workspace. DeepSeek and other open-weight models serve sensitive diligence that can't leave the firm.",
-      },
-      {
-        question: 'How are Indian VCs actually using AI in 2026?',
-        answer:
-          "Most common: draft first-cut memos from inbound decks, summarise founder transcripts, run competitive teardowns, and pressure-test theses. Advanced funds run Custom GPTs loaded with firm playbooks, portfolio metrics, and sector theses — so every new conversation inherits context. The leverage is not model intelligence; it's setting up reusable context and pairing AI with transcription tools.",
-      },
-      {
-        question: 'Is it safe to upload founder decks to ChatGPT or Claude?',
-        answer:
-          'On consumer plans, no — content may be used to train future models. On enterprise plans (ChatGPT Business, Claude for Enterprise, Team tiers), training is disabled, SOC 2 compliance is in place, and audit logs track usage. Check your plan before uploading anything confidential. For the most sensitive diligence — regulatory or cap-table work — use self-hosted open-weight models like DeepSeek instead.',
       },
     ],
     relatedSlugs: ['transcription', 'research', 'productivity', 'vibe-coding'],
@@ -423,40 +249,6 @@ The practical rule: if you're a fund with 20+ portfolio companies and an in-hous
           'For SEBI-registered AIF category II/III funds, LP reporting formats, FEMA considerations, and ROC filings matter. Taghash and India-native tools handle this; global platforms often do not.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'taghash',
-        rationale:
-          "The India-first pick. Integrated fund OS covering dealflow, portfolio, fund accounting, and LP reporting in one platform. Handles SEBI-specific reporting that global tools miss. Used by Kalaari and Blume — strong if you want a single system of record.",
-      },
-      {
-        slug: 'carta',
-        rationale:
-          "The cap-table default. Most portfolio companies already use Carta; as an investor you get read-only views of ownership and dilution across the book for free. Fund-admin add-on handles capital calls and LP statements at institutional scale.",
-      },
-      {
-        slug: 'standard-metrics',
-        rationale:
-          'The specialist KPI tool. Automates quarterly data collection from founders and benchmarks portfolio performance against 10,000+ anonymised peer companies. Used by Bessemer, General Catalyst, Accel. Best for funds that want portfolio-monitoring without the full fund-OS lock-in.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What portfolio management tool do Indian VCs use?',
-        answer:
-          'Taghash is the India-specific default — integrated fund OS covering dealflow, portfolio, fund accounting, and LP reporting, with SEBI-aware reporting that global tools miss. Kalaari and Blume are known users. Global alternatives like Standard Metrics and Vestberry are stronger on KPI benchmarking but weaker on Indian regulatory reporting. Most Indian funds also use Carta for cap-table visibility across portfolio companies.',
-      },
-      {
-        question: 'Do I need a dedicated portfolio management tool?',
-        answer:
-          "Under 10 portfolio companies, probably not — a well-structured Airtable or Notion database with a monthly KPI email works. Between 10 and 30, a specialist like Standard Metrics pays off. Above 30 or with a dedicated ops hire, an integrated fund OS like Taghash or Vestberry saves real time on LP reports and partner meetings. The switching cost is the data migration, so pick once you've committed to the discipline of collecting KPIs monthly.",
-      },
-      {
-        question: 'How much does portfolio software cost for a VC fund?',
-        answer:
-          'Standard Metrics and Vestberry are typically $25K–$60K/year for small-to-mid funds, scaling with portfolio size and seat count. Taghash is custom-quoted — usually bundled with dealflow and fund accounting — in a similar range but covers more jobs. Carta fund admin starts at $30K/year and scales with AUM. Budget $30K–$80K/year total for a proper post-investment stack at a fund with 20+ active portfolio companies.',
-      },
-    ],
     relatedSlugs: ['crm', 'admin-ops', 'data', 'communication'],
   },
 
@@ -492,40 +284,6 @@ The practical decision split is size and structure. Under $10M with a syndicate 
         label: 'Pricing vs AUM stage',
         description:
           'Platform fees typically scale with AUM or LP count. A $5K/year tool at $10M AUM becomes $50K/year at $200M. Confirm the pricing curve before you commit — switching admin mid-fund is painful.',
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'angellist',
-        rationale:
-          'The global default for syndicates and micro-funds. Handles fund formation, LP onboarding, capital calls, and tax filings through a self-serve interface. Used by hundreds of solo GPs and emerging managers worldwide. Best if your LPs are comfortable with a US structure.',
-      },
-      {
-        slug: 'letsventure',
-        rationale:
-          "The India pick. Runs syndicates and small AIFs end-to-end — KYC, drawdowns, NAV calculation, and SEBI-compliant reporting — without a back-office team. The platform most Indian angels and micro-VCs use for their first fund.",
-      },
-      {
-        slug: 'incentive-finance',
-        rationale:
-          'The specialist pick for SEBI-registered AIFs wanting institutional-grade compliance. Handles NAV computation, LP capital-account maintenance, and statutory filings. Used by category I/II funds that have outgrown spreadsheet-plus-accountant setups.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What fund admin platform do Indian VCs use?',
-        answer:
-          'LetsVenture is the dominant platform for Indian syndicates and small AIFs, covering KYC, drawdowns, NAV, and SEBI-compliant LP reporting without a back-office team. Incentive Finance serves larger SEBI-registered funds that need institutional-grade compliance. AngelList is used by Indian GPs running US-structured syndicates. Above $200M AUM, most Indian funds move to a traditional admin firm.',
-      },
-      {
-        question: 'Can I run a fund on Carta alone?',
-        answer:
-          "For cap-table and portfolio visibility, Carta is sufficient. For a full India-registered AIF, it is not — you still need SEBI-compliant compliance workflows, which Carta does not handle. Typical setup at Indian funds is LetsVenture or Incentive for fund ops + Carta for cap-table-and-portfolio visibility across companies that are Carta-hosted.",
-      },
-      {
-        question: 'How much does fund admin cost for a small VC?',
-        answer:
-          'For a syndicate under $5M, AngelList or LetsVenture is typically $5K–$15K per year all-in. A SEBI-registered AIF under $50M pays $25K–$75K per year for platform + statutory fees. Traditional admin firms at $200M+ AUM are usually $100K–$250K per year. Budget early — admin costs compound with LP count, not just AUM.',
       },
     ],
     relatedSlugs: ['portfolio-management', 'crm', 'automation', 'data'],
@@ -564,40 +322,6 @@ The practical rule for Indian funds: start with Zapier to connect the 3–5 tool
           "Automation rots. If no one owns the workflows, they break inside six months. Either pick a platform that a non-technical team member can debug (Zapier), or have a dedicated ops hire who can.",
       },
     ],
-    topPicks: [
-      {
-        slug: 'zapier',
-        rationale:
-          'The default starting point. 7,000+ app integrations, the most approachable UI, and enough power for 90% of fund use cases. Most Indian VCs build their first automation stack on Zapier before graduating to Make for specific workflows that need it.',
-      },
-      {
-        slug: 'make',
-        rationale:
-          "The power-user alternative. Visual flow builder with branching, iteration, and error handling — significantly more capable than Zapier once workflows get complex. Noticeably cheaper per operation at scale. Steeper learning curve, but the right call for any fund running 30+ flows.",
-      },
-      {
-        slug: 'phantombuster',
-        rationale:
-          'The sourcing-specific pick. Extracts structured data from LinkedIn, Twitter, and public web pages into clean CSVs or directly into Zapier/Make flows. Essential for Indian VCs running LinkedIn-driven founder sourcing or portfolio-company hiring tracking.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Do VCs really need workflow automation?',
-        answer:
-          'For a solo GP or a fund under five people, a few well-chosen Zaps save real hours each week — CRM logging, calendar-to-Slack reminders, inbound pitch routing. For larger funds with an ops hire, automation becomes structural: a weekly LP-update pipeline, founder KPI pulls, diligence-document routing. Under two people, skip it; above three, automate the three workflows you do daily.',
-      },
-      {
-        question: 'Zapier vs Make — which one should I start with?',
-        answer:
-          "Zapier if you are not technical and want working flows in an afternoon. Make if you are comfortable with data structures and want more control — it is cheaper at scale and better at complex logic. Many Indian funds end up running both: Zapier for simple triggers, Make for anything that needs branching or high operation volume. Don't overthink the first call; migration is easy.",
-      },
-      {
-        question: 'Is it safe to automate workflows on founder data?',
-        answer:
-          "Depends on the tools in the chain. Zapier and Make are SOC 2 certified with enterprise tiers that disable data retention and add audit logs. PhantomBuster handles public data scraping, so it's less sensitive. For anything touching LP PII or regulated founder data, use enterprise plans and avoid routing through personal accounts — GDPR and India DPDPA fines are real.",
-      },
-    ],
     relatedSlugs: ['crm', 'productivity', 'data', 'admin-ops'],
   },
   // ─── Communication — where the partnership talks ─────────────────────────
@@ -632,40 +356,6 @@ The practical split: WhatsApp for external (founders, LPs, co-investors), Slack 
         label: 'Compliance and data retention',
         description:
           'LP-facing conversations and regulated-sector diligence (fintech, healthcare) may need audit logs and retention. Enterprise plans on Slack, WhatsApp Business, and Zoom add these; free tiers do not.',
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'whatsapp',
-        rationale:
-          'The default external channel for Indian venture. Founders, LPs, and co-investors will all prefer WhatsApp over any other surface — the practical job is to log conversations into the CRM, not to replace the medium itself.',
-      },
-      {
-        slug: 'slack',
-        rationale:
-          'The internal workspace default. IC channels, sector channels, portfolio rooms, automated CRM/news alerts, and one-click Huddles for quick partner sync. Used by nearly every Indian fund above a few people — the coordination layer of firm operations.',
-      },
-      {
-        slug: 'discord',
-        rationale:
-          'The community-first alternative. Used by funds that treat their portfolio as a network — shared founder channels, sector lounges, LP rooms. Lightweight, familiar to younger founders, and strong if your fund has a community or platform motion.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'How do Indian VCs communicate with founders?',
-        answer:
-          'WhatsApp first, email second, everything else distant. This is true across stages and fund sizes. The constraint is that WhatsApp history does not automatically make it into the CRM — so either pick a CRM that captures it natively (Taghash does; most global CRMs do not), or run a manual logging discipline. Otherwise months of relationship history vanish when someone leaves the fund.',
-      },
-      {
-        question: 'Slack or Discord for a venture fund?',
-        answer:
-          "Slack for nearly every case — it is the default for internal firm ops, has better enterprise controls, and every tool integrates with it. Discord makes sense if you run a community motion (portfolio founder network, sector community, LP lounge) where informal participation matters more than strict governance. Some funds run both — Slack internal, Discord for founders.",
-      },
-      {
-        question: 'Are WhatsApp conversations with founders really safe to log?',
-        answer:
-          "WhatsApp Business is end-to-end encrypted and has retention APIs, but personal WhatsApp accounts have weaker controls. For logging into a CRM, use a vetted integration (Taghash, Wati, or similar) rather than screenshots or manual copy-paste. For LP-facing or regulated-sector diligence, confirm your setup meets SEBI and DPDPA requirements — India's data-protection rules apply.",
       },
     ],
     relatedSlugs: ['crm', 'mailing', 'productivity', 'transcription'],
@@ -704,40 +394,6 @@ For Indian VCs, there is also a cultural split. Investors who care about inbox s
           'Superhuman is $30/user/month, Shortwave $12–$25, Notion Mail bundled with Notion. For a 10-person fund, that is $3–$4K/year versus free Gmail — worth it if the team actually adopts; wasteful otherwise.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'superhuman',
-        rationale:
-          'The investor default for inbox speed. Keyboard-first design, split-second triage, read statuses, and a reputation as the productivity tool VCs recommend to each other. Used by founders and investors at most of India’s top funds. Worth the $30/month if you actually live in email.',
-      },
-      {
-        slug: 'shortwave',
-        rationale:
-          'The AI-first alternative. Gemini-based writing help, strong natural-language search across years of mail, and thread-level summarisation. Especially strong for investors who already use AI tools and want that horsepower inside the inbox rather than bolted on.',
-      },
-      {
-        slug: 'notion-mail',
-        rationale:
-          'The Notion-native pick. Sits inside Notion alongside docs, databases, and tasks — ideal for teams that already run the firm on Notion and want email threads to live next to meeting notes and dealflow pages. Newest of the three; evolving fast.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Is Superhuman worth $30/month for a VC?',
-        answer:
-          'For an investor who reads 150+ emails daily, yes — the keyboard speed and triage flow save about an hour per week, which at VC opportunity cost pays back instantly. For associates or platform hires who read less, the value is thinner. Most Indian funds end up buying it for partners and making it optional below.',
-      },
-      {
-        question: 'Superhuman vs Shortwave — which should I pick?',
-        answer:
-          "Superhuman if speed is your constraint and you already know Gmail keyboard shortcuts. Shortwave if you want AI help — summarisation, drafting, and natural-language search matter more to your workflow than raw triage speed. Both sit on top of Gmail or Outlook, so switching between them is low-friction. Try a 2-week trial of each with your real inbox.",
-      },
-      {
-        question: 'Can I run a whole fund on Notion Mail?',
-        answer:
-          "You can, especially for smaller funds already deep in Notion. The advantage is unified search and linking — email threads live alongside deal notes and IC memos. The tradeoff is maturity; Notion Mail is newer than Superhuman and Shortwave, which means occasional rough edges. For teams under 5 already on Notion, it is worth trying. Larger funds should wait 6–12 months.",
-      },
-    ],
     relatedSlugs: ['communication', 'productivity', 'calendar', 'crm'],
   },
   // ─── Calendar — booking and defending time ───────────────────────────────
@@ -772,40 +428,6 @@ The practical split for Indian funds: everyone uses a booking-link tool for inbo
         label: 'Booking-link limits',
         description:
           'Calendly free tier caps features; Cal.com free tier is more generous. Paid plans ($15–$30/user/month) are standard for investors. Budget this as firm infrastructure, not a personal subscription.',
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'vimcal',
-        rationale:
-          'The VC-native calendar client. Built specifically for investors with heavy schedules: multi-timezone display, natural-language commands, booking links, tight Superhuman integration. Used by partners at many Indian and global funds who have given up on generic calendar apps.',
-      },
-      {
-        slug: 'calendly',
-        rationale:
-          "The global booking-link default. Ubiquitous, reliable, and understood by every founder and LP you will share a link with. Works with every CRM. The 'nobody gets fired for choosing Calendly' pick — and for most Indian funds, that is the right choice.",
-      },
-      {
-        slug: 'notion-calendar',
-        rationale:
-          'The Notion-native pick. Shows calendar events alongside Notion docs, databases, and tasks in one workspace. Best if your fund already runs on Notion and wants unified search across meetings, notes, and deal records. Not yet a replacement for booking-link tools — pair with Calendly.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What calendar tool do VCs use for scheduling?',
-        answer:
-          'Most Indian investors use Calendly for external booking links (founders, LPs) and Vimcal for their own calendar client. Cal.com is gaining share among technical investors who want self-hostable tooling. Notion Calendar is common at Notion-first funds. The firm-wide default matters more than the individual choice — pick one booking-link tool and standardise across all partners.',
-      },
-      {
-        question: 'Is Vimcal worth the price?',
-        answer:
-          'For partners with 15+ meetings per week across multiple timezones, yes — the speed gains and reduced scheduling errors pay for themselves. For associates with lighter schedules or solo GPs with simple calendars, a free Google Calendar plus Calendly is enough. Start with the free stack; upgrade partners to Vimcal once meeting volume makes it obvious.',
-      },
-      {
-        question: 'Calendly vs Cal.com — which should I pick?',
-        answer:
-          "Calendly if you want proven, reliable, and effortless — nearly every founder and LP already has it open. Cal.com if you care about open-source, self-hosting, or more flexible pricing. The feature sets are 90% overlapping for VC use cases. Pick based on preference, not feature comparison — and commit the whole firm to the same choice.",
       },
     ],
     relatedSlugs: ['mailing', 'productivity', 'communication', 'transcription'],
@@ -844,40 +466,6 @@ For Indian funds, the decision usually hinges on two factors. First, founder com
           'For sensitive diligence (regulated sectors, M&A situations), confirm retention policy, training-data settings, and enterprise controls. Consumer plans typically use meeting content for model training; enterprise plans disable this.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'granola',
-        rationale:
-          "The 2026 VC favorite. Private-by-default — runs locally during meetings, no visible bot, produces clean structured notes and memos in your voice. Fast, opinionated, and increasingly the standard among early-stage investors who want notes without the awkwardness of a visible recording bot.",
-      },
-      {
-        slug: 'fathom',
-        rationale:
-          'The most VC-integrated pick. Joins Zoom and Meet as a labelled bot, auto-extracts highlights, and pushes structured data into Affinity, Attio, and other CRMs out of the box. Free tier is generous; paid tiers add team features. The default choice for funds that care about CRM compounding.',
-      },
-      {
-        slug: 'fireflies',
-        rationale:
-          'The enterprise-friendly option. Deep Slack and CRM integrations, strong search across historical meetings, team-wide analytics. Used by larger funds and corporate venture teams that want governance and audit logs alongside transcription. Heavier than Granola; more mature than Fathom on admin controls.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Which AI notetaker do VCs use most in 2026?',
-        answer:
-          'Granola has become the fastest-growing choice among early-stage investors, led by its private-by-default design and quality of output. Fathom remains the most-integrated with VC CRMs (Affinity, Attio). Fireflies is common at larger funds that need enterprise controls. Otter is the legacy option. Many funds run two — Granola for external founder calls, Fathom for internal IC meetings.',
-      },
-      {
-        question: 'Is it okay to record every founder call?',
-        answer:
-          'Legally, in India and most jurisdictions, yes — as long as you disclose and consent is given (implicit when a bot joins a meeting). Culturally it depends on the founder. Visible-bot tools (Fathom, Fireflies) prompt explicit comfort checks; local-recording tools (Granola) raise fewer awkward moments. For sensitive M&A or regulated diligence, always ask explicitly regardless of tooling.',
-      },
-      {
-        question: 'Do I need both a CRM and a transcription tool?',
-        answer:
-          'Yes, if you want the value to compound. A transcription tool without CRM integration produces a folder of transcripts nobody searches. A CRM without transcription integration captures contact metadata but not conversation substance. The leverage comes from the join — Fathom or Fireflies pushing structured meeting highlights onto contact records in Affinity or Attio is where the workflow pays back.',
-      },
-    ],
     relatedSlugs: ['ai', 'communication', 'crm', 'productivity'],
   },
   // ─── Voice to Text — dictation on the move ───────────────────────────────
@@ -912,40 +500,6 @@ The practical use cases are narrow but high-leverage: post-meeting founder recap
         label: 'AI cleanup quality',
         description:
           'Raw transcription has ums and repetition. Tools vary in how cleanly they restructure speech into readable text — Aqua and Willow lean heavier into post-processing than Wispr Flow or Superwhisper. Match to whether you want raw transcripts or near-publishable drafts.',
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'wispr-flow',
-        rationale:
-          'The speed-first pick. Near-real-time transcription that works in any app via global shortcut; handles Indian English well. Loved by investors who dictate into CRMs and chat threads constantly between meetings. Clean, minimal, and the fastest way to get voice into a text field in 2026.',
-      },
-      {
-        slug: 'superwhisper',
-        rationale:
-          'The privacy-conscious alternative. Local-first processing with optional cloud models, which matters for founder-sensitive or regulated-sector work. Strong global-shortcut UX and accent handling comparable to Wispr Flow. Common choice at funds that prioritise data locality.',
-      },
-      {
-        slug: 'aqua-voice',
-        rationale:
-          'The cleanup-heavy pick. Applies more aggressive AI post-processing — restructures bullet points, cleans filler words, outputs near-publishable memo-quality text. Slower than Wispr Flow but better if the end goal is a polished draft rather than a raw transcript.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'Do VCs actually use voice-to-text tools?',
-        answer:
-          'More than most tools in this stack. The use case is narrow — post-meeting recaps, CRM entries, quick Slack messages between meetings — but the volume is high for partners who take 15+ meetings a week. A good voice-to-text tool saves 30–60 minutes per day for heavy users, which compounds to real time reclaimed over a year.',
-      },
-      {
-        question: 'Wispr Flow vs Superwhisper — which is better?',
-        answer:
-          'Both are excellent; pick based on privacy preference. Wispr Flow is faster and slightly more polished in UX, but runs primarily through cloud models. Superwhisper leans local-first, which is better for founder-sensitive and regulated-sector work. Most Indian VCs who try both settle on Wispr Flow unless they have specific privacy requirements that push them to Superwhisper.',
-      },
-      {
-        question: 'How well do these tools handle Indian English?',
-        answer:
-          "Much better than they did two years ago. Current Wispr Flow and Superwhisper both handle Indian English accents with accuracy comparable to North American English. Aqua Voice and Willow Voice are close behind. If you tested a dictation tool before 2024 and found accuracy poor, retry — the gap has effectively closed for the top tier.",
       },
     ],
     relatedSlugs: ['ai', 'transcription', 'productivity', 'crm'],
@@ -984,40 +538,6 @@ The working rule for Indian funds: Notion for knowledge (wiki, memos, databases,
           'Notion and Coda both charge per user per month, typically $8–$20. For a 10-person fund, that is $1–3K/year. Google Sheets is effectively free via Workspace. Budget is rarely the constraint; adoption usually is.',
       },
     ],
-    topPicks: [
-      {
-        slug: 'notion',
-        rationale:
-          'The firm-wide default. Handles wiki, memos, databases, and tasks in one workspace, which is usually good enough to replace three separate tools. Nearly every Indian fund under 50 people runs on Notion. Newer AI, Calendar, and Mail additions deepen the moat.',
-      },
-      {
-        slug: 'coda',
-        rationale:
-          'The power-user alternative. Significantly stronger on formulas, linked tables, and complex dashboards than Notion — closer to a spreadsheet-database hybrid with doc UI on top. Best for funds with a technical ops hire who will build opinionated workflows the rest of the team can follow.',
-      },
-      {
-        slug: 'google-sheets',
-        rationale:
-          "The substrate that never leaves. Fund model, KPI trackers, LP list, quick calcs — Sheets remains the fastest path from blank cell to usable analysis. No fund runs without it. Don't try to replace; just decide what lives in Sheets versus what lives in Notion.",
-      },
-    ],
-    faqs: [
-      {
-        question: 'What productivity tool do Indian VCs use?',
-        answer:
-          "Notion is the default across most Indian VC firms under 50 people. A smaller set of technical-leaning funds use Coda for complex database workflows. Google Sheets remains universal for numbers and quick calculations. Airtable appears in about a third of funds, usually for custom dealflow or portfolio databases that need more structure than Notion but less power than Coda.",
-      },
-      {
-        question: 'Notion vs Coda — which should a VC firm choose?',
-        answer:
-          "Notion if you want low-friction adoption across partners and associates. Coda if you have a power-user driving opinionated database workflows the team will follow. The mistake is trying to run a partnership on both — different partners on different platforms defeats the institutional-memory goal. Pick one, commit fully, and move on.",
-      },
-      {
-        question: 'Do I still need Google Sheets if I have Notion?',
-        answer:
-          "Yes. Notion databases are adequate for simple tracking but slow and awkward for actual financial analysis, scenario modeling, or anything that needs formulas across hundreds of rows. Every Indian fund we've seen runs Notion plus Google Sheets — one for knowledge, one for numbers. Do not try to collapse these; the boundary is natural and productive.",
-      },
-    ],
     relatedSlugs: ['communication', 'mailing', 'automation', 'crm'],
   },
   // ─── Vibe Coding — AI-native builders ─────────────────────────────────────
@@ -1054,40 +574,6 @@ For Indian VCs, the practical use case is lightweight software for tasks that ot
           'The value comes from fast iteration cycles — prompt, see, refine. Tools with slow build-and-redeploy loops kill the creative flow. Test specifically how fast you can go from "this is wrong" to "fixed".',
       },
     ],
-    topPicks: [
-      {
-        slug: 'lovable',
-        rationale:
-          'The fastest-growing tool in the category. Chat-first, strong at shipping polished web apps from natural-language prompts, tight Supabase integration for data. The go-to for quick landing pages and simple dashboards. Best balance of quality and speed for non-technical users in 2026.',
-      },
-      {
-        slug: 'bolt',
-        rationale:
-          'The power-user pick. Browser-based full-stack development with actual code you can edit, test, and deploy. Significantly more capable than chat-only tools once apps get complex. Right choice if you want to understand the code being generated or modify it beyond prompts.',
-      },
-      {
-        slug: 'replit',
-        rationale:
-          'The mature platform. Broader than the others — hosting, databases, auth, AI assistance all bundled together. Great for funds that want one platform that grows from throwaway prototype to production app without tool switching. Slower early but more durable for anything you plan to keep.',
-      },
-    ],
-    faqs: [
-      {
-        question: 'What do VCs actually build with vibe coding tools?',
-        answer:
-          'Small, specific, disposable software. Common examples: a scoring form for a new thesis, a landing page for a portfolio company launch, a private dashboard for a sector map, a data-room signup page, a quick survey tool for diligence. Not products. Not anything customer-facing at scale. One-off internal tools that otherwise would have been Google Forms or a spreadsheet with worse UX.',
-      },
-      {
-        question: 'Lovable vs Bolt — which should I pick?',
-        answer:
-          "Lovable if you want fastest time-to-working-app from a plain-English prompt, and you do not want to see the code. Bolt if you want real full-stack development with editable code and more control. Many technical investors run both — Lovable for quick mockups, Bolt when the mockup needs to become something real. Both are cheap at $20–$40/month; try them on a real use case.",
-      },
-      {
-        question: 'Is vibe coding output production-ready?',
-        answer:
-          "For internal tools and small landing pages, yes, increasingly so in 2026. For anything customer-facing at scale, or handling regulated data (PII, financial records, health), no — treat vibe-coded output as prototypes that need engineering review before shipping. The tools have gotten good; the tradeoffs on security, accessibility, and edge-case handling have not caught up. Ship prototypes; rewrite before production.",
-      },
-    ],
     relatedSlugs: ['ai', 'productivity', 'automation', 'browser'],
   },
   // ─── Browser — investor-grade browsers ────────────────────────────────────
@@ -1122,40 +608,6 @@ For Indian VCs, the practical split is personal preference at the partner level,
         label: 'Privacy posture',
         description:
           "For regulated-sector diligence, Brave's tracker blocking matters. For general investor work, most tracker blocking is handled by CRM and ad-blocker extensions. Privacy-first as a primary browser is a niche pick, not a default.",
-      },
-    ],
-    topPicks: [
-      {
-        slug: 'arc-browser',
-        rationale:
-          'The design-forward default for modern investors. Workspaces separate work from personal, sidebar tabs handle tab overload better than any tab bar, and the UX is genuinely thoughtful. Evangelical user base among younger Indian investors; still a distinct minority overall but growing fast.',
-      },
-      {
-        slug: 'comet',
-        rationale:
-          "Perplexity's AI-first browser. Answer engine in the address bar means any page becomes a queryable document — ask questions about a founder deck, summarise a long article, compare sites side by side. Strong for investors who already live in Perplexity and want that capability native to the browsing flow.",
-      },
-      {
-        slug: 'atlas-browser',
-        rationale:
-          "OpenAI's answer to Comet. ChatGPT built into the browsing experience with agentic task execution across multiple sites. Earlier in development than Comet; more ambitious on the agentic side. Worth watching if you already rely heavily on ChatGPT and want the browser to participate.",
-      },
-    ],
-    faqs: [
-      {
-        question: 'What browser do VCs use in 2026?',
-        answer:
-          'Chrome is still the universal fallback. Among primary daily drivers, Arc has a strong minority among design-conscious investors; Comet and Atlas are growing fast with investors who rely on AI tools. Brave is a niche privacy-first pick. Nearly every investor uses at least two browsers — one primary for daily work, one backup for edge cases like shared demos or enterprise tools.',
-      },
-      {
-        question: 'Is Arc actually better for investors?',
-        answer:
-          "If you fight tab overload or want workspace separation (work vs personal vs portfolio research), yes — Arc genuinely handles these cases better than Chrome. If you mostly live in 5 pinned tabs and occasionally open new windows, Chrome is fine. Try Arc for two weeks on real work; if the sidebar and workspaces click, you will not go back. If they don't, switch back without regret.",
-      },
-      {
-        question: 'AI browsers — worth switching for?',
-        answer:
-          'Depends on how much you query pages. Investors who constantly paste URLs into ChatGPT or Perplexity should try Comet or Atlas — it saves the paste-and-wait cycle every time. Investors who read pages normally and occasionally use AI get limited benefit. Both Comet and Atlas are still maturing; expect rough edges, but the direction is obviously where browsers are going.',
       },
     ],
     relatedSlugs: ['ai', 'productivity', 'research', 'news'],

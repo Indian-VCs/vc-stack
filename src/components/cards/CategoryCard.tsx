@@ -100,17 +100,18 @@ export default function CategoryCard({
         </div>
       )}
 
-      <style jsx>{`
+      <style jsx global>{`
         .cat-card {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
           background: var(--paper);
           border: 1px solid var(--rule);
-          padding: 20px;
+          padding: 22px;
           text-decoration: none;
           transition: border-color var(--dur-fast), background var(--dur-fast);
           height: 100%;
+          min-height: 200px;
         }
         .cat-card:hover,
         .cat-card:focus-visible {
@@ -124,20 +125,21 @@ export default function CategoryCard({
         .cat-card-title {
           font-family: var(--serif);
           font-size: var(--fs-hero);
-          font-weight: 700;
+          font-weight: 800;
           color: var(--ink);
-          line-height: 1.15;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
           margin: 0;
         }
         .cat-card-desc {
           font-family: var(--body);
           font-size: var(--fs-body);
           color: var(--ink-light);
-          line-height: 1.45;
+          line-height: 1.5;
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 1;
-          line-clamp: 1;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -147,7 +149,8 @@ export default function CategoryCard({
           gap: 6px;
           flex-wrap: wrap;
           margin-top: auto;
-          padding-top: 12px;
+          padding-top: 14px;
+          border-top: 1px solid var(--rule);
         }
         .cat-card-chip {
           display: inline-flex;

@@ -7,16 +7,6 @@ export interface BuyingCriterion {
   description: string
 }
 
-export interface CategoryFAQ {
-  question: string
-  answer: string
-}
-
-export interface TopPick {
-  slug: string
-  rationale: string
-}
-
 export interface Category {
   id: string
   name: string
@@ -30,8 +20,6 @@ export interface Category {
   /** pSEO content — see docs/pseo-strategy.md */
   intro?: string | null
   buyingCriteria?: BuyingCriterion[] | null
-  faqs?: CategoryFAQ[] | null
-  topPicks?: TopPick[] | null
   relatedSlugs?: string[] | null
   seoTitle?: string | null
   seoDescription?: string | null
@@ -118,8 +106,6 @@ export interface PaginatedResult<T> {
   totalPages: number
 }
 
-export type SortOrder = 'featured' | 'alpha' | 'reviews'
-
 export interface SearchFilters {
   query?: string
   category?: string
@@ -127,6 +113,4 @@ export interface SearchFilters {
   tags?: string[]
   page?: number
   pageSize?: number
-  /** Ordering for tool results. Defaults to 'featured'. */
-  sort?: SortOrder
 }

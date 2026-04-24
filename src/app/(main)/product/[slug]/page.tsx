@@ -69,7 +69,6 @@ export default async function ToolDetailPage({ params }: Props) {
   const FEATURED_CAP = 5
   const spotlightShown = spotlight.slice(0, FEATURED_CAP)
   const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
-  const reviewCount = tool._count?.reviews ?? tool.reviews?.length ?? 0
   const domain = domainFor(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
@@ -291,12 +290,6 @@ export default async function ToolDetailPage({ params }: Props) {
           >
             {domain}
           </a>
-        </span>
-        <span>
-          <span style={{ color: 'var(--ink-muted)' }}>Reviews · </span>
-          <span style={{ color: 'var(--ink)' }}>
-            {reviewCount > 0 ? `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}` : 'None yet'}
-          </span>
         </span>
         {tool.tags && tool.tags.length > 0 && (
           <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
