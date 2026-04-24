@@ -1,29 +1,28 @@
 import type { MetadataRoute } from 'next'
 import { getCategories, getAllTools } from '@/lib/data'
-
-const BASE = 'https://www.indianvcs.com/vc-stack'
+import { publicUrl } from '@/lib/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, tools] = await Promise.all([getCategories(), getAllTools()])
   const now = new Date()
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE}`, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${BASE}/all-categories`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE}/market-map`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${BASE}/submit-product`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: publicUrl('/'), lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: publicUrl('/all-categories'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: publicUrl('/market-map'), lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: publicUrl('/submit-product'), lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
   ]
 
   const categoryRoutes: MetadataRoute.Sitemap = categories.map((c) => ({
-    url: `${BASE}/category/${c.slug}`,
+    url: publicUrl(`/category/${c.slug}`),
     lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
 
   const toolRoutes: MetadataRoute.Sitemap = tools.map((t) => ({
-    url: `${BASE}/product/${t.slug}`,
-    lastModified: t.updatedAt ? new Date(t.updatedAt) : now,
+    url: publicUrl(`/product/${t.slug}`),
+    lastModified: now,
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }))

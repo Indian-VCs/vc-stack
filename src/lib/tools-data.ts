@@ -54,13 +54,9 @@ function t(
   return {
     id, name, slug, shortDesc, description, websiteUrl,
     logoUrl: resolvedLogo,
-    screenshotUrl: null,
     pricingModel, isFeatured, categoryId, category: _catResolver(categoryId),
     extraCategorySlugs: extraCategorySlugs?.length ? extraCategorySlugs : undefined,
     useCases: useCases?.length ? useCases : undefined,
-    tags: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   }
 }
 

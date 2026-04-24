@@ -5,11 +5,12 @@ import SearchBox from '@/components/ui/SearchBox'
 import Pagination from '@/components/ui/Pagination'
 import RevealStagger from '@/components/ui/RevealStagger'
 import Link from 'next/link'
+import { publicUrl } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Search Tools',
   description: 'Search across every tool in the Indian VC stack.',
-  alternates: { canonical: '/vc-stack/search' },
+  alternates: { canonical: publicUrl('/search') },
   robots: { index: false, follow: true },
 }
 
@@ -19,14 +20,14 @@ interface Props {
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q = '', page: pageStr } = await searchParams
-  const page = Number(pageStr ?? 1)
+  const requestedPage = Number(pageStr ?? 1)
 
   const [result, allTools] = await Promise.all([
-    searchTools({ query: q, page, pageSize: 24 }),
+    searchTools({ query: q, page: requestedPage, pageSize: 24 }),
     getAllTools(),
   ])
 
-  const { data: tools, total, totalPages } = result
+  const { data: tools, total, totalPages, page: currentPage } = result
   const totalInCorpus = allTools.length
 
   return (
@@ -103,15 +104,15 @@ export default async function SearchPage({ searchParams }: Props) {
       ) : (
         <>
           <RevealStagger className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {tools.map((tool, i) => (
+            {tools.map((tool) => (
               <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
-                <ToolCard tool={tool} index={i} />
+                <ToolCard tool={tool} />
               </div>
             ))}
           </RevealStagger>
 
           <Pagination
-            page={page}
+            page={currentPage}
             totalPages={totalPages}
             hrefFor={(p) => `/search?${q ? `q=${encodeURIComponent(q)}&` : ''}page=${p}`}
           />

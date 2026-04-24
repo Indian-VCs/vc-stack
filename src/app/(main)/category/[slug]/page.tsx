@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
+import { OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
 import ToolCard from '@/components/cards/ToolCard'
 import Pagination from '@/components/ui/Pagination'
 import CategoryIntro from '@/components/category/CategoryIntro'
@@ -19,8 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const category = await getCategoryBySlug(slug)
   if (!category) return {}
-  const path = `/vc-stack/category/${category.slug}`
-  const url = `https://www.indianvcs.com${path}`
+  const path = `/category/${category.slug}`
+  const url = buildCategoryUrl(category.slug)
   const count = category._count?.tools ?? 0
   const title = category.seoTitle ?? `${category.name} Tools for VCs — ${count}+ curated`
   const description =
@@ -28,10 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     category.heroAngle ??
     category.description ??
     `Browse ${count} ${category.name} tools used by Indian venture capital firms.`
+  const imageUrl = ogImageUrl(`${path}/og-image`)
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
@@ -39,12 +41,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: 'Indian VCs',
       type: 'website',
       locale: 'en_IN',
+      images: [
+        {
+          url: imageUrl,
+          width: OG_IMAGE_SIZE.width,
+          height: OG_IMAGE_SIZE.height,
+          alt: `${category.name} tools on VC Stack`,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description,
       creator: '@indianvcs',
+      images: [imageUrl],
     },
   }
 }
@@ -69,18 +80,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   if (!category) notFound()
 
-  const { data: tools, total, totalPages } = result
+  const { data: tools, total, totalPages, page: currentPage } = result
   const allCategories = category.relatedSlugs ? await getCategories() : []
   const hasAccordionContent = Boolean(category.intro || (category.buyingCriteria && category.buyingCriteria.length > 0))
 
-  const categoryUrl = `https://www.indianvcs.com/vc-stack/category/${category.slug}`
+  const categoryPageUrl = buildCategoryUrl(category.slug)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'CollectionPage',
-        '@id': `${categoryUrl}#page`,
-        url: categoryUrl,
+        '@id': `${categoryPageUrl}#page`,
+        url: categoryPageUrl,
         name: `${category.name} tools for VCs`,
         description:
           category.heroAngle ??
@@ -94,21 +105,21 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             '@type': 'ListItem',
             position: i + 1,
             name: t.name,
-            url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
+            url: buildToolUrl(t.slug),
           })),
         },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: publicUrl('/') },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'All Categories',
-            item: 'https://www.indianvcs.com/vc-stack/all-categories',
+            item: publicUrl('/all-categories'),
           },
-          { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
+          { '@type': 'ListItem', position: 3, name: category.name, item: categoryPageUrl },
         ],
       },
     ],
@@ -202,32 +213,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       </header>
 
-      {/* Subcategory tabs */}
-      {category.subCategories && category.subCategories.length > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            gap: 6,
-            flexWrap: 'wrap',
-            marginBottom: 24,
-          }}
-        >
-          <Link href={`/category/${slug}`} className="tag tag--accent">
-            All
-          </Link>
-          {category.subCategories.map((sub) => (
-            <Link
-              key={sub.id}
-              href={`/category/${slug}?sub=${sub.slug}`}
-              className="tag"
-              style={{ textDecoration: 'none' }}
-            >
-              {sub.name}
-            </Link>
-          ))}
-        </div>
-      )}
-
       {/* ── Tools grid (top of page) ──────────────────────────────── */}
       {tools.length === 0 ? (
         <div className="empty">
@@ -238,15 +223,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       ) : (
         <>
           <RevealStagger className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {tools.map((tool, i) => (
+            {tools.map((tool) => (
               <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
-                <ToolCard tool={tool} index={i} />
+                <ToolCard tool={tool} />
               </div>
             ))}
           </RevealStagger>
 
           <Pagination
-            page={page}
+            page={currentPage}
             totalPages={totalPages}
             hrefFor={(p) => (p === 1 ? `/category/${slug}` : `/category/${slug}?page=${p}`)}
           />

@@ -1,66 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import type { Category } from '@/lib/types'
-
-export interface PreviewTool {
-  name: string
-  logoUrl?: string | null
-}
+import type { Category, CategoryPreviewTool } from '@/lib/types'
 
 interface CategoryCardProps {
   category: Category
-  previewTools?: PreviewTool[]
-  variant?: 'default' | 'compact'
-  /** Kept for back-compat; no longer rendered on the default variant. */
-  index?: number
+  previewTools?: CategoryPreviewTool[]
 }
 
 export default function CategoryCard({
   category,
   previewTools = [],
-  variant = 'default',
 }: CategoryCardProps) {
   const toolCount = category._count?.tools ?? 0
-
-  if (variant === 'compact') {
-    return (
-      <Link
-        href={`/category/${category.slug}`}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-          gap: 12,
-          padding: '12px 0',
-          borderBottom: '1px solid var(--rule)',
-          textDecoration: 'none',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--serif)',
-            fontSize: 'var(--fs-card)',
-            fontWeight: 700,
-            color: 'var(--ink)',
-          }}
-        >
-          {category.name}
-        </span>
-        <span
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            color: 'var(--ink-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-          }}
-        >
-          {toolCount} tools →
-        </span>
-      </Link>
-    )
-  }
 
   const chips = previewTools.slice(0, 6)
 

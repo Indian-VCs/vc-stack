@@ -38,22 +38,24 @@ src/
 │   │   ├── search/                # Full-page results
 │   │   ├── submit-product/        # Tool-suggestion form (v2)
 │   │   └── layout.tsx             # Navbar + Footer + CommandK
-│   ├── opengraph-image.tsx        # Default site OG image (1200×630)
-│   ├── sitemap.ts                 # Dynamic sitemap (139 URLs)
+│   ├── og-image/route.tsx         # Default site OG image (1200×630)
+│   ├── sitemap.ts                 # Dynamic sitemap
 │   ├── robots.ts                  # robots.txt
 │   ├── layout.tsx                 # Root metadata, JSON-LD, GTM
 │   ├── page.tsx                   # Home (hero + market-map + categories + FAQ)
 │   └── icon.svg                   # Favicon
 ├── components/
 │   ├── layout/   (Navbar, Footer, PageLayout)
-│   ├── cards/    (ToolCard, CategoryCard, ProductCard)
+│   ├── cards/    (ToolCard, CategoryCard)
 │   └── ui/       (CommandK, HeroFeaturedTool, MarketMapPoster,
 │                  FeaturedToolStrip, LogoCard, IndianVCsLogo,
 │                  FaqSection, …)
 └── lib/
     ├── tools-data.ts              # 👈 source of truth for the 119-tool catalog
     ├── data.ts                    # Fetch helpers + FEATURED_TOOL_SLUGS canonical list
-    ├── types.ts                   # Tool / Category / Review / Submission types
+    ├── site.ts                    # Public URL/basePath helpers for SEO
+    ├── og-images.tsx              # Shared social image renderer
+    ├── types.ts                   # Tool / Category / pagination/search types
     ├── stats.ts                   # Exported counts + CATEGORY_COUNTS for SEO
     └── substack.ts                # Hardcoded newsletter URL (public)
 ```
@@ -129,7 +131,7 @@ Every surface — home hero, category pages, Cmd+K search, OG share cards, JSON-
 
 ### Featured tools
 
-The canonical featured-tool list is the `FEATURED_TOOL_SLUGS` constant exported from `src/lib/data.ts`. Edit that array to change which tools rotate in the homepage hero and appear in the "Featured Tools" strip under every tool page.
+The canonical featured-tool list is the `FEATURED_TOOL_SLUGS` constant in `src/lib/data.ts`. Edit that array to change which tools rotate in the homepage hero and appear in the "Featured Tools" strip under every tool page.
 
 ---
 

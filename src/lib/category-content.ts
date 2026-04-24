@@ -14,7 +14,7 @@
 
 import type { BuyingCriterion } from './types'
 
-export interface CategoryContent {
+interface CategoryContent {
   intro?: string
   buyingCriteria?: BuyingCriterion[]
   relatedSlugs?: string[]
@@ -23,7 +23,7 @@ export interface CategoryContent {
   heroAngle?: string
 }
 
-export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
+const CATEGORY_CONTENT: Record<string, CategoryContent> = {
   // ─── CRM — fully fleshed template ─────────────────────────────────────────
   crm: {
     seoTitle: 'CRM for VCs · Top Tools in 2026 | VC Stack',

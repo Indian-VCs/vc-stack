@@ -132,9 +132,6 @@ export default function CommandK({ tools }: Props) {
     return () => window.removeEventListener('keydown', handleFocusTrap)
   }, [open])
 
-  // Reset active index when query changes
-  useEffect(() => { setActive(0) }, [query])
-
   const select = useCallback((tool: Tool) => {
     close()
     router.push(`/product/${tool.slug}`)
@@ -185,7 +182,10 @@ export default function CommandK({ tools }: Props) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setActive(0)
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Search tools, categories…"
             aria-label="Search query"

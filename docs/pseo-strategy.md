@@ -22,9 +22,9 @@ Target: rank for 50+ long-tail queries in 3 months; rank in top-20 for "VC tech 
 | Asset | Count | Notes |
 |---|---|---|
 | Categories | 17 | CRM, Data, Research, News, AI, Portfolio Mgmt, Admin/Ops, Automation, Communication, Mailing, Calendar, Transcription, Voice-to-Text, Productivity, Vibe Coding, Browser, Other Tools |
-| Tool pages | ~80+ | Auto-gen metadata, broadsheet design |
+| Tool pages | 117 canonical URLs | Auto-gen metadata, broadsheet design |
 | Deploy path | `/vc-stack/...` | Subfolder (good for SEO — consolidates authority) |
-| Stack | Next.js 16 + Prisma + Cloudflare | Static gen via `generateStaticParams` |
+| Stack | Next.js 16 + static catalog + Cloudflare | Catalog lives in `src/lib/tools-data.ts` |
 
 **Current category page weaknesses (from reading `src/app/(main)/category/[slug]/page.tsx`):**
 - Title metadata is just the category name (thin)
@@ -70,7 +70,6 @@ Target: rank for 50+ long-tail queries in 3 months; rank in top-20 for "VC tech 
 │ NEW: What to look for (3–5 criteria)   │  ← buying guide
 │ NEW: Top picks (3 featured tools)      │  ← editorial + rationale
 │                                        │
-│ Subcategory tabs                       │  (existing)
 │ Tools grid                             │  (existing)
 │                                        │
 │ NEW: FAQ (3 Q&As)                      │  ← captures long-tail
@@ -80,34 +79,24 @@ Target: rank for 50+ long-tail queries in 3 months; rank in top-20 for "VC tech 
 └────────────────────────────────────────┘
 ```
 
-### Data model changes (`prisma/schema.prisma`)
+### Static content changes
 
-```prisma
-model Category {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  slug          String         @unique
-  description   String?        // existing — used as pull quote (extend to 150+ chars)
-  icon          String?
+No database or Prisma migration exists in this app. Add pSEO content to
+`src/lib/category-content.ts`, then merge it into category objects through
+`getCategoryContent()` in `src/lib/data.ts`.
 
-  // NEW pSEO fields
-  intro         String?        // 150–250 word unique intro (markdown ok)
-  buyingCriteria String?       // JSON: [{label, description}]
-  faqs          String?        // JSON: [{question, answer}]
-  topPickSlugs  String?        // JSON: ["affinity", "attio", "harmonic"]
-  relatedSlugs  String?        // JSON: ["data", "research", "ai"]
-  seoTitle      String?        // override for <title>
-  seoDescription String?       // override for meta description
-  heroAngle     String?        // one-line pitch (used in meta description fallback)
+Supported category content fields:
 
-  subCategories SubCategory[]
-  tools         Tool[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+```typescript
+type CategoryContent = {
+  intro?: string
+  buyingCriteria?: Array<{ label: string; description: string }>
+  relatedSlugs?: string[]
+  seoTitle?: string
+  seoDescription?: string
+  heroAngle?: string
 }
 ```
-
-Keep as strings (JSON-serialized) since SQLite. Parse at the data layer.
 
 ### Metadata function (before → after)
 
@@ -129,12 +118,13 @@ const description = category.seoDescription
 return {
   title,
   description,
-  alternates: { canonical: `/vc-stack/category/${slug}` },
+  alternates: { canonical: `https://www.indianvcs.com/vc-stack/category/${slug}` },
   openGraph: {
     title,
     description,
     type: 'website',
-    url: `/vc-stack/category/${slug}`,
+    url: `https://www.indianvcs.com/vc-stack/category/${slug}`,
+    images: [`https://www.indianvcs.com/vc-stack/category/${slug}/og-image`],
   },
   twitter: { card: 'summary_large_image', title, description },
 }
@@ -154,7 +144,7 @@ Every enriched category must pass:
 - [ ] **Title:** ≤60 chars, unique, includes `for VCs` or `venture capital`
 - [ ] **Meta description:** 140–160 chars, unique, includes the primary keyword
 - [ ] **JSON-LD:** ItemList + BreadcrumbList + FAQPage rendered
-- [ ] **Internal links:** ≥5 outbound links (top picks + related cats + subcategory links)
+- [ ] **Internal links:** ≥5 outbound links (top picks + related categories)
 
 ### Component breakdown
 
@@ -172,8 +162,8 @@ src/components/category/
 Modify:
 ```
 src/app/(main)/category/[slug]/page.tsx   // wire in new sections
-src/lib/data.ts                            // include new fields
-prisma/schema.prisma                       // add fields + migration
+src/lib/category-content.ts                 // static pSEO source
+src/lib/data.ts                             // merge static pSEO fields
 ```
 
 ### Sample content — CRM category (use as template)
@@ -348,7 +338,7 @@ Home (/)
 |---|---|
 | Home | `WebSite`, `Organization` |
 | Category | `CollectionPage` + `ItemList` + `BreadcrumbList` + `FAQPage` |
-| Tool | `SoftwareApplication` + `BreadcrumbList` + `AggregateRating` (when reviews exist) |
+| Tool | `SoftwareApplication` + `BreadcrumbList` |
 | Comparison | `Article` + `BreadcrumbList` |
 | Pillar | `Article` + `BreadcrumbList` |
 
@@ -441,10 +431,9 @@ Branded: `vc stack` · `vc stack newsletter` · `indianvcs`
 
 1. **Writing capacity:** 17 categories × ~500 words each = ~8,500 words. Who writes? (Pavithran solo? Contributors? Hire?)
 2. **Curation methodology:** How opinionated do we want to be? Is it OK to say "don't use HubSpot"?
-3. **Review/rating data:** Do we have user reviews? If not, `AggregateRating` schema is skipped — that's fine but worth noting.
-4. **Refresh cadence:** Monthly, quarterly, or only on request? Recommend quarterly.
-5. **Newsletter wiring:** Each enriched page should have a newsletter CTA. Where does it live (end of intro? after tools grid? sticky?)
-6. **Indian VC angle specificity:** How much do we lean in? My recommendation: hard. It's the moat.
+3. **Refresh cadence:** Monthly, quarterly, or only on request? Recommend quarterly.
+4. **Newsletter wiring:** Each enriched page should have a newsletter CTA. Where does it live (end of intro? after tools grid? sticky?)
+5. **Indian VC angle specificity:** How much do we lean in? My recommendation: hard. It's the moat.
 
 ---
 

@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCategories, getCategoryPreviewTools } from '@/lib/data'
+import { publicUrl } from '@/lib/site'
 import CategoryCard from '@/components/cards/CategoryCard'
 import RevealStagger from '@/components/ui/RevealStagger'
 
 export const metadata: Metadata = {
   title: 'All Categories',
   description: 'Browse all VC tool categories — from deal sourcing to fund administration.',
-  alternates: { canonical: '/vc-stack/all-categories' },
+  alternates: { canonical: publicUrl('/all-categories') },
 }
 
 export const revalidate = 3600
@@ -74,12 +75,11 @@ export default async function AllCategoriesPage() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         style={{ gap: 0 }}
       >
-        {categories.map((cat, i) => (
+        {categories.map((cat) => (
           <div key={cat.id} style={{ marginLeft: -1, marginTop: -1 }}>
             <CategoryCard
               category={cat}
               previewTools={previewToolsMap[cat.slug] ?? []}
-              index={i}
             />
           </div>
         ))}

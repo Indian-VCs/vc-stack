@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import { getAllTools, getCategories } from '@/lib/data'
+import { publicUrl } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Market Map',
   description: 'The complete visual market map of every tool powering India\'s VC firms in 2026.',
-  alternates: { canonical: '/vc-stack/market-map' },
+  alternates: { canonical: publicUrl('/market-map') },
 }
 
 export default async function MarketMapPage() {

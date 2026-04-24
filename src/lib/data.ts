@@ -4,8 +4,7 @@
  * No DB; the catalog is the source of truth.
  */
 
-import type { Category, Tool, PaginatedResult, SearchFilters } from './types'
-import type { PreviewTool } from '@/components/cards/CategoryCard'
+import type { Category, CategoryPreviewTool, Tool, PaginatedResult, SearchFilters } from './types'
 import { setCategoryResolver, buildAllTools } from './tools-data'
 import { getCategoryContent } from './category-content'
 
@@ -42,10 +41,7 @@ export async function getToolsByCategory(
   const filtered = STATIC_TOOLS
     .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
     .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
-  const total = filtered.length
-  const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const data = filtered.slice((page - 1) * pageSize, page * pageSize)
-  return { data, total, page, pageSize, totalPages }
+  return paginate(filtered, page, pageSize)
 }
 
 const PINNED_SLUG = 'evertrace'
@@ -78,10 +74,6 @@ export async function getAllTools(): Promise<Tool[]> {
   return pinEverTrace(dedupeByWebsite(sorted))
 }
 
-export async function getFeaturedTools(limit = 12): Promise<Tool[]> {
-  return pinEverTrace(STATIC_TOOLS.filter((t) => t.isFeatured)).slice(0, limit)
-}
-
 export async function getToolBySlug(slug: string): Promise<Tool | null> {
   return STATIC_TOOLS.find((t) => t.slug === slug) ?? null
 }
@@ -98,9 +90,12 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
         (t.shortDesc ?? '').toLowerCase().includes(q)
     )
   }
-  if (category) results = results.filter((t) => t.category?.slug === category)
+  if (category) results = results.filter((t) => categorySlugsForTool(t).includes(category))
   if (pricing) results = results.filter((t) => t.pricingModel === pricing)
-  return { data: results, total: results.length, page: 1, pageSize: results.length, totalPages: 1 }
+  const sorted = [...results].sort((a, b) =>
+    (Number(b.isFeatured) - Number(a.isFeatured)) || a.name.localeCompare(b.name)
+  )
+  return paginate(sorted, page, pageSize)
 }
 
 /**
@@ -108,7 +103,7 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
  * the homepage hero rotator and every tool detail page's "Featured Tools" row.
  * Edit this list to change which tools are featured everywhere.
  */
-export const FEATURED_TOOL_SLUGS = [
+const FEATURED_TOOL_SLUGS = [
   'evertrace',
   'notion',
   'superhuman',
@@ -139,7 +134,7 @@ export async function getFeaturedToolsExcluding(excludeSlug: string): Promise<To
   return getRelatedTools(current.id, current.categoryId, 5)
 }
 
-export async function getRelatedTools(toolId: string, categoryId: string, limit = 4): Promise<Tool[]> {
+async function getRelatedTools(toolId: string, categoryId: string, limit = 4): Promise<Tool[]> {
   // Include tools whose primary or extra category matches, excluding the current tool.
   const cat = STATIC_CATEGORIES.find((c) => c.id === categoryId)
   const catSlug = cat?.slug
@@ -149,24 +144,15 @@ export async function getRelatedTools(toolId: string, categoryId: string, limit 
     .slice(0, limit)
 }
 
-export async function getSiteStats() {
-  return {
-    toolCount: STATIC_TOOLS.length,
-    categoryCount: STATIC_CATEGORIES.length,
-    reviewCount: 0,
-    submissionCount: 0,
-  }
-}
-
 /** Returns up to 6 preview tools (name + logoUrl) per category slug. */
-export async function getCategoryPreviewTools(): Promise<Record<string, PreviewTool[]>> {
-  const result: Record<string, PreviewTool[]> = {}
+export async function getCategoryPreviewTools(): Promise<Record<string, CategoryPreviewTool[]>> {
+  const result: Record<string, CategoryPreviewTool[]> = {}
   for (const tool of STATIC_TOOLS) {
-    const slug = tool.category?.slug
-    if (!slug) continue
-    if (!result[slug]) result[slug] = []
-    if (result[slug].length < 6) {
-      result[slug].push({ name: tool.name, logoUrl: tool.logoUrl ?? null })
+    for (const slug of categorySlugsForTool(tool)) {
+      if (!result[slug]) result[slug] = []
+      if (result[slug].length < 6) {
+        result[slug].push({ name: tool.name, logoUrl: tool.logoUrl ?? null })
+      }
     }
   }
   return result
@@ -230,6 +216,25 @@ export function categorySlugsForTool(tool: Tool): string[] {
 /** Total appearances = sum of all (tool × category) pairs across the catalog. */
 function totalAppearances(tools: Tool[]): number {
   return tools.reduce((acc, t) => acc + categorySlugsForTool(t).length, 0)
+}
+
+function positiveInt(value: number | undefined, fallback: number): number {
+  return Number.isInteger(value) && value !== undefined && value > 0 ? value : fallback
+}
+
+function paginate<T>(items: T[], page: number | undefined, pageSize: number | undefined): PaginatedResult<T> {
+  const safePageSize = positiveInt(pageSize, 24)
+  const total = items.length
+  const totalPages = Math.max(1, Math.ceil(total / safePageSize))
+  const safePage = Math.min(positiveInt(page, 1), totalPages)
+  const start = (safePage - 1) * safePageSize
+  return {
+    data: items.slice(start, start + safePageSize),
+    total,
+    page: safePage,
+    pageSize: safePageSize,
+    totalPages,
+  }
 }
 
 // Backfill STATIC_CATEGORIES._count.tools with live counts so nothing drifts.

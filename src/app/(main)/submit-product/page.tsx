@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import SubmitProductForm from './SubmitProductForm'
 import { getCategories } from '@/lib/data'
+import { publicUrl } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Submit a Product',
   description: 'File a submission to the IndianVCs desk — a tool worth listing on the paper.',
-  alternates: { canonical: '/vc-stack/submit-product' },
+  alternates: { canonical: publicUrl('/submit-product') },
 }
 
 export default async function SubmitProductPage() {

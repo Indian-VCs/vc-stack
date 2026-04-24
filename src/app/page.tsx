@@ -179,13 +179,11 @@ export default async function HomePage() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0"
           style={{ gap: 0 }}
         >
-          {categories.map((cat, i) => (
+          {categories.map((cat) => (
             <div key={cat.id} style={{ marginLeft: -1, marginTop: -1 }}>
               <CategoryCard
                 category={cat}
-                variant="default"
                 previewTools={previewToolsMap[cat.slug] ?? []}
-                index={i}
               />
             </div>
           ))}
