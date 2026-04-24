@@ -65,7 +65,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
       className="hft-card"
       role="link"
       tabIndex={0}
-      aria-label={`Open ${t.name}`}
+      aria-label={t.name}
       onClick={goProduct}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -95,7 +95,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
             )}
           </div>
           <div className="hft-title-wrap">
-            <h3 className="hft-name">{t.name}</h3>
+            <h2 className="hft-name">{t.name}</h2>
             {t.category && <span className="hft-cat-pill">{t.category.name}</span>}
           </div>
         </div>

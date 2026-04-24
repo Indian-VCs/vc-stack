@@ -22,11 +22,10 @@ export default function IndianVCsLogo({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 420.99 60.48"
       height={height}
-      width="auto"
       role="img"
       aria-label={title}
       className={className}
-      style={{ display: 'block' }}
+      style={{ display: 'block', width: 'auto' }}
     >
       <title>{title}</title>
       <g>

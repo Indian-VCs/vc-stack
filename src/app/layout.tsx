@@ -56,6 +56,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://indianvcs.com"),
   alternates: {
     canonical: "/vc-stack",
+    languages: {
+      "en-IN": "/vc-stack",
+      "x-default": "/vc-stack",
+    },
   },
   openGraph: {
     title: "VC Stack 2026 | Indian VCs",
@@ -71,6 +75,7 @@ export const metadata: Metadata = {
     title: "VC Stack 2026 | Indian VCs",
     description:
       `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. Curated by Indian VCs.`,
+    site: "@indianvcs",
     creator: "@indianvcs",
   },
   robots: {
