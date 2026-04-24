@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tool = await getToolBySlug(slug)
   if (!tool) return {}
   const path = `/vc-stack/product/${tool.slug}`
-  const url = `https://indianvcs.com${path}`
+  const url = `https://www.indianvcs.com${path}`
   const description = tool.shortDesc ?? tool.description.slice(0, 160)
   const title = `${tool.name} — ${tool.category?.name ?? 'Tool'} for VCs`
   return {
@@ -73,9 +73,9 @@ export default async function ToolDetailPage({ params }: Props) {
   const domain = domainFor(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
-  const toolUrl = `https://indianvcs.com/vc-stack/product/${tool.slug}`
+  const toolUrl = `https://www.indianvcs.com/vc-stack/product/${tool.slug}`
   const categoryUrl = tool.category
-    ? `https://indianvcs.com/vc-stack/category/${tool.category.slug}`
+    ? `https://www.indianvcs.com/vc-stack/category/${tool.category.slug}`
     : undefined
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -107,7 +107,7 @@ export default async function ToolDetailPage({ params }: Props) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://indianvcs.com/vc-stack',
+            item: 'https://www.indianvcs.com/vc-stack',
           },
           ...(tool.category && categoryUrl
             ? [

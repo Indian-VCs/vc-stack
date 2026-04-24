@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import { getAllTools, getCategories } from '@/lib/data'
+
+export const metadata: Metadata = {
+  title: 'Market Map',
+  description: 'The complete visual market map of every tool powering India\'s VC firms in 2026.',
+  alternates: { canonical: '/vc-stack/market-map' },
+}
 
 export default async function MarketMapPage() {
   const [tools, categories] = await Promise.all([getAllTools(), getCategories()])

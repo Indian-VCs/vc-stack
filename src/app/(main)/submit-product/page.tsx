@@ -4,8 +4,9 @@ import SubmitProductForm from './SubmitProductForm'
 import { getCategories } from '@/lib/data'
 
 export const metadata: Metadata = {
-  title: 'Submit a Product — IndianVCs',
+  title: 'Submit a Product',
   description: 'File a submission to the IndianVCs desk — a tool worth listing on the paper.',
+  alternates: { canonical: '/vc-stack/submit-product' },
 }
 
 export default async function SubmitProductPage() {

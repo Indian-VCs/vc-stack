@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = await getCategoryBySlug(slug)
   if (!category) return {}
   const path = `/vc-stack/category/${category.slug}`
-  const url = `https://indianvcs.com${path}`
+  const url = `https://www.indianvcs.com${path}`
   const count = category._count?.tools ?? 0
   const description =
     category.description ??
@@ -82,7 +82,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { data: tools, total, totalPages } = result
   const totalUnfiltered = unfilteredResult?.total ?? total
 
-  const categoryUrl = `https://indianvcs.com/vc-stack/category/${category.slug}`
+  const categoryUrl = `https://www.indianvcs.com/vc-stack/category/${category.slug}`
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -94,7 +94,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         description:
           category.description ??
           `Curated ${category.name} tools used by Indian venture capital firms.`,
-        isPartOf: { '@id': 'https://indianvcs.com/#website' },
+        isPartOf: { '@id': 'https://www.indianvcs.com/#website' },
         mainEntity: {
           '@type': 'ItemList',
           numberOfItems: total,
@@ -102,19 +102,19 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             '@type': 'ListItem',
             position: i + 1,
             name: t.name,
-            url: `https://indianvcs.com/vc-stack/product/${t.slug}`,
+            url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
           })),
         },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://indianvcs.com/vc-stack' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'All Categories',
-            item: 'https://indianvcs.com/vc-stack/all-categories',
+            item: 'https://www.indianvcs.com/vc-stack/all-categories',
           },
           { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
         ],
