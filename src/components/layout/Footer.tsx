@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import IndianVCsLogo from '@/components/ui/IndianVCsLogo'
 
 const SOCIAL: { label: string; href: string; icon: React.ReactNode }[] = [
   {
@@ -42,21 +43,18 @@ export default function Footer() {
           flexWrap: 'wrap',
         }}
       >
-        <Link
-          href="/"
+        <a
+          href="https://indianvcs.com"
+          aria-label="Indian VCs — back to indianvcs.com"
           style={{
-            fontFamily: 'var(--serif)',
-            fontWeight: 900,
-            fontSize: '1rem',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'var(--ink)',
+            display: 'inline-flex',
+            alignItems: 'center',
             textDecoration: 'none',
             lineHeight: 1,
           }}
         >
-          IndianVCs
-        </Link>
+          <IndianVCsLogo height={18} />
+        </a>
 
         <div
           style={{

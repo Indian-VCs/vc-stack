@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from '@/lib/stats'
 import { COMMANDK_OPEN_EVENT } from '@/components/ui/CommandK'
+import IndianVCsLogo from '@/components/ui/IndianVCsLogo'
 
 type Cat = { name: string; slug: string }
 
@@ -80,21 +81,18 @@ export default function Navbar() {
         >
           {/* ── Left: logo + primary nav ─────────────────────────── */}
           <div className="hidden lg:flex items-center" style={{ gap: 0 }}>
-            <Link
-              href="/"
+            <a
+              href="https://indianvcs.com"
+              aria-label="Indian VCs — back to indianvcs.com"
               style={{
-                fontFamily: 'var(--serif)',
-                fontWeight: 900,
-                fontSize: '1.25rem',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'var(--ink)',
-                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
                 marginRight: 20,
+                textDecoration: 'none',
               }}
             >
-              IndianVCs
-            </Link>
+              <IndianVCsLogo height={22} />
+            </a>
             <NavLink href="/" label="Home" active={pathname === '/'} />
 
             {/* Categories megamenu trigger */}
