@@ -103,7 +103,15 @@ export default function HeroFeaturedTool({ tools }: Props) {
         <div className="hft-row hft-row-head">
           <div className="hft-icon-wrap">
             {icon ? (
-              <img src={icon} alt="" className="hft-icon" loading="lazy" />
+              <img
+                src={icon}
+                alt=""
+                width={40}
+                height={40}
+                className="hft-icon"
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <div className="hft-icon hft-icon-fb">{initials(t.name)}</div>
             )}
@@ -234,7 +242,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-body {
           display: flex;
           flex-direction: column;
-          animation: hftFade 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+          animation: hftFade 360ms var(--ease-out);
           flex: 1;
         }
         @keyframes hftFade {
@@ -259,7 +267,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
           width: 56px;
           height: 56px;
           border: 1px solid var(--rule);
-          background: #fff;
+          background: var(--surface-logo);
           display: flex;
           align-items: center;
           justify-content: center;

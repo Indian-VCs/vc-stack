@@ -44,6 +44,7 @@ export default function CommandK({ tools }: Props) {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const previouslyFocused = useRef<HTMLElement | null>(null)
 
   const results = useMemo(() => {
@@ -57,7 +58,13 @@ export default function CommandK({ tools }: Props) {
     setQuery('')
     setActive(0)
     const prev = previouslyFocused.current
-    if (prev && typeof prev.focus === 'function') prev.focus()
+    if (prev && document.body.contains(prev) && typeof prev.focus === 'function') {
+      prev.focus()
+    } else {
+      // Fallback: return focus to the nav search trigger if present, else body
+      const trigger = document.querySelector<HTMLElement>('[aria-label="Open search (Cmd+K)"]')
+      trigger?.focus()
+    }
   }, [])
 
   const openModal = useCallback(() => {
@@ -86,13 +93,43 @@ export default function CommandK({ tools }: Props) {
     }
   }, [open, close, openModal])
 
-  // Focus input, lock body scroll while open
+  // Focus input, lock body scroll while open. Capture the original inline
+  // overflow value at effect-setup time so cleanup restores it even if the
+  // component unmounts mid-open (e.g., page navigation).
   useEffect(() => {
     if (!open) return
-    const { overflow } = document.body.style
+    const originalOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     inputRef.current?.focus()
-    return () => { document.body.style.overflow = overflow }
+    return () => { document.body.style.overflow = originalOverflow }
+  }, [open])
+
+  // Focus trap: keep Tab/Shift+Tab cycling inside the modal while open
+  useEffect(() => {
+    if (!open) return
+    const handleFocusTrap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      const panel = panelRef.current
+      if (!panel) return
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const activeEl = document.activeElement as HTMLElement | null
+      if (e.shiftKey) {
+        if (activeEl === first || !panel.contains(activeEl)) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else if (activeEl === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    window.addEventListener('keydown', handleFocusTrap)
+    return () => window.removeEventListener('keydown', handleFocusTrap)
   }, [open])
 
   // Reset active index when query changes
@@ -138,7 +175,7 @@ export default function CommandK({ tools }: Props) {
         if (e.target === e.currentTarget) close()
       }}
     >
-      <div className="ckk-panel">
+      <div ref={panelRef} className="ckk-panel">
         <div className="ckk-input-row">
           <svg className="ckk-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
             <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4" fill="none" />
@@ -184,7 +221,15 @@ export default function CommandK({ tools }: Props) {
                   >
                     <div className="ckk-row-icon-wrap">
                       {icon ? (
-                        <img src={icon} alt="" className="ckk-row-icon" loading="lazy" />
+                        <img
+                          src={icon}
+                          alt=""
+                          width={22}
+                          height={22}
+                          className="ckk-row-icon"
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : (
                         <div className="ckk-row-icon ckk-row-icon-fb">{initials(tool.name)}</div>
                       )}
@@ -220,7 +265,7 @@ export default function CommandK({ tools }: Props) {
           align-items: flex-start;
           justify-content: center;
           padding: min(15vh, 120px) 16px 16px;
-          animation: ckkFade 160ms ease-out;
+          animation: ckkFade 160ms var(--ease-out);
         }
         @keyframes ckkFade {
           from { opacity: 0; }
@@ -235,6 +280,16 @@ export default function CommandK({ tools }: Props) {
           display: flex;
           flex-direction: column;
           max-height: min(70vh, 560px);
+          animation: ckkPanel 220ms var(--ease-out) both;
+        }
+        /* Panel descends subtly from above — feels grounded, editorial,
+           like a drawer pulled down rather than a modal that "pops". */
+        @keyframes ckkPanel {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ckk-overlay, .ckk-panel { animation: none; }
         }
 
         .ckk-input-row {
@@ -312,7 +367,7 @@ export default function CommandK({ tools }: Props) {
           width: 32px;
           height: 32px;
           border: 1px solid var(--rule);
-          background: #fff;
+          background: var(--surface-logo);
           display: flex;
           align-items: center;
           justify-content: center;

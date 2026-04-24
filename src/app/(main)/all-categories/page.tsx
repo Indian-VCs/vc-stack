@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCategories, getCategoryPreviewTools } from '@/lib/data'
 import CategoryCard from '@/components/cards/CategoryCard'
+import RevealStagger from '@/components/ui/RevealStagger'
 
 export const metadata: Metadata = {
   title: 'All Categories',
@@ -69,7 +70,10 @@ export default async function AllCategoriesPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 0 }}>
+      <RevealStagger
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        style={{ gap: 0 }}
+      >
         {categories.map((cat, i) => (
           <div key={cat.id} style={{ marginLeft: -1, marginTop: -1 }}>
             <CategoryCard
@@ -79,7 +83,7 @@ export default async function AllCategoriesPage() {
             />
           </div>
         ))}
-      </div>
+      </RevealStagger>
     </div>
   )
 }

@@ -28,7 +28,7 @@ export function ProductCard({ name, tagline, logoUrl, slug }: ProductCardProps) 
             width: 64,
             height: 64,
             border: '1px solid var(--rule)',
-            background: 'var(--paper)',
+            background: 'var(--surface-logo)',
             padding: 8,
             display: 'flex',
             alignItems: 'center',
@@ -38,7 +38,11 @@ export function ProductCard({ name, tagline, logoUrl, slug }: ProductCardProps) 
           {logoUrl ? (
             <img
               src={logoUrl}
-              alt={`${name} logo`}
+              alt=""
+              width={48}
+              height={48}
+              loading="lazy"
+              decoding="async"
               style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
             />
           ) : (

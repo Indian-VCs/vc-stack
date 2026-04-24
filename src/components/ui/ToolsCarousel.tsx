@@ -62,7 +62,15 @@ export default function ToolsCarousel({ tools, title = 'Recommended Tools' }: Pr
               <div className="tc-card-head">
                 <div className="tc-icon-wrap">
                   {icon ? (
-                    <img src={icon} alt="" className="tc-icon" loading="lazy" />
+                    <img
+                      src={icon}
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="tc-icon"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : (
                     <div className="tc-icon tc-icon-fb">{initials(t.name)}</div>
                   )}
@@ -161,7 +169,7 @@ export default function ToolsCarousel({ tools, title = 'Recommended Tools' }: Pr
           width: 36px;
           height: 36px;
           border: 1px solid var(--rule);
-          background: #fff;
+          background: var(--surface-logo);
           display: flex;
           align-items: center;
           justify-content: center;

@@ -32,7 +32,7 @@ export default function LogoCard({
       style={{
         width: dim,
         height: dim,
-        background: 'var(--paper)',
+        background: 'var(--surface-logo)',
         border: '1px solid var(--rule)',
         display: 'flex',
         alignItems: 'center',
@@ -45,9 +45,18 @@ export default function LogoCard({
       {showImage ? (
         <img
           src={logoUrl!}
-          alt={name}
+          alt=""
+          width={dim - (size === 'sm' ? 8 : 12)}
+          height={dim - (size === 'sm' ? 8 : 12)}
+          loading="lazy"
+          decoding="async"
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          onError={() => setImgFailed(true)}
+          onError={() => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn(`[LogoCard] logo failed for ${name}: ${logoUrl}`)
+            }
+            setImgFailed(true)
+          }}
         />
       ) : (
         <span

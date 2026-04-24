@@ -7,19 +7,33 @@
 
 /* ── Design Tokens ─────────────────────────────────────────────────────── */
 :root {
-  /* Color */
+  /* Surfaces — warm paper palette. Use --paper for page bg, --paper-alt for
+     subtle secondary surfaces (nav search, footers, tags). No pure white;
+     --surface-logo is the bright chip behind tool logos. */
   --paper: #f5f0e8;
   --paper-dark: #ede7db;
   --paper-alt: #ede7db;
+  --surface-logo: #fbf8f2;
+
+  /* Ink — primary text. --ink is AAA on paper; --ink-light darkened from
+     #4a4035 (failed AA at body size) to #3a322a → ~6.6:1 ratio, passes AA
+     for body text. --ink-muted for metadata/tag labels only (passes AA at
+     12px+ uppercase). */
   --ink: #1a1410;
-  --ink-light: #4a4035;
+  --ink-light: #3a322a;
   --ink-muted: #524a3c;
+
   /* Brand red — synced with hub.indianvcs.com (--ivc-red) */
   --red: #d21905;
   --red-dark: #a41204;
+
+  /* Rules/dividers. --rule: hairlines between cards/rows; --rule-dark:
+     stronger section dividers. */
   --rule: #c8bfb0;
   --rule-dark: #9a9080;
   --rule-heavy: #9a9080;
+
+  /* Semantic accents */
   --success: #4a7c59;
   --warning: #b8860b;
 
@@ -100,9 +114,23 @@ body::before {
 }
 
 h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); line-height: 1.15; }
-a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 2px;
+  transition: color var(--dur-fast) var(--ease-out),
+              text-decoration-color var(--dur-fast) var(--ease-out);
+}
 a:hover { color: var(--red); text-decoration-color: var(--red); }
 ::selection { background: var(--red); color: var(--paper); }
+
+/* Global focus ring — keyboard-only, high-contrast brand red.
+   Individual components may override with :focus-visible for tighter styling. */
+:where(a, button, [role="button"], [role="link"], [role="option"], [role="menuitem"], [role="tab"], input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
 
 /* ── Layout ────────────────────────────────────────────────────────────── */
 .page { max-width: var(--page-max); margin: 0 auto; padding: 0 120px; }
@@ -111,6 +139,9 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
 }
 @media (max-width: 900px) {
   .page { padding: 0 24px; }
+}
+@media (max-width: 380px) {
+  .page { padding: 0 14px; }
 }
 .page--detail { max-width: var(--detail-max); }
 
@@ -149,7 +180,11 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   background: var(--paper);
   color: var(--ink);
   cursor: pointer;
-  transition: all var(--dur-fast);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform 90ms var(--ease-out);
   border-radius: 0;
   text-decoration: none;
   display: inline-flex;
@@ -157,6 +192,11 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   gap: 6px;
 }
 .btn:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+/* Tactile press feedback — tiny scale down while held */
+.btn:active { transform: scale(0.985); }
+@media (prefers-reduced-motion: reduce) {
+  .btn:active { transform: none; }
+}
 
 .btn--primary {
   background: var(--red);
@@ -239,11 +279,14 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   border: 1px solid var(--rule);
   padding: 10px 12px;
   border-radius: 0;
-  transition: border-color var(--dur-fast);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
 }
 .input:focus, .textarea:focus, .select:focus {
   outline: none;
   border-color: var(--ink);
+  background: var(--paper);
 }
 .label {
   display: block;
@@ -283,6 +326,94 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   border-bottom: 1px solid var(--rule);
   padding-bottom: 8px;
   margin-bottom: 16px;
+}
+
+/* ── Cards — hover affordance ──────────────────────────────────────────── */
+/* Category card base styling lives in CategoryCard's styled-jsx; this layer
+   only contributes the subtle lift on hover + transform transition so the
+   affordance is consistent across all card types. */
+.cat-card {
+  transform: translateY(0);
+  transition-property: transform;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-out);
+}
+.cat-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Tool card default variant — flat by default, border darkens on hover. */
+.tool-card {
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.tool-card:hover {
+  border-color: var(--ink);
+  background: var(--paper-dark);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-card,
+  .tool-card {
+    transition: background var(--dur-fast), border-color var(--dur-fast);
+  }
+  .cat-card:hover,
+  .tool-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Entrance Choreography ─────────────────────────────────────────────── */
+/* Signature page-load stagger — each block settles onto the page like
+   newspaper type being set. Compose by giving siblings this class with
+   incremental animation-delay (typically 0 / 120 / 240 / 360ms). */
+.hero-enter {
+  opacity: 0;
+  animation: heroEnter 560ms var(--ease-out) both;
+}
+@keyframes heroEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll-in grid reveal — used by <RevealStagger>. Each child animates
+   in with a 60ms cascade, capped so large grids don't feel laggy. */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 520ms var(--ease-out),
+    transform 520ms var(--ease-out);
+}
+.reveal-stagger.is-in > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-stagger.is-in > *:nth-child(1)  { transition-delay: 0ms; }
+.reveal-stagger.is-in > *:nth-child(2)  { transition-delay: 50ms; }
+.reveal-stagger.is-in > *:nth-child(3)  { transition-delay: 100ms; }
+.reveal-stagger.is-in > *:nth-child(4)  { transition-delay: 150ms; }
+.reveal-stagger.is-in > *:nth-child(5)  { transition-delay: 200ms; }
+.reveal-stagger.is-in > *:nth-child(6)  { transition-delay: 240ms; }
+.reveal-stagger.is-in > *:nth-child(7)  { transition-delay: 280ms; }
+.reveal-stagger.is-in > *:nth-child(8)  { transition-delay: 320ms; }
+.reveal-stagger.is-in > *:nth-child(9)  { transition-delay: 360ms; }
+.reveal-stagger.is-in > *:nth-child(n+10) { transition-delay: 400ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ── Breadcrumb ────────────────────────────────────────────────────────── */

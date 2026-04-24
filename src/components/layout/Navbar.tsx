@@ -137,18 +137,19 @@ export default function Navbar() {
               </button>
 
               {showCategories && (
-                <div className="megamenu" role="menu">
+                <div className="megamenu" role="menu" aria-label="Categories">
                   <div className="megamenu-grid">
                     <div>
-                      <div className="megamenu-header">Core Stack</div>
-                      <ul className="megamenu-list">
+                      <div className="megamenu-header" id="megamenu-core">Core Stack</div>
+                      <ul className="megamenu-list" role="group" aria-labelledby="megamenu-core">
                         {CATEGORIES_PRIMARY.map(({ name, slug }) => (
-                          <li key={slug}>
+                          <li key={slug} role="none">
                             <Link
                               href={`/category/${slug}`}
                               className="megamenu-item"
+                              role="menuitem"
                             >
-                              <span className="megamenu-bullet">·</span>
+                              <span className="megamenu-bullet" aria-hidden="true">·</span>
                               {name}
                             </Link>
                           </li>
@@ -156,15 +157,16 @@ export default function Navbar() {
                       </ul>
                     </div>
                     <div>
-                      <div className="megamenu-header">Workflow & More</div>
-                      <ul className="megamenu-list">
+                      <div className="megamenu-header" id="megamenu-workflow">Workflow & More</div>
+                      <ul className="megamenu-list" role="group" aria-labelledby="megamenu-workflow">
                         {CATEGORIES_SECONDARY.map(({ name, slug }) => (
-                          <li key={slug}>
+                          <li key={slug} role="none">
                             <Link
                               href={`/category/${slug}`}
                               className="megamenu-item"
+                              role="menuitem"
                             >
-                              <span className="megamenu-bullet">·</span>
+                              <span className="megamenu-bullet" aria-hidden="true">·</span>
                               {name}
                             </Link>
                           </li>
@@ -176,10 +178,10 @@ export default function Navbar() {
                       <p className="megamenu-blurb">
                         {TOTAL_CATEGORIES} categories · {TOTAL_TOOL_APPEARANCES} tools curated from the Indian VC stack.
                       </p>
-                      <Link href="/all-categories" className="megamenu-cta">
+                      <Link href="/all-categories" className="megamenu-cta" role="menuitem">
                         View all categories →
                       </Link>
-                      <Link href="/market-map" className="megamenu-cta megamenu-cta--ghost">
+                      <Link href="/market-map" className="megamenu-cta megamenu-cta--ghost" role="menuitem">
                         Open market map →
                       </Link>
                     </aside>
@@ -390,6 +392,16 @@ export default function Navbar() {
           padding: 20px 22px;
           z-index: 50;
           box-shadow: var(--shadow-soft);
+          transform-origin: top left;
+          animation: megamenuEnter 180ms var(--ease-out) both;
+        }
+        /* Descends from the nav rail — short, assertive, grounded. */
+        @keyframes megamenuEnter {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .megamenu { animation: none; }
         }
         .megamenu-grid {
           display: grid;
@@ -466,7 +478,7 @@ export default function Navbar() {
           gap: 8px;
           height: 32px;
           padding: 0 10px;
-          background: var(--paper-alt, #ede7db);
+          background: var(--paper-alt);
           border: 1px solid var(--rule);
           transition: border-color var(--dur-fast), background var(--dur-fast);
           cursor: pointer;

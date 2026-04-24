@@ -160,20 +160,26 @@ export default async function ToolDetailPage({ params }: Props) {
         }}
       >
         <div className="tool-head-row">
-          <LogoCard name={tool.name} logoUrl={tool.logoUrl} size="lg" />
-          <h1 className="tool-head-name">{tool.name}</h1>
+          <div className="hero-enter" style={{ animationDelay: '0ms' }}>
+            <LogoCard name={tool.name} logoUrl={tool.logoUrl} size="lg" />
+          </div>
+          <h1 className="tool-head-name hero-enter" style={{ animationDelay: '80ms' }}>
+            {tool.name}
+          </h1>
           <a
             href={tool.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="tool-head-visit"
+            className="tool-head-visit hero-enter"
+            style={{ animationDelay: '200ms' }}
           >
             Visit Website ↗
           </a>
           {tool.category && (
             <Link
               href={`/category/${tool.category.slug}`}
-              className="tool-head-cat"
+              className="tool-head-cat hero-enter"
+              style={{ animationDelay: '280ms' }}
             >
               {tool.category.name}
             </Link>

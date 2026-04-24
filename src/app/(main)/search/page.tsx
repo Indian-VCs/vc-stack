@@ -3,6 +3,7 @@ import { searchTools, getAllTools } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
 import SearchBox from '@/components/ui/SearchBox'
 import Pagination from '@/components/ui/Pagination'
+import RevealStagger from '@/components/ui/RevealStagger'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default async function SearchPage({ searchParams }: Props) {
         }}
       >
         <div
+          className="hero-enter"
           style={{
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
@@ -52,11 +54,13 @@ export default async function SearchPage({ searchParams }: Props) {
             letterSpacing: '0.24em',
             color: 'var(--red)',
             marginBottom: 8,
+            animationDelay: '0ms',
           }}
         >
           The Archive
         </div>
         <h1
+          className="hero-enter"
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
@@ -64,12 +68,16 @@ export default async function SearchPage({ searchParams }: Props) {
             color: 'var(--ink)',
             lineHeight: 1.1,
             marginBottom: 16,
+            animationDelay: '80ms',
           }}
         >
           {q ? `Results for “${q}”` : `Search across ${totalInCorpus} tools`}
         </h1>
-        <SearchBox defaultValue={q} />
+        <div className="hero-enter" style={{ animationDelay: '160ms' }}>
+          <SearchBox defaultValue={q} />
+        </div>
         <p
+          className="hero-enter"
           style={{
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
@@ -77,6 +85,7 @@ export default async function SearchPage({ searchParams }: Props) {
             letterSpacing: '0.14em',
             color: 'var(--ink-muted)',
             marginTop: 16,
+            animationDelay: '240ms',
           }}
         >
           {total} {total === 1 ? 'match' : 'matches'}
@@ -93,13 +102,13 @@ export default async function SearchPage({ searchParams }: Props) {
         </div>
       ) : (
         <>
-          <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <RevealStagger className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {tools.map((tool, i) => (
               <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
                 <ToolCard tool={tool} index={i} />
               </div>
             ))}
-          </div>
+          </RevealStagger>
 
           <Pagination
             page={page}

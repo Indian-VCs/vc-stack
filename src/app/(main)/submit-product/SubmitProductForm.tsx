@@ -12,6 +12,9 @@ export default function SubmitProductForm({ categories }: { categories: Category
   if (state.success) {
     return (
       <div
+        role="status"
+        aria-live="polite"
+        className="submit-received"
         style={{
           border: '2px solid var(--ink)',
           padding: 40,
@@ -20,6 +23,7 @@ export default function SubmitProductForm({ categories }: { categories: Category
         }}
       >
         <div
+          className="submit-received-stamp"
           style={{
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
@@ -67,6 +71,36 @@ export default function SubmitProductForm({ categories }: { categories: Category
             Reference this file number if you write to the editors.
           </p>
         )}
+
+        <style>{`
+          /* Calm arrival — a filed document settling onto the desk.
+             Stamp fades in a beat after the card lands, like type hitting
+             paper after the page is set. */
+          .submit-received {
+            opacity: 0;
+            animation: submitReceived 520ms var(--ease-out) both;
+          }
+          .submit-received-stamp {
+            opacity: 0;
+            animation: submitStamp 280ms var(--ease-out) 420ms both;
+          }
+          @keyframes submitReceived {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes submitStamp {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .submit-received,
+            .submit-received-stamp {
+              animation: none;
+              opacity: 1;
+              transform: none;
+            }
+          }
+        `}</style>
       </div>
     )
   }
@@ -92,27 +126,43 @@ export default function SubmitProductForm({ categories }: { categories: Category
 
       <Field label="Tool Name" name="toolName" required error={state.errors?.toolName?.[0]}>
         <input
+          id="toolName"
           type="text"
           name="toolName"
           placeholder="e.g. Affinity"
           required
           autoFocus
+          aria-required="true"
+          aria-invalid={Boolean(state.errors?.toolName?.[0])}
+          aria-describedby={state.errors?.toolName?.[0] ? 'toolName-error' : undefined}
           style={inputStyle}
         />
       </Field>
 
       <Field label="Website URL" name="websiteUrl" required error={state.errors?.websiteUrl?.[0]}>
         <input
+          id="websiteUrl"
           type="url"
           name="websiteUrl"
           placeholder="https://example.com"
           required
+          aria-required="true"
+          aria-invalid={Boolean(state.errors?.websiteUrl?.[0])}
+          aria-describedby={state.errors?.websiteUrl?.[0] ? 'websiteUrl-error' : undefined}
           style={inputStyle}
         />
       </Field>
 
       <Field label="Category" name="categoryId" required error={state.errors?.categoryId?.[0]}>
-        <select name="categoryId" required style={inputStyle}>
+        <select
+          id="categoryId"
+          name="categoryId"
+          required
+          aria-required="true"
+          aria-invalid={Boolean(state.errors?.categoryId?.[0])}
+          aria-describedby={state.errors?.categoryId?.[0] ? 'categoryId-error' : undefined}
+          style={inputStyle}
+        >
           <option value="">Select a category…</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
@@ -122,9 +172,13 @@ export default function SubmitProductForm({ categories }: { categories: Category
 
       <Field label="Description" name="description" required error={state.errors?.description?.[0]}>
         <textarea
+          id="description"
           name="description"
           rows={5}
           required
+          aria-required="true"
+          aria-invalid={Boolean(state.errors?.description?.[0])}
+          aria-describedby={state.errors?.description?.[0] ? 'description-error' : undefined}
           placeholder="Describe what the tool does and why VCs use it…"
           style={{ ...inputStyle, resize: 'vertical', fontFamily: 'var(--body)' }}
         />
@@ -132,10 +186,14 @@ export default function SubmitProductForm({ categories }: { categories: Category
 
       <Field label="Your Email" name="submitterEmail" required error={state.errors?.submitterEmail?.[0]}>
         <input
+          id="submitterEmail"
           type="email"
           name="submitterEmail"
           placeholder="you@example.com"
           required
+          aria-required="true"
+          aria-invalid={Boolean(state.errors?.submitterEmail?.[0])}
+          aria-describedby={state.errors?.submitterEmail?.[0] ? 'submitterEmail-error' : undefined}
           style={inputStyle}
         />
       </Field>
@@ -200,6 +258,8 @@ function Field({
       {children}
       {error && (
         <p
+          id={`${name}-error`}
+          role="alert"
           style={{
             marginTop: 6,
             fontFamily: 'var(--mono)',
