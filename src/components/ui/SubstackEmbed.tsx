@@ -5,11 +5,10 @@
  * We control the entire visual (fonts, colors, sizing, disclaimer copy).
  * On submit, we open `${substackUrl}/subscribe?email=...` in a new tab —
  * Substack handles the actual subscription + confirmation email.
- *
- * Reads NEXT_PUBLIC_SUBSTACK_URL. Falls back to "Launching soon" when unset.
  */
 
 import { useState } from 'react'
+import { SUBSTACK_URL } from '@/lib/substack'
 
 export default function SubstackEmbed({
   maxWidth,
@@ -18,7 +17,7 @@ export default function SubstackEmbed({
   maxWidth?: number | string
   wide?: boolean
 }) {
-  const baseUrl = (process.env.NEXT_PUBLIC_SUBSTACK_URL || '').trim().replace(/\/+$/, '')
+  const baseUrl = SUBSTACK_URL.trim().replace(/\/+$/, '')
   const resolvedMaxWidth = maxWidth ?? (wide ? '100%' : 520)
 
   const [email, setEmail] = useState('')

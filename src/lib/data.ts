@@ -1,50 +1,20 @@
 /**
  * Data-fetching layer.
- * Tries Prisma first; falls back to STATIC_* constants so the UI
- * renders in development without a live database.
+ * Reads from the static STATIC_* catalog defined in tools-data.ts.
+ * No DB; the catalog is the source of truth.
  */
 
 import type { Category, Tool, PaginatedResult, SearchFilters } from './types'
 import type { PreviewTool } from '@/components/cards/CategoryCard'
 import { setCategoryResolver, buildAllTools } from './tools-data'
 
-async function getPrisma() {
-  try {
-    const { prisma } = await import('./db/prisma')
-    return prisma
-  } catch {
-    return null
-  }
-}
-
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      return await db.category.findMany({
-        include: { _count: { select: { tools: true } }, subCategories: true },
-        orderBy: { name: 'asc' },
-      })
-    } catch { /* fall through */ }
-  }
   return STATIC_CATEGORIES
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      return await db.category.findUnique({
-        where: { slug },
-        include: {
-          _count: { select: { tools: true } },
-          subCategories: { include: { _count: { select: { tools: true } } } },
-        },
-      })
-    } catch { /* fall through */ }
-  }
   return STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
 }
 
@@ -88,34 +58,6 @@ export async function getToolsByCategory(
   filters: SearchFilters = {}
 ): Promise<PaginatedResult<Tool>> {
   const { page = 1, pageSize = 24, pricing, query, sort = 'featured' } = filters
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const where = {
-        category: { slug: categorySlug },
-        ...(pricing ? { pricingModel: pricing } : {}),
-        ...(query
-          ? {
-              OR: [
-                { name: { contains: query, mode: 'insensitive' as const } },
-                { shortDesc: { contains: query, mode: 'insensitive' as const } },
-              ],
-            }
-          : {}),
-      }
-      const [data, total] = await Promise.all([
-        db.tool.findMany({
-          where,
-          include: { category: true, tags: true, _count: { select: { reviews: true } } },
-          skip: (page - 1) * pageSize,
-          take: pageSize,
-          orderBy: orderByForSort(sort),
-        }),
-        db.tool.count({ where }),
-      ])
-      return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) }
-    } catch { /* fall through */ }
-  }
   let filtered = STATIC_TOOLS.filter(
     (t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug)
   )
@@ -160,16 +102,6 @@ function dedupeByWebsite<T extends { websiteUrl: string; name: string }>(list: T
 }
 
 export async function getAllTools(): Promise<Tool[]> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const rows = await db.tool.findMany({
-        include: { category: true, tags: true, _count: { select: { reviews: true } } },
-        orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }],
-      })
-      return pinEverTrace(dedupeByWebsite(rows))
-    } catch { /* fall through */ }
-  }
   const sorted = [...STATIC_TOOLS].sort((a, b) =>
     (Number(b.isFeatured) - Number(a.isFeatured)) || a.name.localeCompare(b.name)
   )
@@ -177,76 +109,15 @@ export async function getAllTools(): Promise<Tool[]> {
 }
 
 export async function getFeaturedTools(limit = 12): Promise<Tool[]> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const rows = await db.tool.findMany({
-        where: { isFeatured: true },
-        include: { category: true, tags: true, _count: { select: { reviews: true } } },
-        take: limit,
-        orderBy: { updatedAt: 'desc' },
-      })
-      return pinEverTrace(rows)
-    } catch { /* fall through */ }
-  }
   return pinEverTrace(STATIC_TOOLS.filter((t) => t.isFeatured)).slice(0, limit)
 }
 
 export async function getToolBySlug(slug: string): Promise<Tool | null> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      return await db.tool.findUnique({
-        where: { slug },
-        include: {
-          category: true,
-          subCategory: true,
-          tags: true,
-          reviews: {
-            where: { isApproved: true },
-            include: { user: { select: { name: true, email: true } } },
-            orderBy: { createdAt: 'desc' },
-            take: 20,
-          },
-          _count: { select: { reviews: true } },
-        },
-      })
-    } catch { /* fall through */ }
-  }
   return STATIC_TOOLS.find((t) => t.slug === slug) ?? null
 }
 
 export async function searchTools(filters: SearchFilters): Promise<PaginatedResult<Tool>> {
   const { query = '', category, pricing, page = 1, pageSize = 24 } = filters
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const where = {
-        ...(query
-          ? {
-              OR: [
-                { name: { contains: query, mode: 'insensitive' as const } },
-                { description: { contains: query, mode: 'insensitive' as const } },
-                { shortDesc: { contains: query, mode: 'insensitive' as const } },
-              ],
-            }
-          : {}),
-        ...(category ? { category: { slug: category } } : {}),
-        ...(pricing ? { pricingModel: pricing } : {}),
-      }
-      const [data, total] = await Promise.all([
-        db.tool.findMany({
-          where,
-          include: { category: true, tags: true, _count: { select: { reviews: true } } },
-          skip: (page - 1) * pageSize,
-          take: pageSize,
-          orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }],
-        }),
-        db.tool.count({ where }),
-      ])
-      return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) }
-    } catch { /* fall through */ }
-  }
   let results = STATIC_TOOLS
   if (query) {
     const q = query.toLowerCase()
@@ -299,17 +170,6 @@ export async function getFeaturedToolsExcluding(excludeSlug: string): Promise<To
 }
 
 export async function getRelatedTools(toolId: string, categoryId: string, limit = 4): Promise<Tool[]> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      return await db.tool.findMany({
-        where: { categoryId, id: { not: toolId } },
-        include: { category: true, tags: true },
-        take: limit,
-        orderBy: { isFeatured: 'desc' },
-      })
-    } catch { /* fall through */ }
-  }
   // Include tools whose primary or extra category matches, excluding the current tool.
   const cat = STATIC_CATEGORIES.find((c) => c.id === categoryId)
   const catSlug = cat?.slug
@@ -320,18 +180,6 @@ export async function getRelatedTools(toolId: string, categoryId: string, limit 
 }
 
 export async function getSiteStats() {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const [toolCount, categoryCount, reviewCount, submissionCount] = await Promise.all([
-        db.tool.count(),
-        db.category.count(),
-        db.review.count({ where: { isApproved: true } }),
-        db.submission.count({ where: { status: 'PENDING' } }),
-      ])
-      return { toolCount, categoryCount, reviewCount, submissionCount }
-    } catch { /* fall through */ }
-  }
   return {
     toolCount: STATIC_TOOLS.length,
     categoryCount: STATIC_CATEGORIES.length,
@@ -426,17 +274,6 @@ export async function getCanonicalStats(): Promise<{
   uniqueTools: number
   totalCategories: number
 }> {
-  const db = await getPrisma()
-  if (db) {
-    try {
-      const [toolCount, categoryCount] = await Promise.all([
-        db.tool.count(),
-        db.category.count(),
-      ])
-      // Without m2m schema support yet, treat DB tool count as both unique and total.
-      return { totalTools: toolCount, uniqueTools: toolCount, totalCategories: categoryCount }
-    } catch { /* fall through */ }
-  }
   return {
     totalTools: totalAppearances(STATIC_TOOLS),
     uniqueTools: STATIC_TOOLS.length,

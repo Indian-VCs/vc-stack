@@ -19,8 +19,7 @@ Curated by **Indian VCs**, built by **DealQuick Labs Private Limited**.
 | Hosting | Webflow Cloud |
 | Language | TypeScript 5 |
 | Styling | Tailwind 4 + CSS custom properties |
-| Auth | Lightweight cookie-based (edge middleware) |
-| Data | Static catalog (`src/lib/tools-data.ts`), with optional Prisma/SQLite fallback for local admin |
+| Data | Static catalog (`src/lib/tools-data.ts`) — single source of truth |
 
 The site is mounted at `/vc-stack` on `indianvcs.com`. Every route, `<Link>`, and static asset is automatically prefixed with that basePath (see `next.config.ts`).
 
@@ -39,26 +38,24 @@ src/
 │   │   ├── search/                # Full-page results
 │   │   ├── submit-product/        # Tool-suggestion form (v2)
 │   │   └── layout.tsx             # Navbar + Footer + CommandK
-│   ├── admin/                     # Password-protected admin (internal)
 │   ├── opengraph-image.tsx        # Default site OG image (1200×630)
 │   ├── sitemap.ts                 # Dynamic sitemap (139 URLs)
 │   ├── robots.ts                  # robots.txt
 │   ├── layout.tsx                 # Root metadata, JSON-LD, GTM
 │   ├── page.tsx                   # Home (hero + market-map + categories + FAQ)
-│   ├── icon.svg                   # Favicon
-│   └── middleware.ts              # Edge middleware — admin auth gate
+│   └── icon.svg                   # Favicon
 ├── components/
 │   ├── layout/   (Navbar, Footer, PageLayout)
 │   ├── cards/    (ToolCard, CategoryCard, ProductCard)
 │   └── ui/       (CommandK, HeroFeaturedTool, MarketMapPoster,
 │                  FeaturedToolStrip, LogoCard, IndianVCsLogo,
 │                  FaqSection, …)
-├── lib/
-│   ├── tools-data.ts              # 👈 source of truth for the 119-tool catalog
-│   ├── data.ts                    # Fetch helpers + FEATURED_TOOL_SLUGS canonical list
-│   ├── types.ts                   # Tool / Category / Review / Submission types
-│   └── stats.ts                   # Exported counts + CATEGORY_COUNTS for SEO
-└── app/api/admin/                 # Password-check endpoints
+└── lib/
+    ├── tools-data.ts              # 👈 source of truth for the 119-tool catalog
+    ├── data.ts                    # Fetch helpers + FEATURED_TOOL_SLUGS canonical list
+    ├── types.ts                   # Tool / Category / Review / Submission types
+    ├── stats.ts                   # Exported counts + CATEGORY_COUNTS for SEO
+    └── substack.ts                # Hardcoded newsletter URL (public)
 ```
 
 Brand assets (primary logo SVG, favicon variants) live at `/Users/pc/Documents/Indian VCs Logo Kit/` and are inlined into React via [`src/components/ui/IndianVCsLogo.tsx`](src/components/ui/IndianVCsLogo.tsx).
@@ -76,20 +73,9 @@ Open [http://localhost:5000/vc-stack](http://localhost:5000/vc-stack).
 
 The `/vc-stack` prefix is mandatory — hitting `/` returns 404. Internal navigation via Next.js `<Link>` handles the prefix automatically.
 
-### Environment variables (for local dev)
+### Environment variables
 
-```env
-# Optional — only needed if you want the admin UI
-ADMIN_PASSWORD=admin123
-
-# Optional — if unset, the home-page newsletter CTA shows a "Launching soon" state
-NEXT_PUBLIC_SUBSTACK_URL=https://breakingvc.substack.com
-
-# Optional — SQLite fallback for Prisma. App works fine without this.
-DATABASE_URL="file:./dev.db"
-```
-
-`.env` is gitignored. In production these are set in the Webflow Cloud project settings, not committed.
+None required. The app runs with zero configuration. The Substack URL is a hardcoded constant (`src/lib/substack.ts`) since the newsletter is public. Tool data lives entirely in `src/lib/tools-data.ts`. There's no database to wire up, no admin panel to secure.
 
 ---
 
@@ -102,6 +88,8 @@ git push origin main
 # → Webflow Cloud auto-detects webflow.json, runs the OpenNext build,
 #   ships the Cloudflare Worker under indianvcs.com/vc-stack.
 ```
+
+No env vars need setting in Webflow Cloud — the app runs on static data and has no secrets to inject.
 
 Useful local commands:
 

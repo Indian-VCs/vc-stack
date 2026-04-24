@@ -21,11 +21,11 @@ Owned by **Indian VCs** / **DealQuick Labs Private Limited**. Not a clone of vcs
 ### basePath `/vc-stack`
 The app deploys **under** `indianvcs.com/vc-stack`, not at root. Next.js auto-prefixes every route, `<Link>`, and asset URL. Any hand-written absolute paths must include `/vc-stack` (rare — only in metadata `canonical` / OG `url` / JSON-LD `@id`).
 
-### Static-first data, Prisma optional
-`src/lib/tools-data.ts` is the authoritative catalog. Fetch helpers in `src/lib/data.ts` try Prisma first and fall through to `STATIC_TOOLS` on any error. **Runtime on Workers has no DB**, so the fallback is always what ships. Prisma exists only for the local admin UI.
+### Static-only data, no DB
+`src/lib/tools-data.ts` **is** the catalog. Fetch helpers in `src/lib/data.ts` read directly from `STATIC_TOOLS` and `STATIC_CATEGORIES`. No Prisma, no SQLite, no Postgres. The catalog *is* the database.
 
-### Middleware vs proxy.ts
-Next 16 deprecated `middleware.ts` in favour of `proxy.ts`. **But** `proxy.ts` is Node-only and won't run on Cloudflare Workers. We kept the legacy `middleware.ts` with `runtime = 'experimental-edge'`. Dev server warns; ignore it.
+### No admin portal
+There is no `/admin` route in this app. Tools are edited by hand in `tools-data.ts`, committed to git, and deployed. No password gate, no middleware, no auth. The `/api` directory is empty.
 
 ### Canonical Featured list
 `FEATURED_TOOL_SLUGS` in `src/lib/data.ts`. Edit that array to change what rotates in the homepage hero **and** what appears in every tool page's inline "Featured Tools" row. Both surfaces read from the same source.
@@ -105,10 +105,7 @@ Edit `STATIC_CATEGORIES` in `src/lib/data.ts`. Use a new `id` (`cat-N`) and slug
 git push origin main  # triggers Webflow Cloud auto-build
 ```
 
-**Env vars** are set in the Webflow Cloud project-settings UI, not in git:
-- `NEXT_PUBLIC_SUBSTACK_URL`
-- `ADMIN_PASSWORD`
-- `DATABASE_URL` — optional; unset = static-data fallback
+**No env vars required.** The site runs on static data. The Substack URL is a hardcoded public constant in `src/lib/substack.ts` (it's a public newsletter link, not a secret).
 
 Local preview of the Cloudflare Worker build: `npm run preview`. Needs `wrangler login` once.
 
@@ -125,8 +122,7 @@ Local preview of the Cloudflare Worker build: `npm run preview`. Needs `wrangler
 - **Sitemap / robots files** must be at `src/app/sitemap.ts` and `src/app/robots.ts` (not inside `(main)`). They auto-serve at `/vc-stack/sitemap.xml` etc.
 - **`app/opengraph-image.tsx` in route groups** works but requires the route group to use it on its own pages. Pages outside the group (like `src/app/page.tsx` which wraps `<PageLayout>` directly) get only the root-level OG image.
 - **Turbopack dev caching**: if a new file convention (new `opengraph-image.tsx`, `sitemap.ts`, etc.) isn't discovered, kill the dev server, `rm -rf .next`, and restart. Turbopack occasionally misses metadata-route detection.
-- **Prisma on Workers**: not supported without Prisma Accelerate / D1. Our helpers catch the import error and fall through — don't remove the try/catch.
-- **Content rot from the banned-phrases list**: if you paste content from elsewhere and it contains "unleash" / "one-stop" / "supercharge" / "leverage", the agents validation will reject it. Fix the source before pasting.
+- **Content rot from the banned-phrases list**: if you paste content from elsewhere and it contains "unleash" / "one-stop" / "supercharge" / "leverage", the validation will reject it. Fix the source before pasting.
 
 ## The commit history you're inheriting
 

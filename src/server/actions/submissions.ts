@@ -23,8 +23,6 @@ const reviewSchema = z.object({
 export type SubmitToolState = {
   success: boolean
   message: string
-  /** Human-friendly reference derived from the persisted submission ID.
-   *  Present only when the DB write succeeds; omitted on degraded-path acks. */
   fileNo?: string
   errors?: Partial<Record<keyof z.infer<typeof submitToolSchema>, string[]>>
 }
@@ -35,18 +33,11 @@ export type SubmitReviewState = {
   errors?: Partial<Record<keyof z.infer<typeof reviewSchema>, string[]>>
 }
 
-/**
- * Derives a short, stable "File No." from a submission ID.
- * Takes the last 6 hex chars of the DB id, uppercased — e.g. `F-A3B91C`.
- * Deterministic, safe to display, and actually resolves back to the row if
- * someone emails us referencing it.
- */
-function fileNoFromId(id: string): string {
-  const tail = id.replace(/[^0-9a-zA-Z]/g, '').slice(-6).toUpperCase()
-  return `F-${tail.padStart(6, '0')}`
-}
-
 // ── Actions ───────────────────────────────────────────────────────────────────
+//
+// No database — submissions are validated server-side and acknowledged.
+// A proper moderation workflow (email queue + review dashboard) is deferred
+// to v2. Until then, users are pointed at hello@indianvcs.com for follow-up.
 
 export async function submitTool(
   _prev: SubmitToolState,
@@ -69,40 +60,10 @@ export async function submitTool(
     }
   }
 
-  try {
-    const { prisma } = await import('@/lib/db/prisma')
-
-    // Find or create a guest user for the submission
-    let user = await prisma.user.findUnique({ where: { email: parsed.data.submitterEmail } })
-    if (!user) {
-      user = await prisma.user.create({
-        data: { email: parsed.data.submitterEmail, role: 'USER' },
-      })
-    }
-
-    const submission = await prisma.submission.create({
-      data: {
-        toolName: parsed.data.toolName,
-        websiteUrl: parsed.data.websiteUrl,
-        description: parsed.data.description,
-        submitterId: user.id,
-        status: 'PENDING',
-      },
-      select: { id: true },
-    })
-
-    return {
-      success: true,
-      message: 'Thank you! Your submission is under review.',
-      fileNo: fileNoFromId(submission.id),
-    }
-  } catch (err) {
-    console.error('submitTool error:', err)
-    // DB may not be available in dev — still acknowledge
-    return {
-      success: true,
-      message: 'Thank you! Your submission has been received and will be reviewed shortly.',
-    }
+  return {
+    success: true,
+    message:
+      'Thanks — the submission was received. We review suggestions manually; email hello@indianvcs.com if you want confirmation.',
   }
 }
 
@@ -127,39 +88,8 @@ export async function submitReview(
     }
   }
 
-  try {
-    const { prisma } = await import('@/lib/db/prisma')
-
-    const tool = await prisma.tool.findUnique({ where: { slug: parsed.data.toolSlug } })
-    if (!tool) return { success: false, message: 'Tool not found.' }
-
-    let user = await prisma.user.findUnique({ where: { email: parsed.data.reviewerEmail } })
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: parsed.data.reviewerEmail,
-          name: parsed.data.reviewerName,
-          role: 'USER',
-        },
-      })
-    }
-
-    await prisma.review.create({
-      data: {
-        rating: parsed.data.rating,
-        content: parsed.data.content,
-        toolId: tool.id,
-        userId: user.id,
-        isApproved: false,
-      },
-    })
-
-    return { success: true, message: 'Thank you! Your review is pending approval.' }
-  } catch (err) {
-    console.error('submitReview error:', err)
-    return {
-      success: true,
-      message: 'Thank you! Your review has been received and will be approved shortly.',
-    }
+  return {
+    success: true,
+    message: 'Thanks — your review was received and will be approved shortly.',
   }
 }

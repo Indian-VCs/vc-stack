@@ -1,7 +1,9 @@
 'use client'
 
+import { SUBSTACK_URL } from '@/lib/substack'
+
 export default function NewsletterForm() {
-  const substackUrl = process.env.NEXT_PUBLIC_SUBSTACK_URL || ''
+  const substackUrl = SUBSTACK_URL
   const isLive = Boolean(substackUrl.trim())
 
   if (!isLive) {
