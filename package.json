@@ -1,5 +1,5 @@
 {
-  "name": "vcstack-clone",
+  "name": "vc-stack",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -13,6 +13,8 @@
     "build": "prisma generate && next build",
     "postinstall": "prisma generate || true",
     "start": "next start -p 5000 -H 0.0.0.0",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -25,17 +27,20 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.6.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.1.4",
+    "@webflow/webflow-cli": "^1.12.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "prisma": "^7.7.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "wrangler": "^4.23.0"
   }
 }

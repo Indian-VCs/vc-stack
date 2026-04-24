@@ -55,13 +55,13 @@ export const metadata: Metadata = {
   publisher: "DealQuick Labs Private Limited",
   metadataBase: new URL("https://indianvcs.com"),
   alternates: {
-    canonical: "/tech-stack",
+    canonical: "/vc-stack",
   },
   openGraph: {
     title: "VC Stack 2026 | Indian VCs",
     description:
       `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. CRM, AI, Research, Data, News, Vibe Coding & more. Curated by Indian VCs.`,
-    url: "https://indianvcs.com/tech-stack",
+    url: "https://indianvcs.com/vc-stack",
     siteName: "Indian VCs",
     type: "website",
     locale: "en_IN",
@@ -100,8 +100,8 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://indianvcs.com/tech-stack",
-      url: "https://indianvcs.com/tech-stack",
+      "@id": "https://indianvcs.com/vc-stack",
+      url: "https://indianvcs.com/vc-stack",
       name: "VC Stack 2026 | Indian VCs",
       description:
         `The definitive visual market map of ${TOTAL_TOOL_APPEARANCES}+ tools and workflows powering India's top venture capital firms in 2026.`,
