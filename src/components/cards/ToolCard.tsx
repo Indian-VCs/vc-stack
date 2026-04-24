@@ -10,11 +10,13 @@ const PRICING_LABELS: Record<string, string> = {
   ENTERPRISE: 'Enterprise',
 }
 
+/* Pricing tiers are neutral information, not a severity signal.
+   Only FREE gets a subtle positive tint; all others use the default .tag. */
 const PRICING_TAG: Record<string, string> = {
   FREE: 'tag tag--positive',
   FREEMIUM: 'tag',
-  PAID: 'tag tag--accent',
-  ENTERPRISE: 'tag tag--warning',
+  PAID: 'tag',
+  ENTERPRISE: 'tag tag--solid',
 }
 
 function Logo({ name, logoUrl, size = 40 }: { name: string; logoUrl?: string | null; size?: number }) {

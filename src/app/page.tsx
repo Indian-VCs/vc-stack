@@ -2,6 +2,7 @@ import PageLayout from '@/components/layout/PageLayout'
 import CategoryCard from '@/components/cards/CategoryCard'
 import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
+import HeroSearchCTA from '@/components/ui/HeroSearchCTA'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
 import Link from 'next/link'
 import {
@@ -55,22 +56,25 @@ export default async function HomePage() {
               lineHeight: 1.5,
               color: 'var(--ink-light)',
               maxWidth: 520,
-              margin: '0 0 28px',
+              margin: '0 0 24px',
             }}
           >
             Browse {stats.totalTools} tools across {stats.totalCategories} categories — from sourcing and research to portfolio ops and back office.
           </p>
 
-          {/* Inline newsletter embed — fills the left column, wide/compact */}
-          <div >
+          {/* Primary CTA — search + browse */}
+          <HeroSearchCTA totalTools={stats.totalTools} />
+
+          {/* Inline newsletter embed — secondary CTA below the fold of the hero */}
+          <div>
             <div
               style={{
                 fontFamily: 'var(--mono)',
                 fontSize: 'var(--fs-tag)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.22em',
-                color: 'var(--red)',
-                marginBottom: 12,
+                color: 'var(--ink-muted)',
+                marginBottom: 10,
                 fontWeight: 600,
               }}
             >

@@ -31,16 +31,30 @@ function initials(name: string) {
 export default function HeroFeaturedTool({ tools }: Props) {
   const rotation = tools.slice(0, 8)
   const [i, setI] = useState(0)
-  const pausedRef = useRef(false)
+  const [userPaused, setUserPaused] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const hoverPausedRef = useRef(false)
   const router = useRouter()
 
+  /* Respect the OS-level reduced-motion preference. */
   useEffect(() => {
-    if (rotation.length < 2) return
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  const isPlaying = rotation.length > 1 && !userPaused && !reducedMotion
+
+  useEffect(() => {
+    if (!isPlaying) return
     const id = window.setInterval(() => {
-      if (!pausedRef.current) setI((n) => (n + 1) % rotation.length)
+      if (!hoverPausedRef.current) setI((n) => (n + 1) % rotation.length)
     }, AUTOPLAY_MS)
     return () => window.clearInterval(id)
-  }, [rotation.length])
+  }, [isPlaying, rotation.length])
 
   if (!rotation.length) return null
 
@@ -75,8 +89,8 @@ export default function HeroFeaturedTool({ tools }: Props) {
           goProduct()
         }
       }}
-      onMouseEnter={() => { pausedRef.current = true }}
-      onMouseLeave={() => { pausedRef.current = false }}
+      onMouseEnter={() => { hoverPausedRef.current = true }}
+      onMouseLeave={() => { hoverPausedRef.current = false }}
     >
       {/* ── Row 1 · Card header (fixed) ── */}
       <div className="hft-header">
@@ -115,6 +129,27 @@ export default function HeroFeaturedTool({ tools }: Props) {
       {/* ── Row 3 · Card footer (prev/next + slider, fixed) ── */}
       {rotation.length > 1 && (
         <div className="hft-footer">
+          <button
+            type="button"
+            className="hft-nav-btn"
+            aria-label={isPlaying ? 'Pause featured tools rotation' : 'Play featured tools rotation'}
+            aria-pressed={!isPlaying}
+            onClick={(e) => { stop(e); setUserPaused((p) => !p) }}
+            onKeyDown={stop}
+            disabled={reducedMotion}
+            title={reducedMotion ? 'Rotation disabled by system preference' : undefined}
+          >
+            {isPlaying ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <rect x="3" y="2.5" width="2.5" height="9" fill="currentColor" />
+                <rect x="8.5" y="2.5" width="2.5" height="9" fill="currentColor" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <path d="M4 2.5 L4 11.5 L11 7 Z" fill="currentColor" />
+              </svg>
+            )}
+          </button>
           <button
             type="button"
             className="hft-nav-btn"
@@ -369,6 +404,15 @@ export default function HeroFeaturedTool({ tools }: Props) {
         .hft-nav-btn:focus-visible {
           outline: 2px solid var(--red);
           outline-offset: 2px;
+        }
+        .hft-nav-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+        .hft-nav-btn:disabled:hover {
+          background: var(--paper);
+          color: var(--ink);
+          border-color: var(--rule);
         }
         .hft-dots {
           display: flex;

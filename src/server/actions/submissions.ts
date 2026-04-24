@@ -23,6 +23,9 @@ const reviewSchema = z.object({
 export type SubmitToolState = {
   success: boolean
   message: string
+  /** Human-friendly reference derived from the persisted submission ID.
+   *  Present only when the DB write succeeds; omitted on degraded-path acks. */
+  fileNo?: string
   errors?: Partial<Record<keyof z.infer<typeof submitToolSchema>, string[]>>
 }
 
@@ -30,6 +33,17 @@ export type SubmitReviewState = {
   success: boolean
   message: string
   errors?: Partial<Record<keyof z.infer<typeof reviewSchema>, string[]>>
+}
+
+/**
+ * Derives a short, stable "File No." from a submission ID.
+ * Takes the last 6 hex chars of the DB id, uppercased — e.g. `F-A3B91C`.
+ * Deterministic, safe to display, and actually resolves back to the row if
+ * someone emails us referencing it.
+ */
+function fileNoFromId(id: string): string {
+  const tail = id.replace(/[^0-9a-zA-Z]/g, '').slice(-6).toUpperCase()
+  return `F-${tail.padStart(6, '0')}`
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
@@ -66,7 +80,7 @@ export async function submitTool(
       })
     }
 
-    await prisma.submission.create({
+    const submission = await prisma.submission.create({
       data: {
         toolName: parsed.data.toolName,
         websiteUrl: parsed.data.websiteUrl,
@@ -74,9 +88,14 @@ export async function submitTool(
         submitterId: user.id,
         status: 'PENDING',
       },
+      select: { id: true },
     })
 
-    return { success: true, message: 'Thank you! Your submission is under review.' }
+    return {
+      success: true,
+      message: 'Thank you! Your submission is under review.',
+      fileNo: fileNoFromId(submission.id),
+    }
   } catch (err) {
     console.error('submitTool error:', err)
     // DB may not be available in dev — still acknowledge

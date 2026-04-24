@@ -93,6 +93,8 @@ export interface PaginatedResult<T> {
   totalPages: number
 }
 
+export type SortOrder = 'featured' | 'alpha' | 'reviews'
+
 export interface SearchFilters {
   query?: string
   category?: string
@@ -100,4 +102,6 @@ export interface SearchFilters {
   tags?: string[]
   page?: number
   pageSize?: number
+  /** Ordering for tool results. Defaults to 'featured'. */
+  sort?: SortOrder
 }

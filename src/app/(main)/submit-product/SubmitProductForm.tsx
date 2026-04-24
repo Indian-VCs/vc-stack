@@ -29,7 +29,7 @@ export default function SubmitProductForm({ categories }: { categories: Category
             marginBottom: 14,
           }}
         >
-          Received · File No. {Math.floor(Math.random() * 9000 + 1000)}
+          {state.fileNo ? `Received · File ${state.fileNo}` : 'Received'}
         </div>
         <h2
           style={{
@@ -53,6 +53,20 @@ export default function SubmitProductForm({ categories }: { categories: Category
         >
           {state.message}
         </p>
+        {state.fileNo && (
+          <p
+            style={{
+              marginTop: 16,
+              fontFamily: 'var(--mono)',
+              fontSize: 'var(--fs-tag)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              color: 'var(--ink-muted)',
+            }}
+          >
+            Reference this file number if you write to the editors.
+          </p>
+        )}
       </div>
     )
   }
@@ -82,6 +96,7 @@ export default function SubmitProductForm({ categories }: { categories: Category
           name="toolName"
           placeholder="e.g. Affinity"
           required
+          autoFocus
           style={inputStyle}
         />
       </Field>

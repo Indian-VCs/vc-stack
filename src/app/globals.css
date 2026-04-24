@@ -186,6 +186,9 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
 .tag--positive { color: var(--success); border-color: var(--success); }
 .tag--warning { color: var(--warning); border-color: var(--warning); }
 .tag--accent { color: var(--red); border-color: var(--red); }
+/* Solid ink tag — heavier presence, used for "Enterprise" tier and similar.
+   Keeps the broadsheet monochrome palette without misreading as a warning. */
+.tag--solid { color: var(--paper); background: var(--ink); border-color: var(--ink); }
 
 /* ── Row (HN-style feed item) ──────────────────────────────────────────── */
 .row {

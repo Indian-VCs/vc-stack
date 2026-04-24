@@ -67,6 +67,7 @@ export default function Footer() {
             letterSpacing: '0.16em',
           }}
         >
+          <Link href="/submit-product" className="ftr-link">Submit a Tool</Link>
           <Link href="/privacy-policy" className="ftr-link">Privacy</Link>
           <Link href="/terms" className="ftr-link">Terms</Link>
         </div>
