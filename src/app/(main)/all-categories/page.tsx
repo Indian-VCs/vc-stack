@@ -6,6 +6,7 @@ import CategoryCard from '@/components/cards/CategoryCard'
 export const metadata: Metadata = {
   title: 'All Categories',
   description: 'Browse all VC tool categories — from deal sourcing to fund administration.',
+  alternates: { canonical: '/vc-stack/all-categories' },
 }
 
 export const revalidate = 3600

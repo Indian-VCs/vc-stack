@@ -44,7 +44,7 @@ export default function Footer() {
         }}
       >
         <a
-          href="https://indianvcs.com"
+          href="https://www.indianvcs.com"
           aria-label="Indian VCs — back to indianvcs.com"
           style={{
             display: 'inline-flex',

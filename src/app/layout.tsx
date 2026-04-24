@@ -48,12 +48,12 @@ export const metadata: Metadata = {
     "mailing tools for investors",
   ],
   authors: [
-    { name: "Indian VCs", url: "https://indianvcs.com" },
+    { name: "Indian VCs", url: "https://www.indianvcs.com" },
     { name: "DealQuick Labs Private Limited" },
   ],
   creator: "Indian VCs by DealQuick Labs Private Limited",
   publisher: "DealQuick Labs Private Limited",
-  metadataBase: new URL("https://indianvcs.com"),
+  metadataBase: new URL("https://www.indianvcs.com"),
   alternates: {
     canonical: "/vc-stack",
     languages: {
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     title: "VC Stack 2026 | Indian VCs",
     description:
       `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. CRM, AI, Research, Data, News, Vibe Coding & more. Curated by Indian VCs.`,
-    url: "https://indianvcs.com/vc-stack",
+    url: "https://www.indianvcs.com/vc-stack",
     siteName: "Indian VCs",
     type: "website",
     locale: "en_IN",
@@ -105,19 +105,19 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://indianvcs.com/vc-stack",
-      url: "https://indianvcs.com/vc-stack",
+      "@id": "https://www.indianvcs.com/vc-stack",
+      url: "https://www.indianvcs.com/vc-stack",
       name: "VC Stack 2026 | Indian VCs",
       description:
         `The definitive visual market map of ${TOTAL_TOOL_APPEARANCES}+ tools and workflows powering India's top venture capital firms in 2026.`,
       isPartOf: {
         "@type": "WebSite",
-        "@id": "https://indianvcs.com/#website",
-        url: "https://indianvcs.com",
+        "@id": "https://www.indianvcs.com/#website",
+        url: "https://www.indianvcs.com",
         name: "Indian VCs",
         publisher: {
           "@type": "Organization",
-          "@id": "https://indianvcs.com/#organization",
+          "@id": "https://www.indianvcs.com/#organization",
         },
       },
       about: {
@@ -136,26 +136,26 @@ const jsonLd = {
           "@type": "ListItem",
           position: i + 1,
           name: `${c.name} (${c.count} tools)`,
-          url: `https://indianvcs.com/vc-stack/category/${c.slug}`,
+          url: `https://www.indianvcs.com/vc-stack/category/${c.slug}`,
         })),
       },
     },
     {
       "@type": "Organization",
-      "@id": "https://indianvcs.com/#organization",
+      "@id": "https://www.indianvcs.com/#organization",
       name: "Indian VCs",
       legalName: "DealQuick Labs Private Limited",
-      url: "https://indianvcs.com",
+      url: "https://www.indianvcs.com",
       sameAs: ["https://twitter.com/indianvcs"],
     },
     {
       "@type": "WebSite",
-      "@id": "https://indianvcs.com/#website",
-      url: "https://indianvcs.com",
+      "@id": "https://www.indianvcs.com/#website",
+      url: "https://www.indianvcs.com",
       name: "Indian VCs",
       publisher: {
         "@type": "Organization",
-        "@id": "https://indianvcs.com/#organization",
+        "@id": "https://www.indianvcs.com/#organization",
       },
     },
   ],

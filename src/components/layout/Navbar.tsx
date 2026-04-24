@@ -96,7 +96,7 @@ export default function Navbar() {
         >
           {/* ── Brand: official Indian VCs logo, always visible, links to parent site ── */}
           <a
-            href="https://indianvcs.com"
+            href="https://www.indianvcs.com"
             aria-label="Indian VCs — back to indianvcs.com"
             className="nav-brand"
             style={{
@@ -110,6 +110,7 @@ export default function Navbar() {
 
           {/* ── Desktop: primary nav ──────────────────────────────── */}
           <div className="nav-desktop" style={{ gap: 0 }}>
+
             <NavLink href="/" label="Home" active={pathname === '/'} />
 
             {/* Categories megamenu trigger */}

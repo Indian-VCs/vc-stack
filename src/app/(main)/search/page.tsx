@@ -8,6 +8,8 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Search Tools',
   description: 'Search across every tool in the Indian VC stack.',
+  alternates: { canonical: '/vc-stack/search' },
+  robots: { index: false, follow: true },
 }
 
 interface Props {

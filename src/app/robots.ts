@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/api', '/admin/*', '/api/*'],
       },
     ],
-    sitemap: 'https://indianvcs.com/vc-stack/sitemap.xml',
-    host: 'https://indianvcs.com',
+    sitemap: 'https://www.indianvcs.com/vc-stack/sitemap.xml',
+    host: 'https://www.indianvcs.com',
   }
 }
