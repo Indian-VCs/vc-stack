@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Playfair_Display, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES, CATEGORY_COUNTS } from "@/lib/stats";
+import { DEFAULT_OG_IMAGE_ALT, OG_IMAGE_SIZE, SITE_ORIGIN, SITE_URL, ogImageUrl, publicUrl } from "@/lib/site";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -38,22 +39,30 @@ export const metadata: Metadata = {
   ],
   creator: "Indian VCs by DealQuick Labs Private Limited",
   publisher: "DealQuick Labs Private Limited",
-  metadataBase: new URL("https://www.indianvcs.com"),
+  metadataBase: new URL(SITE_ORIGIN),
   alternates: {
-    canonical: "/vc-stack",
+    canonical: publicUrl("/"),
     languages: {
-      "en-IN": "/vc-stack",
-      "x-default": "/vc-stack",
+      "en-IN": publicUrl("/"),
+      "x-default": publicUrl("/"),
     },
   },
   openGraph: {
     title: "VC Stack 2026 | Indian VCs",
     description:
       `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. CRM, AI, Research, Data, News, Vibe Coding & more. Curated by Indian VCs.`,
-    url: "https://www.indianvcs.com/vc-stack",
+    url: SITE_URL,
     siteName: "Indian VCs",
     type: "website",
     locale: "en_IN",
+    images: [
+      {
+        url: ogImageUrl(),
+        width: OG_IMAGE_SIZE.width,
+        height: OG_IMAGE_SIZE.height,
+        alt: DEFAULT_OG_IMAGE_ALT,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -62,6 +71,7 @@ export const metadata: Metadata = {
       `${TOTAL_TOOL_APPEARANCES}+ tools across ${TOTAL_CATEGORIES} categories — the complete tech stack powering India's top VCs. Curated by Indian VCs.`,
     site: "@indianvcs",
     creator: "@indianvcs",
+    images: [ogImageUrl()],
   },
   robots: {
     index: true,
@@ -90,8 +100,8 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.indianvcs.com/vc-stack",
-      url: "https://www.indianvcs.com/vc-stack",
+      "@id": SITE_URL,
+      url: SITE_URL,
       name: "VC Stack 2026 | Indian VCs",
       description:
         `The definitive visual market map of ${TOTAL_TOOL_APPEARANCES}+ tools and workflows powering India's top venture capital firms in 2026.`,
@@ -121,7 +131,7 @@ const jsonLd = {
           "@type": "ListItem",
           position: i + 1,
           name: `${c.name} (${c.count} tools)`,
-          url: `https://www.indianvcs.com/vc-stack/category/${c.slug}`,
+          url: publicUrl(`/category/${c.slug}`),
         })),
       },
     },

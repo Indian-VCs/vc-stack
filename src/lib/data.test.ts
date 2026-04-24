@@ -3,8 +3,11 @@ import {
   STATIC_TOOLS,
   STATIC_CATEGORIES,
   categorySlugsForTool,
+  getCategoryPreviewTools,
+  searchTools,
 } from './data'
 import { TOTAL_UNIQUE_TOOLS, TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from './stats'
+import { categoryUrl, ogImageUrl, publicUrl, toolUrl } from './site'
 
 describe('categorySlugsForTool', () => {
   it('returns just the primary slug for single-category tools', () => {
@@ -62,5 +65,37 @@ describe('canonical catalog invariants', () => {
       ).length
       expect(cat._count?.tools, `category ${cat.slug}`).toBe(actual)
     }
+  })
+})
+
+describe('catalog fetch helpers', () => {
+  it('paginates search results instead of returning the whole corpus', async () => {
+    const firstPage = await searchTools({ page: 1, pageSize: 10 })
+    const secondPage = await searchTools({ page: 2, pageSize: 10 })
+
+    expect(firstPage.total).toBe(STATIC_TOOLS.length)
+    expect(firstPage.totalPages).toBeGreaterThan(1)
+    expect(firstPage.data).toHaveLength(10)
+    expect(secondPage.page).toBe(2)
+    expect(secondPage.data).toHaveLength(10)
+    expect(secondPage.data[0].slug).not.toBe(firstPage.data[0].slug)
+  })
+
+  it('uses extra category placements in category preview chips', async () => {
+    const previews = await getCategoryPreviewTools()
+
+    expect(previews.productivity.map((tool) => tool.name)).toContain('Airtable')
+    expect(previews.transcription.map((tool) => tool.name)).toContain('Notion')
+  })
+})
+
+describe('public URL helpers', () => {
+  it('keeps canonical and OG URLs under the /vc-stack mount path', () => {
+    expect(publicUrl('/')).toBe('https://www.indianvcs.com/vc-stack/')
+    expect(categoryUrl('productivity')).toBe('https://www.indianvcs.com/vc-stack/category/productivity')
+    expect(toolUrl('notion')).toBe('https://www.indianvcs.com/vc-stack/product/notion')
+    expect(ogImageUrl('/product/notion/og-image')).toBe(
+      'https://www.indianvcs.com/vc-stack/product/notion/og-image',
+    )
   })
 })

@@ -33,7 +33,7 @@ export default function SubmitProductForm({ categories }: { categories: Category
             marginBottom: 14,
           }}
         >
-          {state.fileNo ? `Received · File ${state.fileNo}` : 'Received'}
+          Received
         </div>
         <h2
           style={{
@@ -57,21 +57,6 @@ export default function SubmitProductForm({ categories }: { categories: Category
         >
           {state.message}
         </p>
-        {state.fileNo && (
-          <p
-            style={{
-              marginTop: 16,
-              fontFamily: 'var(--mono)',
-              fontSize: 'var(--fs-tag)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.14em',
-              color: 'var(--ink-muted)',
-            }}
-          >
-            Reference this file number if you write to the editors.
-          </p>
-        )}
-
         <style>{`
           /* Calm arrival — a filed document settling onto the desk.
              Stamp fades in a beat after the card lands, like type hitting
@@ -218,7 +203,7 @@ export default function SubmitProductForm({ categories }: { categories: Category
           marginTop: 4,
         }}
       >
-        Reviewed within 48 hours · Editors' discretion applies
+        Reviewed within 48 hours · Editors&apos; discretion applies
       </p>
     </form>
   )

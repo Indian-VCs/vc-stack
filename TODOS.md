@@ -2,17 +2,10 @@
 
 ## Before shipping to production
 
-- **Set `NEXT_PUBLIC_SUBSTACK_URL` env var.** Once The Dispatch is live on Substack, set this
-  to the subscribe URL (e.g. `https://indianvcs.substack.com/`). Until then, both homepage
-  signup surfaces render a "Launching soon" state. `.env.example` documents the var.
+- No blocking app-config TODOs. The app runs on static catalog data and hardcoded public
+  constants only; no env vars are required for Webflow Cloud.
 
 ## Deferred (post-launch)
-
-- **Prisma schema: multi-category support.** Today, `Tool.extraCategorySlugs` lives only in the
-  static catalog (`src/lib/tools-data.ts`). When CMS-driven tool creation goes live, this needs
-  a proper many-to-many `Tool ↔ Category` relation in the Prisma schema. Until then, tools added
-  through the admin UI will only appear in a single category on the market map. ~1 hour with CC.
-  Non-blocking for the 6-month editorial-first strategy.
 
 - **Create DESIGN.md.** Site has no written design system. For 6 months of weekly editorial
   (images, embeds, blockquotes, tables, CTAs within pieces), decisions will drift without a

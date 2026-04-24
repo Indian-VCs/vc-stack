@@ -66,10 +66,10 @@ export default function Navbar() {
     }
   }, [])
 
-  useEffect(() => {
+  const closeMenus = () => {
     setShowCategories(false)
     setShowMobile(false)
-  }, [pathname])
+  }
 
   // Lock body scroll when mobile sheet is open
   useEffect(() => {
@@ -148,6 +148,7 @@ export default function Navbar() {
                               href={`/category/${slug}`}
                               className="megamenu-item"
                               role="menuitem"
+                              onClick={closeMenus}
                             >
                               <span className="megamenu-bullet" aria-hidden="true">·</span>
                               {name}
@@ -178,10 +179,10 @@ export default function Navbar() {
                       <p className="megamenu-blurb">
                         {TOTAL_CATEGORIES} categories · {TOTAL_TOOL_APPEARANCES} tools curated from the Indian VC stack.
                       </p>
-                      <Link href="/all-categories" className="megamenu-cta" role="menuitem">
+                      <Link href="/all-categories" className="megamenu-cta" role="menuitem" onClick={closeMenus}>
                         View all categories →
                       </Link>
-                      <Link href="/market-map" className="megamenu-cta megamenu-cta--ghost" role="menuitem">
+                      <Link href="/market-map" className="megamenu-cta megamenu-cta--ghost" role="menuitem" onClick={closeMenus}>
                         Open market map →
                       </Link>
                     </aside>
@@ -279,13 +280,13 @@ export default function Navbar() {
 
               <div className="nav-mobile-section">
                 <div className="nav-mobile-header">Navigate</div>
-                <Link href="/" className={`nav-mobile-link ${pathname === '/' ? 'is-active' : ''}`}>Home</Link>
-                <Link href="/all-categories" className={`nav-mobile-link ${pathname.startsWith('/all-categories') ? 'is-active' : ''}`}>All Categories</Link>
-                <Link href="/market-map" className={`nav-mobile-link ${pathname.startsWith('/market-map') ? 'is-active' : ''}`}>Market Map</Link>
-                <a href={BLOG_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link">
+                <Link href="/" className={`nav-mobile-link ${pathname === '/' ? 'is-active' : ''}`} onClick={closeMenus}>Home</Link>
+                <Link href="/all-categories" className={`nav-mobile-link ${pathname.startsWith('/all-categories') ? 'is-active' : ''}`} onClick={closeMenus}>All Categories</Link>
+                <Link href="/market-map" className={`nav-mobile-link ${pathname.startsWith('/market-map') ? 'is-active' : ''}`} onClick={closeMenus}>Market Map</Link>
+                <a href={BLOG_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link" onClick={closeMenus}>
                   VC Hub <span className="ext-arrow" aria-hidden="true">↗</span>
                 </a>
-                <a href={NEWSLETTER_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link">
+                <a href={NEWSLETTER_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link" onClick={closeMenus}>
                   Newsletter <span className="ext-arrow" aria-hidden="true">↗</span>
                 </a>
               </div>
@@ -294,7 +295,7 @@ export default function Navbar() {
                 <div className="nav-mobile-header">Core Stack</div>
                 <div className="nav-mobile-cats">
                   {CATEGORIES_PRIMARY.map(({ name, slug }) => (
-                    <Link key={slug} href={`/category/${slug}`} className="nav-mobile-cat">{name}</Link>
+                    <Link key={slug} href={`/category/${slug}`} className="nav-mobile-cat" onClick={closeMenus}>{name}</Link>
                   ))}
                 </div>
               </div>
@@ -303,7 +304,7 @@ export default function Navbar() {
                 <div className="nav-mobile-header">Workflow & More</div>
                 <div className="nav-mobile-cats">
                   {CATEGORIES_SECONDARY.map(({ name, slug }) => (
-                    <Link key={slug} href={`/category/${slug}`} className="nav-mobile-cat">{name}</Link>
+                    <Link key={slug} href={`/category/${slug}`} className="nav-mobile-cat" onClick={closeMenus}>{name}</Link>
                   ))}
                 </div>
               </div>

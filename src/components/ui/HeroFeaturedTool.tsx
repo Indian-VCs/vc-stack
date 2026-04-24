@@ -62,7 +62,7 @@ export default function HeroFeaturedTool({ tools }: Props) {
   const icon = t.logoUrl || faviconFor(t.websiteUrl)
   // Prefer the long `description` so the hero card fills its 3-line
   // description area consistently. `shortDesc` is reserved for compact
-  // surfaces (Recommended Tools carousel, category previews).
+  // surfaces such as category previews.
   const subDesc = t.description?.trim() || t.shortDesc?.trim() || ''
 
   const goProduct = () => router.push(`/product/${t.slug}`)

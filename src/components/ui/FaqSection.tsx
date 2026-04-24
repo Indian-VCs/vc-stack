@@ -1,5 +1,3 @@
-import Script from 'next/script'
-
 const FAQS: { q: string; a: string }[] = [
   {
     q: 'Which tools should a new fund start with?',
@@ -43,13 +41,10 @@ export default function FaqSection() {
 
   return (
     <section className="page" style={{ padding: '12px 24px 56px', borderTop: '1px solid var(--rule)' }}>
-      <Script
-        id="home-faq-jsonld"
+      <script
         type="application/ld+json"
-        strategy="beforeInteractive"
-      >
-        {JSON.stringify(jsonLd)}
-      </Script>
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <div
         style={{

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { SITE_ORIGIN, publicUrl } from '@/lib/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/api', '/admin/*', '/api/*'],
       },
     ],
-    sitemap: 'https://www.indianvcs.com/vc-stack/sitemap.xml',
-    host: 'https://www.indianvcs.com',
+    sitemap: publicUrl('/sitemap.xml'),
+    host: SITE_ORIGIN,
   }
 }

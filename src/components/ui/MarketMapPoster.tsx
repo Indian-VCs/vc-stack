@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { Category, Tool } from '@/lib/types'
 
 interface Props {
@@ -139,16 +139,16 @@ function CategoryCard({
   pillCols?: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (typeof IntersectionObserver === 'undefined') { setVisible(true); return }
+    const reveal = () => el.classList.add('is-in')
+    if (typeof IntersectionObserver === 'undefined') { reveal(); return }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting) { setVisible(true); io.disconnect(); break }
+          if (e.isIntersecting) { reveal(); io.disconnect(); break }
         }
       },
       { rootMargin: '0px 0px -40px 0px', threshold: 0.05 },
@@ -160,7 +160,7 @@ function CategoryCard({
   return (
     <div
       ref={ref}
-      className={`card ${visible ? 'is-in' : ''}`}
+      className="card"
       style={{
         transitionDelay: `${Math.min(index, 8) * 40}ms`,
         '--pill-cols': pillCols,

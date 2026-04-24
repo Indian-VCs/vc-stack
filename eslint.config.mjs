@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated/local artifacts that are intentionally outside source review.
+    ".claude/**",
+    ".gstack/**",
+    ".open-next/**",
+    ".wrangler/**",
+    "coverage/**",
+    "dist/**",
+    "public/design-previews/**",
   ]),
 ]);
 

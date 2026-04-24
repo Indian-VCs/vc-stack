@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
+import { OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
 import LogoCard from '@/components/ui/LogoCard'
 
 interface Props {
@@ -13,14 +14,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
   if (!tool) return {}
-  const path = `/vc-stack/product/${tool.slug}`
-  const url = `https://www.indianvcs.com${path}`
+  const path = `/product/${tool.slug}`
+  const url = buildToolUrl(tool.slug)
   const description = tool.shortDesc ?? tool.description.slice(0, 160)
   const title = `${tool.name} — ${tool.category?.name ?? 'Tool'} for VCs`
+  const imageUrl = ogImageUrl(`${path}/og-image`)
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
@@ -28,12 +30,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: 'Indian VCs',
       type: 'article',
       locale: 'en_IN',
+      images: [
+        {
+          url: imageUrl,
+          width: OG_IMAGE_SIZE.width,
+          height: OG_IMAGE_SIZE.height,
+          alt: `${tool.name} on VC Stack`,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description,
       creator: '@indianvcs',
+      images: [imageUrl],
     },
   }
 }
@@ -72,16 +83,16 @@ export default async function ToolDetailPage({ params }: Props) {
   const domain = domainFor(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
-  const toolUrl = `https://www.indianvcs.com/vc-stack/product/${tool.slug}`
-  const categoryUrl = tool.category
-    ? `https://www.indianvcs.com/vc-stack/category/${tool.category.slug}`
+  const toolPageUrl = buildToolUrl(tool.slug)
+  const parentCategoryUrl = tool.category
+    ? buildCategoryUrl(tool.category.slug)
     : undefined
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'SoftwareApplication',
-        '@id': `${toolUrl}#software`,
+        '@id': `${toolPageUrl}#software`,
         name: tool.name,
         description: tool.description,
         url: tool.websiteUrl,
@@ -106,15 +117,15 @@ export default async function ToolDetailPage({ params }: Props) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://www.indianvcs.com/vc-stack',
+            item: publicUrl('/'),
           },
-          ...(tool.category && categoryUrl
+          ...(tool.category && parentCategoryUrl
             ? [
                 {
                   '@type': 'ListItem',
                   position: 2,
                   name: tool.category.name,
-                  item: categoryUrl,
+                  item: parentCategoryUrl,
                 },
               ]
             : []),
@@ -122,7 +133,7 @@ export default async function ToolDetailPage({ params }: Props) {
             '@type': 'ListItem',
             position: tool.category ? 3 : 2,
             name: tool.name,
-            item: toolUrl,
+            item: toolPageUrl,
           },
         ],
       },
@@ -249,7 +260,7 @@ export default async function ToolDetailPage({ params }: Props) {
         `}</style>
       </header>
 
-      {/* ── Dateline meta strip (pricing · domain · reviews · tags) ── */}
+      {/* ── Dateline meta strip (pricing · domain) ── */}
       <div
         style={{
           display: 'flex',
@@ -291,13 +302,6 @@ export default async function ToolDetailPage({ params }: Props) {
             {domain}
           </a>
         </span>
-        {tool.tags && tool.tags.length > 0 && (
-          <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
-            {tool.tags.slice(0, 6).map((t) => (
-              <span key={t.id} className="tag">{t.name}</span>
-            ))}
-          </span>
-        )}
       </div>
 
       {/* ── Description (full width, compact section, larger font) ─── */}
