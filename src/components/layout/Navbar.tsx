@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from '@/lib/stats'
+import { COMMANDK_OPEN_EVENT } from '@/components/ui/CommandK'
 
 type Cat = { name: string; slug: string }
 
@@ -34,13 +35,15 @@ const BLOG_EXTERNAL = 'https://hub.indianvcs.com/'
 const NEWSLETTER_EXTERNAL = 'https://hub.indianvcs.com/newsletter'
 
 export default function Navbar() {
-  const router = useRouter()
   const pathname = usePathname() || '/'
-  const [query, setQuery] = useState('')
   const [showCategories, setShowCategories] = useState(false)
   const catRef = useRef<HTMLDivElement>(null)
 
   const isCategoryRoute = pathname.startsWith('/category') || pathname.startsWith('/all-categories')
+
+  const openCommandK = () => {
+    window.dispatchEvent(new Event(COMMANDK_OPEN_EVENT))
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -60,13 +63,6 @@ export default function Navbar() {
   useEffect(() => {
     setShowCategories(false)
   }, [pathname])
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    const q = query.trim()
-    if (!q) return
-    router.push(`/search?q=${encodeURIComponent(q)}`)
-  }
 
   return (
     <header style={{ background: 'var(--paper)', borderBottom: '1px solid var(--ink)', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -176,7 +172,6 @@ export default function Navbar() {
               )}
             </div>
 
-            <NavLink href="/tools" label="Tools" active={pathname.startsWith('/tools')} />
             <NavLink href="/market-map" label="Market Map" active={pathname.startsWith('/market-map')} />
             <NavLink href={BLOG_EXTERNAL} label="VC Hub" external active={false} />
             <NavLink href={NEWSLETTER_EXTERNAL} label="Newsletter" external active={false} />
@@ -184,7 +179,12 @@ export default function Navbar() {
 
           {/* ── Right: search ─────────────────────────────────────── */}
           <div className="hidden md:flex items-center" style={{ gap: 16, marginLeft: 'auto' }}>
-            <form onSubmit={handleSearch} className="nav-search" role="search">
+            <button
+              type="button"
+              onClick={openCommandK}
+              className="nav-search"
+              aria-label="Open search (Cmd+K)"
+            >
               <svg
                 className="nav-search-icon"
                 width="14" height="14" viewBox="0 0 14 14"
@@ -193,15 +193,9 @@ export default function Navbar() {
                 <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
                 <path d="M9.5 9.5 L13 13" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
               </svg>
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search tools, categories…"
-                aria-label="Search tools"
-              />
-              <kbd className="nav-search-kbd">↵</kbd>
-            </form>
+              <span className="nav-search-placeholder">Search tools, categories…</span>
+              <kbd className="nav-search-kbd">⌘K</kbd>
+            </button>
           </div>
 
         </div>
@@ -331,8 +325,10 @@ export default function Navbar() {
         .megamenu-cta--ghost { color: var(--ink-muted); }
         .megamenu-cta:hover { color: var(--ink); }
 
-        /* Search */
+        /* Search (button that opens CommandK) */
         .nav-search {
+          all: unset;
+          box-sizing: border-box;
           display: inline-flex;
           align-items: center;
           gap: 8px;
@@ -341,24 +337,28 @@ export default function Navbar() {
           background: var(--paper-alt, #ede7db);
           border: 1px solid var(--rule);
           transition: border-color var(--dur-fast), background var(--dur-fast);
+          cursor: pointer;
         }
-        .nav-search:focus-within {
+        .nav-search:hover {
           border-color: var(--ink);
           background: var(--paper);
+        }
+        .nav-search:focus-visible {
+          outline: 2px solid var(--red);
+          outline-offset: 2px;
         }
         .nav-search-icon {
           color: var(--ink-muted);
           flex-shrink: 0;
         }
-        .nav-search input {
-          all: unset;
+        .nav-search-placeholder {
           font-family: var(--body);
           font-size: var(--fs-body);
-          color: var(--ink);
+          color: var(--ink-muted);
           width: 220px;
           line-height: 32px;
+          text-align: left;
         }
-        .nav-search input::placeholder { color: var(--ink-muted); }
         .nav-search-kbd {
           font-family: var(--mono);
           font-size: 0.65rem;
@@ -394,7 +394,7 @@ export default function Navbar() {
         .nav-cta.is-active { background: var(--ink); border-color: var(--ink); }
 
         @media (max-width: 1180px) {
-          .nav-search input { width: 160px; }
+          .nav-search-placeholder { width: 160px; }
         }
       `}</style>
     </header>

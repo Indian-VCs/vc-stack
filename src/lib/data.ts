@@ -226,6 +226,42 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
   return { data: results, total: results.length, page: 1, pageSize: results.length, totalPages: 1 }
 }
 
+/**
+ * Canonical list of featured tools — the single source of truth used across
+ * the homepage hero rotator and every tool detail page's "Featured Tools" row.
+ * Edit this list to change which tools are featured everywhere.
+ */
+export const FEATURED_TOOL_SLUGS = [
+  'evertrace',
+  'notion',
+  'superhuman',
+  'wispr-flow',
+  'claude',
+] as const
+
+/** Resolve FEATURED_TOOL_SLUGS to full Tool objects, preserving list order. */
+export async function getCanonicalFeaturedTools(): Promise<Tool[]> {
+  const all = await getAllTools()
+  return FEATURED_TOOL_SLUGS
+    .map((slug) => all.find((t) => t.slug === slug))
+    .filter((t): t is Tool => t !== undefined)
+}
+
+/**
+ * Featured tools minus the tool with the given slug.
+ * Falls back to in-category related tools if the canonical list minus the
+ * current tool yields nothing (shouldn't happen with a reasonable list).
+ */
+export async function getFeaturedToolsExcluding(excludeSlug: string): Promise<Tool[]> {
+  const canonical = await getCanonicalFeaturedTools()
+  const filtered = canonical.filter((t) => t.slug !== excludeSlug)
+  if (filtered.length > 0) return filtered
+
+  const current = await getToolBySlug(excludeSlug)
+  if (!current) return []
+  return getRelatedTools(current.id, current.categoryId, 5)
+}
+
 export async function getRelatedTools(toolId: string, categoryId: string, limit = 4): Promise<Tool[]> {
   const db = await getPrisma()
   if (db) {
@@ -268,14 +304,14 @@ export async function getSiteStats() {
   }
 }
 
-/** Returns up to 4 preview tools (name + logoUrl) per category slug. */
+/** Returns up to 6 preview tools (name + logoUrl) per category slug. */
 export async function getCategoryPreviewTools(): Promise<Record<string, PreviewTool[]>> {
   const result: Record<string, PreviewTool[]> = {}
   for (const tool of STATIC_TOOLS) {
     const slug = tool.category?.slug
     if (!slug) continue
     if (!result[slug]) result[slug] = []
-    if (result[slug].length < 4) {
+    if (result[slug].length < 6) {
       result[slug].push({ name: tool.name, logoUrl: tool.logoUrl ?? null })
     }
   }

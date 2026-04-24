@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getToolBySlug, getRelatedTools } from '@/lib/data'
+import { getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
 import LogoCard from '@/components/ui/LogoCard'
-import ToolsCarousel from '@/components/ui/ToolsCarousel'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -19,23 +18,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const PRICING_LABELS: Record<string, string> = {
-  FREE: 'Free',
-  FREEMIUM: 'Freemium',
-  PAID: 'Paid',
-  ENTERPRISE: 'Enterprise',
-}
-
 export default async function ToolDetailPage({ params }: Props) {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
   if (!tool) notFound()
 
-  const recommended = await getRelatedTools(tool.id, tool.categoryId, 10)
+  const spotlight = await getFeaturedToolsExcluding(tool.slug)
+  const FEATURED_CAP = 5
+  const spotlightShown = spotlight.slice(0, FEATURED_CAP)
+  const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
 
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
-      {/* Single breadcrumb at the top */}
       <nav className="breadcrumb" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         {tool.category && (
@@ -48,161 +42,233 @@ export default async function ToolDetailPage({ params }: Props) {
         <span>{tool.name}</span>
       </nav>
 
-      {/* ── Article header ────────────────────────────────────────── */}
+      {/* ── Article header — single row: logo · name · visit · category ── */}
       <header
         style={{
           borderTop: '2px solid var(--ink)',
           borderBottom: '1px solid var(--ink)',
-          padding: '24px 0 24px',
+          padding: '22px 0',
           marginBottom: 32,
         }}
       >
-        <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-          <LogoCard name={tool.name} logoUrl={tool.logoUrl} size="lg" style={{ position: 'relative' }} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                gap: 16,
-                flexWrap: 'wrap',
-              }}
+        <div className="tool-head-row">
+          <LogoCard name={tool.name} logoUrl={tool.logoUrl} size="lg" />
+          <h1 className="tool-head-name">{tool.name}</h1>
+          <a
+            href={tool.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tool-head-visit"
+          >
+            Visit Website ↗
+          </a>
+          {tool.category && (
+            <Link
+              href={`/category/${tool.category.slug}`}
+              className="tool-head-cat"
             >
-              <h1
-                style={{
-                  fontFamily: 'var(--serif)',
-                  fontWeight: 900,
-                  fontSize: 'var(--fs-name)',
-                  lineHeight: 1.1,
-                  color: 'var(--ink)',
-                  margin: 0,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                {tool.name}
-              </h1>
-              {tool.category && (
-                <Link
-                  href={`/category/${tool.category.slug}`}
-                  style={{
-                    fontFamily: 'var(--mono)',
-                    fontSize: 'var(--fs-tag)',
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: 'var(--ink)',
-                    background: 'var(--paper-alt)',
-                    border: '1px solid var(--rule)',
-                    padding: '5px 10px',
-                    textDecoration: 'none',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                  }}
-                >
-                  {tool.category.name}
-                </Link>
-              )}
-            </div>
-            {tool.shortDesc && (
-              <p
-                style={{
-                  fontFamily: 'var(--body)',
-                  fontSize: '1.05rem',
-                  color: 'var(--ink-light)',
-                  fontStyle: 'italic',
-                  maxWidth: 720,
-                  lineHeight: 1.5,
-                  marginTop: 10,
-                  marginBottom: 0,
-                }}
-              >
-                {tool.shortDesc}
-              </p>
-            )}
-          </div>
+              {tool.category.name}
+            </Link>
+          )}
         </div>
+
+        <style>{`
+          .tool-head-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          .tool-head-row::-webkit-scrollbar { display: none; }
+          .tool-head-name {
+            font-family: var(--serif);
+            font-weight: 900;
+            font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+            line-height: 1.1;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            margin: 0;
+            white-space: nowrap;
+            flex-shrink: 1;
+            min-width: 0;
+          }
+          .tool-head-visit {
+            font-family: var(--mono);
+            font-size: var(--fs-tag);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--paper);
+            background: var(--red);
+            border: 1px solid var(--red);
+            padding: 7px 12px;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: background var(--dur-fast), border-color var(--dur-fast);
+          }
+          .tool-head-visit:hover {
+            background: var(--red-dark);
+            border-color: var(--red-dark);
+          }
+          .tool-head-cat {
+            font-family: var(--mono);
+            font-size: var(--fs-tag);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink);
+            background: var(--paper-alt);
+            border: 1px solid var(--rule);
+            padding: 7px 12px;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+          .tool-head-cat:hover {
+            border-color: var(--ink);
+          }
+          @media (max-width: 640px) {
+            .tool-head-row { gap: 12px; }
+          }
+        `}</style>
       </header>
 
-      {/* ── Body + Sidebar ────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gap: 48 }} className="lg:grid-cols-[1fr_280px]">
-        {/* Description */}
-        <div>
-          <p
-            style={{
-              fontFamily: 'var(--body)',
-              fontSize: '1rem',
-              color: 'var(--ink)',
-              lineHeight: 1.65,
-              whiteSpace: 'pre-line',
-              margin: 0,
-            }}
-          >
-            {tool.description}
-          </p>
-        </div>
+      {/* ── Description (full width, compact section, larger font) ─── */}
+      <article style={{ marginBottom: 32 }}>
+        <p
+          style={{
+            fontFamily: 'var(--body)',
+            fontSize: '1.125rem',
+            color: 'var(--ink)',
+            lineHeight: 1.6,
+            whiteSpace: 'pre-line',
+            margin: 0,
+          }}
+        >
+          {tool.description}
+        </p>
+      </article>
 
-        {/* Sidebar — At a glance */}
-        <aside>
-          <div
-            style={{
-              padding: 16,
-              border: '1px solid var(--ink)',
-              background: 'var(--paper-dark)',
-            }}
-          >
-            <div className="section-header">At a glance</div>
-            <a
-              href={tool.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--primary w-full justify-center"
-              style={{ marginBottom: 16 }}
-            >
-              Visit {tool.name} ↗
-            </a>
-            <dl style={{ fontFamily: 'var(--body)', fontSize: 'var(--fs-body)' }}>
-              <div
+      {/* ── Popular use cases ─────────────────────────────────────── */}
+      {tool.useCases && tool.useCases.length > 0 && (
+        <section style={{ marginBottom: 40 }}>
+          <div className="section-header">Popular use cases</div>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
+            {tool.useCases.map((uc, i) => (
+              <li
+                key={i}
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '6px 0',
-                  borderBottom: '1px solid var(--rule)',
+                  display: 'grid',
+                  gridTemplateColumns: '18px 1fr',
+                  alignItems: 'start',
+                  gap: 10,
+                  fontFamily: 'var(--body)',
+                  fontSize: '1rem',
+                  lineHeight: 1.55,
+                  color: 'var(--ink)',
                 }}
               >
-                <dt style={{ color: 'var(--ink-muted)' }}>Pricing</dt>
-                <dd style={{ color: 'var(--ink)', fontWeight: 600 }}>
-                  {PRICING_LABELS[tool.pricingModel] ?? tool.pricingModel}
-                </dd>
-              </div>
-              {tool.category && (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '6px 0',
-                    borderBottom: '1px solid var(--rule)',
-                  }}
-                >
-                  <dt style={{ color: 'var(--ink-muted)' }}>Category</dt>
-                  <dd>
-                    <Link
-                      href={`/category/${tool.category.slug}`}
-                      style={{ color: 'var(--ink)', fontWeight: 600 }}
-                    >
-                      {tool.category.name}
-                    </Link>
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-        </aside>
-      </div>
+                <span style={{ color: 'var(--red)', fontWeight: 700, lineHeight: 1.55 }}>·</span>
+                <span>{uc}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
-      {/* ── Recommended Tools ───────────────────────────────────── */}
-      {recommended.length > 0 && (
-        <div style={{ marginTop: 56 }}>
-          <ToolsCarousel tools={recommended} title="Recommended Tools" />
+      {/* ── Featured Tools — inline logo+name links (excludes current tool) ── */}
+      {spotlight.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '6px 10px',
+            paddingTop: 20,
+            borderTop: '1px solid var(--rule)',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: 'var(--fs-tag)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.22em',
+              color: 'var(--ink-muted)',
+              marginRight: 4,
+            }}
+          >
+            Featured Tools:
+          </span>
+          {spotlightShown.map((t, i) => (
+            <span
+              key={t.id}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontFamily: 'var(--body)',
+                fontSize: 'var(--fs-body)',
+              }}
+            >
+              <Link
+                href={`/product/${t.slug}`}
+                className="ft-link"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: 'var(--ink)',
+                  textDecoration: 'none',
+                  transition: 'color 160ms ease',
+                }}
+              >
+                {t.logoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={t.logoUrl}
+                    alt=""
+                    style={{
+                      width: 14,
+                      height: 14,
+                      objectFit: 'contain',
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                <span className="ft-link-name">{t.name}</span>
+              </Link>
+              {(i < spotlightShown.length - 1 || spotlightOverflow > 0) && (
+                <span style={{ color: 'var(--ink-muted)', marginLeft: 4 }}>·</span>
+              )}
+            </span>
+          ))}
+          {spotlightOverflow > 0 && (
+            <Link
+              href="/all-categories"
+              className="ft-link"
+              style={{
+                fontFamily: 'var(--body)',
+                fontSize: 'var(--fs-body)',
+                color: 'var(--ink-muted)',
+                textDecoration: 'none',
+              }}
+            >
+              +{spotlightOverflow}
+            </Link>
+          )}
+          <style>{`
+            .ft-link:hover { color: var(--red); }
+            .ft-link-name {
+              border-bottom: 1px solid var(--rule);
+              padding-bottom: 1px;
+              transition: border-color 160ms ease;
+            }
+            .ft-link:hover .ft-link-name { border-color: var(--red); }
+          `}</style>
         </div>
       )}
     </div>

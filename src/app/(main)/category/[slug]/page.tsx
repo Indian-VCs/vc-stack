@@ -3,12 +3,10 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
-import PricingFilter from '@/components/filters/PricingFilter'
-import type { PricingModel } from '@/lib/types'
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ pricing?: string; page?: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,16 +28,12 @@ export const revalidate = 3600
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { pricing, page: pageStr } = await searchParams
+  const { page: pageStr } = await searchParams
   const page = Number(pageStr ?? 1)
 
   const [category, result] = await Promise.all([
     getCategoryBySlug(slug),
-    getToolsByCategory(slug, {
-      pricing: (pricing as PricingModel) || undefined,
-      page,
-      pageSize: 24,
-    }),
+    getToolsByCategory(slug, { page, pageSize: 24 }),
   ])
 
   if (!category) notFound()
@@ -145,69 +139,58 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       )}
 
-      {/* Filters + Grid */}
-      <div style={{ display: 'grid', gap: 32 }} className="lg:grid-cols-[200px_1fr]">
-        <aside>
-          <PricingFilter currentPricing={pricing} basePath={`/category/${slug}`} />
-        </aside>
-
-        <div>
-          {tools.length === 0 ? (
-            <div className="empty">
-              <p style={{ fontFamily: 'var(--serif)', fontSize: '1.2rem', marginBottom: 6 }}>
-                No tools in this beat yet.
-              </p>
-              <p style={{ fontSize: 'var(--fs-body)' }}>Try removing filters.</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid gap-0 sm:grid-cols-2 xl:grid-cols-3">
-                {tools.map((tool, i) => (
-                  <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
-                    <ToolCard tool={tool} index={i} />
-                  </div>
-                ))}
+      {tools.length === 0 ? (
+        <div className="empty">
+          <p style={{ fontFamily: 'var(--serif)', fontSize: '1.2rem', marginBottom: 6 }}>
+            No tools in this beat yet.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {tools.map((tool, i) => (
+              <div key={tool.id} style={{ marginLeft: -1, marginTop: -1 }}>
+                <ToolCard tool={tool} index={i} />
               </div>
+            ))}
+          </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div
+          {totalPages > 1 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 4,
+                marginTop: 32,
+                fontFamily: 'var(--mono)',
+                fontSize: 'var(--fs-btn)',
+              }}
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <Link
+                  key={p}
+                  href={`/category/${slug}?page=${p}`}
                   style={{
                     display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 4,
-                    marginTop: 32,
-                    fontFamily: 'var(--mono)',
-                    fontSize: 'var(--fs-btn)',
+                    width: 32,
+                    height: 32,
+                    border: '1px solid var(--rule)',
+                    textDecoration: 'none',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    background: p === page ? 'var(--ink)' : 'var(--paper)',
+                    color: p === page ? 'var(--paper)' : 'var(--ink-light)',
                   }}
                 >
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                    <Link
-                      key={p}
-                      href={`/category/${slug}?page=${p}${pricing ? `&pricing=${pricing}` : ''}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 32,
-                        height: 32,
-                        border: '1px solid var(--rule)',
-                        textDecoration: 'none',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.1em',
-                        background: p === page ? 'var(--ink)' : 'var(--paper)',
-                        color: p === page ? 'var(--paper)' : 'var(--ink-light)',
-                      }}
-                    >
-                      {p}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </>
+                  {p}
+                </Link>
+              ))}
+            </div>
           )}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   )
 }

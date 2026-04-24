@@ -1,121 +1,114 @@
 import Link from 'next/link'
 
-type FooterLink = { label: string; href: string; external?: boolean }
-
-const COLS: Record<string, FooterLink[]> = {
-  'The Paper': [
-    { label: 'Home',           href: '/' },
-    { label: 'All Categories', href: '/all-categories' },
-    { label: 'Market Map',     href: '/market-map' },
-    { label: 'VC HUB',           href: 'https://hub.indianvcs.com/', external: true },
-    { label: 'Newsletter',     href: 'https://hub.indianvcs.com/newsletter', external: true },
-  ],
-  Masthead: [
-    { label: 'About',   href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Privacy', href: '/privacy-policy' },
-  ],
-}
+const SOCIAL: { label: string; href: string; icon: React.ReactNode }[] = [
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/indianvcs',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.34V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'X',
+    href: 'https://x.com/IndianVCs',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.24 2.25h3.31l-7.23 8.27L22.86 21.75h-6.68l-5.23-6.84-5.99 6.84H1.65l7.74-8.85L1.14 2.25h6.84l4.73 6.26 5.53-6.26zm-1.16 17.52h1.83L7.03 4.14H5.07l12 15.63z"/>
+      </svg>
+    ),
+  },
+]
 
 export default function Footer() {
-  const year = new Date().getFullYear()
-
   return (
     <footer
       style={{
         background: 'var(--paper)',
-        borderTop: '3px double var(--ink)',
-        marginTop: 64,
+        color: 'var(--ink)',
+        borderTop: '1px solid var(--rule)',
+        marginTop: 48,
       }}
     >
-      <div className="page" style={{ padding: '48px 24px 24px' }}>
-        {/* Brand mini-masthead */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div
-            style={{
-              fontFamily: 'var(--serif)',
-              fontWeight: 900,
-              fontSize: '2rem',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: 'var(--ink)',
-              lineHeight: 1,
-            }}
-          >
-            IndianVCs
-          </div>
-          <p
-            style={{
-              fontFamily: 'var(--body)',
-              fontSize: 'var(--fs-body)',
-              color: 'var(--ink-muted)',
-              marginTop: 12,
-              fontStyle: 'italic',
-            }}
-          >
-            The venture capital tool stack, in print.
-          </p>
-        </div>
-
-        {/* Link columns */}
-        <div
-          className="grid grid-cols-2 gap-8"
+      <div
+        className="page"
+        style={{
+          padding: '14px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link
+          href="/"
           style={{
-            borderTop: '1px solid var(--rule)',
-            borderBottom: '1px solid var(--rule)',
-            padding: '32px 0',
+            fontFamily: 'var(--serif)',
+            fontWeight: 900,
+            fontSize: '1rem',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'var(--ink)',
+            textDecoration: 'none',
+            lineHeight: 1,
           }}
         >
-          {Object.entries(COLS).map(([section, links]) => (
-            <div key={section}>
-              <div className="section-header" style={{ marginBottom: 12, paddingBottom: 4 }}>
-                {section}
-              </div>
-              <ul style={{ listStyle: 'none' }}>
-                {links.map((link) => {
-                  const style = {
-                    fontFamily: 'var(--body)',
-                    fontSize: 'var(--fs-body)',
-                    color: 'var(--ink-light)',
-                    textDecoration: 'none',
-                  } as const
-                  return (
-                    <li key={link.label} style={{ padding: '4px 0' }}>
-                      {link.external ? (
-                        <a href={link.href} target="_blank" rel="noopener noreferrer" style={style}>
-                          {link.label} ↗
-                        </a>
-                      ) : (
-                        <Link href={link.href} style={style}>{link.label}</Link>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
+          IndianVCs
+        </Link>
 
-        {/* Bottom bar */}
         <div
           style={{
-            paddingTop: 20,
             display: 'flex',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 12,
+            alignItems: 'center',
+            gap: 18,
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
             textTransform: 'uppercase',
-            letterSpacing: '0.18em',
-            color: 'var(--ink-muted)',
+            letterSpacing: '0.16em',
           }}
         >
-          <span>© {year} IndianVCs</span>
-          <span>Printed in India · Est. 2026</span>
-          <span>All rights reserved</span>
+          <Link href="/privacy-policy" className="ftr-link">Privacy</Link>
+          <Link href="/terms" className="ftr-link">Terms</Link>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          {SOCIAL.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+              className="ftr-social"
+            >
+              {s.icon}
+            </a>
+          ))}
         </div>
       </div>
+
+      <style>{`
+        .ftr-link {
+          color: var(--ink-muted);
+          text-decoration: none;
+          transition: color 160ms ease;
+        }
+        .ftr-link:hover { color: var(--ink); }
+
+        .ftr-social {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 26px;
+          height: 26px;
+          color: var(--ink-muted);
+          text-decoration: none;
+          transition: color 160ms ease;
+        }
+        .ftr-social:hover { color: var(--ink); }
+      `}</style>
     </footer>
   )
 }

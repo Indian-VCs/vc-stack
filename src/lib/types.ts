@@ -33,6 +33,8 @@ export interface Tool {
   slug: string
   description: string
   shortDesc?: string | null
+  /** Short VC-oriented use-case bullets rendered on the tool detail page. */
+  useCases?: string[]
   websiteUrl: string
   logoUrl?: string | null
   screenshotUrl?: string | null

@@ -248,15 +248,12 @@ export default function ToolCard({ tool, variant = 'default', index }: ToolCardP
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           paddingTop: 12,
           borderTop: '1px solid var(--rule)',
         }}
       >
-        <span className={PRICING_TAG[tool.pricingModel] ?? 'tag'}>
-          {PRICING_LABELS[tool.pricingModel] ?? tool.pricingModel}
-        </span>
         <a
           href={tool.websiteUrl}
           target="_blank"
