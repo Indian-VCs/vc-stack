@@ -2,6 +2,21 @@ export type PricingModel = 'FREE' | 'FREEMIUM' | 'PAID' | 'ENTERPRISE'
 export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type UserRole = 'USER' | 'ADMIN'
 
+export interface BuyingCriterion {
+  label: string
+  description: string
+}
+
+export interface CategoryFAQ {
+  question: string
+  answer: string
+}
+
+export interface TopPick {
+  slug: string
+  rationale: string
+}
+
 export interface Category {
   id: string
   name: string
@@ -11,6 +26,16 @@ export interface Category {
   imageUrl?: string | null
   _count?: { tools: number }
   subCategories?: SubCategory[]
+
+  /** pSEO content — see docs/pseo-strategy.md */
+  intro?: string | null
+  buyingCriteria?: BuyingCriterion[] | null
+  faqs?: CategoryFAQ[] | null
+  topPicks?: TopPick[] | null
+  relatedSlugs?: string[] | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  heroAngle?: string | null
 }
 
 export interface SubCategory {

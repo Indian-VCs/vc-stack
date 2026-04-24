@@ -6,6 +6,11 @@ import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data
 import ToolCard from '@/components/cards/ToolCard'
 import CategoryControls from '@/components/ui/CategoryControls'
 import Pagination from '@/components/ui/Pagination'
+import CategoryIntro from '@/components/category/CategoryIntro'
+import BuyingCriteria from '@/components/category/BuyingCriteria'
+import TopPicks from '@/components/category/TopPicks'
+import CategoryFAQ from '@/components/category/CategoryFAQ'
+import RelatedCategories from '@/components/category/RelatedCategories'
 import type { PricingModel, SortOrder } from '@/lib/types'
 
 const VALID_PRICING = new Set(['FREE', 'FREEMIUM', 'PAID', 'ENTERPRISE'])
@@ -23,10 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const path = `/vc-stack/category/${category.slug}`
   const url = `https://www.indianvcs.com${path}`
   const count = category._count?.tools ?? 0
+  // pSEO overrides come first; fall back to the count-based template.
+  const title = category.seoTitle ?? `${category.name} Tools for VCs — ${count}+ curated`
   const description =
+    category.seoDescription ??
+    category.heroAngle ??
     category.description ??
     `Browse ${count} ${category.name} tools used by Indian venture capital firms.`
-  const title = `${category.name} Tools for VCs — ${count}+ curated`
   return {
     title,
     description,
@@ -82,45 +90,57 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { data: tools, total, totalPages } = result
   const totalUnfiltered = unfilteredResult?.total ?? total
 
+  const allCategories = category.faqs || category.relatedSlugs ? await getCategories() : []
+
   const categoryUrl = `https://www.indianvcs.com/vc-stack/category/${category.slug}`
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'CollectionPage',
-        '@id': `${categoryUrl}#page`,
-        url: categoryUrl,
-        name: `${category.name} tools for VCs`,
-        description:
-          category.description ??
-          `Curated ${category.name} tools used by Indian venture capital firms.`,
-        isPartOf: { '@id': 'https://www.indianvcs.com/#website' },
-        mainEntity: {
-          '@type': 'ItemList',
-          numberOfItems: total,
-          itemListElement: tools.map((t, i) => ({
-            '@type': 'ListItem',
-            position: i + 1,
-            name: t.name,
-            url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
-          })),
+  type JsonLdNode = Record<string, unknown>
+  const graph: JsonLdNode[] = [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${categoryUrl}#page`,
+      url: categoryUrl,
+      name: `${category.name} tools for VCs`,
+      description:
+        category.heroAngle ??
+        category.description ??
+        `Curated ${category.name} tools used by Indian venture capital firms.`,
+      isPartOf: { '@id': 'https://www.indianvcs.com/#website' },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: total,
+        itemListElement: tools.map((t, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: t.name,
+          url: `https://www.indianvcs.com/vc-stack/product/${t.slug}`,
+        })),
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'All Categories',
+          item: 'https://www.indianvcs.com/vc-stack/all-categories',
         },
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.indianvcs.com/vc-stack' },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'All Categories',
-            item: 'https://www.indianvcs.com/vc-stack/all-categories',
-          },
-          { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
-        ],
-      },
-    ],
+        { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
+      ],
+    },
+  ]
+  if (category.faqs && category.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: category.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    })
   }
+  const jsonLd = { '@context': 'https://schema.org', '@graph': graph }
 
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
@@ -173,7 +193,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         >
           {category.name}
         </h1>
-        {category.description && (
+        {(category.heroAngle ?? category.description) && (
           <p
             style={{
               fontFamily: 'var(--body)',
@@ -185,7 +205,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               fontStyle: 'italic',
             }}
           >
-            {category.description}
+            {category.heroAngle ?? category.description}
           </p>
         )}
         <div
@@ -201,6 +221,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           {totalUnfiltered} {totalUnfiltered === 1 ? 'tool' : 'tools'} in this beat
         </div>
       </header>
+
+      {/* pSEO sections — silently skip when the category has no content */}
+      <CategoryIntro intro={category.intro} />
+      <BuyingCriteria criteria={category.buyingCriteria} categoryName={category.name} />
+      <TopPicks picks={category.topPicks} tools={tools} categoryName={category.name} />
 
       <CategoryControls
         basePath={`/category/${slug}`}
@@ -273,6 +298,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           />
         </>
       )}
+
+      <CategoryFAQ faqs={category.faqs} categoryName={category.name} />
+      <RelatedCategories
+        relatedSlugs={category.relatedSlugs}
+        allCategories={allCategories}
+        currentSlug={category.slug}
+      />
     </div>
   )
 }
