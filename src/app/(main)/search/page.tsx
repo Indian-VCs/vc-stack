@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { searchTools } from '@/lib/data'
+import { searchTools, getAllTools } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
 import SearchBox from '@/components/ui/SearchBox'
+import Pagination from '@/components/ui/Pagination'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -17,13 +18,13 @@ export default async function SearchPage({ searchParams }: Props) {
   const { q = '', page: pageStr } = await searchParams
   const page = Number(pageStr ?? 1)
 
-  const result = await searchTools({
-    query: q,
-    page,
-    pageSize: 24,
-  })
+  const [result, allTools] = await Promise.all([
+    searchTools({ query: q, page, pageSize: 24 }),
+    getAllTools(),
+  ])
 
   const { data: tools, total, totalPages } = result
+  const totalInCorpus = allTools.length
 
   return (
     <div className="page" style={{ padding: '24px 24px 48px' }}>
@@ -63,7 +64,7 @@ export default async function SearchPage({ searchParams }: Props) {
             marginBottom: 16,
           }}
         >
-          {q ? `Results for “${q}”` : 'Search the paper'}
+          {q ? `Results for “${q}”` : `Search across ${totalInCorpus} tools`}
         </h1>
         <SearchBox defaultValue={q} />
         <p
@@ -98,38 +99,11 @@ export default async function SearchPage({ searchParams }: Props) {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 4,
-                marginTop: 32,
-                fontFamily: 'var(--mono)',
-                fontSize: 'var(--fs-btn)',
-              }}
-            >
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Link
-                  key={p}
-                  href={`/search?${q ? `q=${encodeURIComponent(q)}&` : ''}page=${p}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 32,
-                    height: 32,
-                    border: '1px solid var(--rule)',
-                    textDecoration: 'none',
-                    background: p === page ? 'var(--ink)' : 'var(--paper)',
-                    color: p === page ? 'var(--paper)' : 'var(--ink-light)',
-                  }}
-                >
-                  {p}
-                </Link>
-              ))}
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefFor={(p) => `/search?${q ? `q=${encodeURIComponent(q)}&` : ''}page=${p}`}
+          />
         </>
       )}
     </div>

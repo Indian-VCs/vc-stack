@@ -4,10 +4,16 @@ import Link from 'next/link'
 import Script from 'next/script'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
 import ToolCard from '@/components/cards/ToolCard'
+import CategoryControls from '@/components/ui/CategoryControls'
+import Pagination from '@/components/ui/Pagination'
+import type { PricingModel, SortOrder } from '@/lib/types'
+
+const VALID_PRICING = new Set(['FREE', 'FREEMIUM', 'PAID', 'ENTERPRISE'])
+const VALID_SORT = new Set<SortOrder>(['featured', 'alpha', 'reviews'])
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; pricing?: string; sort?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -51,17 +57,30 @@ export const revalidate = 3600
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { page: pageStr } = await searchParams
-  const page = Number(pageStr ?? 1)
+  const { page: pageStr, pricing: pricingStr, sort: sortStr } = await searchParams
+  const rawPage = Number(pageStr ?? 1)
+  const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1
+  const pricing = VALID_PRICING.has(pricingStr ?? '')
+    ? (pricingStr as PricingModel)
+    : ''
+  const sort: SortOrder = VALID_SORT.has(sortStr as SortOrder)
+    ? (sortStr as SortOrder)
+    : 'featured'
 
-  const [category, result] = await Promise.all([
+  const [category, result, unfilteredResult] = await Promise.all([
     getCategoryBySlug(slug),
-    getToolsByCategory(slug, { page, pageSize: 24 }),
+    getToolsByCategory(slug, { page, pageSize: 24, pricing, sort }),
+    // When filtered, we also fetch the unfiltered count to show "N of M".
+    // Skipped when no filter applied (same total either way).
+    pricing
+      ? getToolsByCategory(slug, { page: 1, pageSize: 1, sort })
+      : Promise.resolve(null),
   ])
 
   if (!category) notFound()
 
   const { data: tools, total, totalPages } = result
+  const totalUnfiltered = unfilteredResult?.total ?? total
 
   const categoryUrl = `https://indianvcs.com/vc-stack/category/${category.slug}`
   const jsonLd = {
@@ -179,9 +198,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             marginTop: 14,
           }}
         >
-          {total} {total === 1 ? 'tool' : 'tools'} in this beat
+          {totalUnfiltered} {totalUnfiltered === 1 ? 'tool' : 'tools'} in this beat
         </div>
       </header>
+
+      <CategoryControls
+        basePath={`/category/${slug}`}
+        pricing={pricing}
+        sort={sort}
+        filteredCount={total}
+        totalCount={totalUnfiltered}
+      />
 
       {/* Subcategory tabs */}
       {category.subCategories && category.subCategories.length > 0 && (
@@ -211,9 +238,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       {tools.length === 0 ? (
         <div className="empty">
-          <p style={{ fontFamily: 'var(--serif)', fontSize: '1.2rem', marginBottom: 6 }}>
-            No tools in this beat yet.
+          <p style={{ fontFamily: 'var(--serif)', fontSize: '1.2rem', marginBottom: 10 }}>
+            {pricing
+              ? `No ${pricing.toLowerCase()} tools in this beat yet.`
+              : 'No tools in this beat yet.'}
           </p>
+          {pricing && (
+            <Link href={`/category/${slug}`} className="btn btn--ghost">
+              Clear filter
+            </Link>
+          )}
         </div>
       ) : (
         <>
@@ -225,40 +259,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 4,
-                marginTop: 32,
-                fontFamily: 'var(--mono)',
-                fontSize: 'var(--fs-btn)',
-              }}
-            >
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Link
-                  key={p}
-                  href={`/category/${slug}?page=${p}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 32,
-                    height: 32,
-                    border: '1px solid var(--rule)',
-                    textDecoration: 'none',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    background: p === page ? 'var(--ink)' : 'var(--paper)',
-                    color: p === page ? 'var(--paper)' : 'var(--ink-light)',
-                  }}
-                >
-                  {p}
-                </Link>
-              ))}
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefFor={(p) => {
+              const qs = new URLSearchParams()
+              if (pricing) qs.set('pricing', pricing)
+              if (sort !== 'featured') qs.set('sort', sort)
+              if (p !== 1) qs.set('page', String(p))
+              const str = qs.toString()
+              return str ? `/category/${slug}?${str}` : `/category/${slug}`
+            }}
+          />
         </>
       )}
     </div>

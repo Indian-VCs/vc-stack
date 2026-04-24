@@ -65,112 +65,106 @@ export default function CategoryCard({
   const chips = previewTools.slice(0, 6)
 
   return (
-    <Link
-      href={`/category/${category.slug}`}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-        background: 'var(--paper)',
-        border: '1px solid var(--rule)',
-        padding: 20,
-        textDecoration: 'none',
-        transition: 'all var(--dur-fast)',
-        height: '100%',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--ink)'
-        e.currentTarget.style.background = 'var(--paper-dark)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--rule)'
-        e.currentTarget.style.background = 'var(--paper)'
-      }}
-    >
-      <h3
-        style={{
-          fontFamily: 'var(--serif)',
-          fontSize: 'var(--fs-hero)',
-          fontWeight: 700,
-          color: 'var(--ink)',
-          lineHeight: 1.15,
-          margin: 0,
-        }}
-      >
-        {category.name}
-      </h3>
+    <Link href={`/category/${category.slug}`} className="cat-card">
+      <h3 className="cat-card-title">{category.name}</h3>
 
       {category.description && (
-        <p
-          style={{
-            fontFamily: 'var(--body)',
-            fontSize: 'var(--fs-body)',
-            color: 'var(--ink-light)',
-            lineHeight: 1.45,
-            margin: 0,
-            display: '-webkit-box',
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {category.description}
-        </p>
+        <p className="cat-card-desc">{category.description}</p>
       )}
 
       {chips.length > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            gap: 6,
-            flexWrap: 'wrap',
-            marginTop: 'auto',
-            paddingTop: 12,
-          }}
-        >
+        <div className="cat-card-chips">
           {chips.map((t) => (
-            <span
-              key={t.name}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                fontFamily: 'var(--mono)',
-                fontSize: 'var(--fs-tag)',
-                color: 'var(--ink-muted)',
-                padding: '3px 7px',
-                border: '1px solid var(--rule)',
-                background: 'var(--paper)',
-              }}
-            >
+            <span key={t.name} className="cat-card-chip">
               {t.logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={t.logoUrl}
                   alt=""
                   style={{ width: 14, height: 14, objectFit: 'contain' }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none'
+                  }}
                 />
               )}
               {t.name}
             </span>
           ))}
           {toolCount > chips.length && (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                fontFamily: 'var(--mono)',
-                fontSize: 'var(--fs-tag)',
-                color: 'var(--ink-muted)',
-                padding: '3px 7px',
-              }}
-            >
-              +{toolCount - chips.length}
-            </span>
+            <span className="cat-card-more">+{toolCount - chips.length}</span>
           )}
         </div>
       )}
+
+      <style jsx>{`
+        .cat-card {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          background: var(--paper);
+          border: 1px solid var(--rule);
+          padding: 20px;
+          text-decoration: none;
+          transition: border-color var(--dur-fast), background var(--dur-fast);
+          height: 100%;
+        }
+        .cat-card:hover,
+        .cat-card:focus-visible {
+          border-color: var(--ink);
+          background: var(--paper-dark);
+        }
+        .cat-card:focus-visible {
+          outline: 2px solid var(--red);
+          outline-offset: 2px;
+        }
+        .cat-card-title {
+          font-family: var(--serif);
+          font-size: var(--fs-hero);
+          font-weight: 700;
+          color: var(--ink);
+          line-height: 1.15;
+          margin: 0;
+        }
+        .cat-card-desc {
+          font-family: var(--body);
+          font-size: var(--fs-body);
+          color: var(--ink-light);
+          line-height: 1.45;
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .cat-card-chips {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+          margin-top: auto;
+          padding-top: 12px;
+        }
+        .cat-card-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-family: var(--mono);
+          font-size: var(--fs-tag);
+          color: var(--ink-muted);
+          padding: 3px 7px;
+          border: 1px solid var(--rule);
+          background: var(--paper);
+        }
+        .cat-card-more {
+          display: inline-flex;
+          align-items: center;
+          font-family: var(--mono);
+          font-size: var(--fs-tag);
+          color: var(--ink-muted);
+          padding: 3px 7px;
+        }
+      `}</style>
     </Link>
   )
 }

@@ -38,6 +38,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+const PRICING_LABEL: Record<string, string> = {
+  FREE: 'Free',
+  FREEMIUM: 'Freemium',
+  PAID: 'Paid',
+  ENTERPRISE: 'Enterprise',
+}
+
+const PRICING_TAG: Record<string, string> = {
+  FREE: 'tag tag--positive',
+  FREEMIUM: 'tag',
+  PAID: 'tag',
+  ENTERPRISE: 'tag tag--solid',
+}
+
+function domainFor(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
 export default async function ToolDetailPage({ params }: Props) {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
@@ -47,6 +69,8 @@ export default async function ToolDetailPage({ params }: Props) {
   const FEATURED_CAP = 5
   const spotlightShown = spotlight.slice(0, FEATURED_CAP)
   const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
+  const reviewCount = tool._count?.reviews ?? tool.reviews?.length ?? 0
+  const domain = domainFor(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
   const toolUrl = `https://indianvcs.com/vc-stack/product/${tool.slug}`
@@ -133,7 +157,6 @@ export default async function ToolDetailPage({ params }: Props) {
           borderTop: '2px solid var(--ink)',
           borderBottom: '1px solid var(--ink)',
           padding: '22px 0',
-          marginBottom: 32,
         }}
       >
         <div className="tool-head-row">
@@ -220,6 +243,63 @@ export default async function ToolDetailPage({ params }: Props) {
           }
         `}</style>
       </header>
+
+      {/* ── Dateline meta strip (pricing · domain · reviews · tags) ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '8px 14px',
+          fontFamily: 'var(--mono)',
+          fontSize: 'var(--fs-tag)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.14em',
+          color: 'var(--ink-muted)',
+          marginTop: 14,
+          marginBottom: 28,
+          paddingBottom: 16,
+          borderBottom: '1px solid var(--rule)',
+        }}
+      >
+        <span className={PRICING_TAG[tool.pricingModel] ?? 'tag'}>
+          {PRICING_LABEL[tool.pricingModel] ?? tool.pricingModel}
+        </span>
+        {tool.isFeatured && (
+          <span className="tag tag--accent">Featured</span>
+        )}
+        <span>
+          <span style={{ color: 'var(--ink-muted)' }}>Site · </span>
+          <a
+            href={tool.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--ink)',
+              textDecoration: 'none',
+              borderBottom: '1px solid var(--rule)',
+              textTransform: 'lowercase',
+              letterSpacing: '0',
+              fontFamily: 'var(--body)',
+            }}
+          >
+            {domain}
+          </a>
+        </span>
+        <span>
+          <span style={{ color: 'var(--ink-muted)' }}>Reviews · </span>
+          <span style={{ color: 'var(--ink)' }}>
+            {reviewCount > 0 ? `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}` : 'None yet'}
+          </span>
+        </span>
+        {tool.tags && tool.tags.length > 0 && (
+          <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+            {tool.tags.slice(0, 6).map((t) => (
+              <span key={t.id} className="tag">{t.name}</span>
+            ))}
+          </span>
+        )}
+      </div>
 
       {/* ── Description (full width, compact section, larger font) ─── */}
       <article style={{ marginBottom: 32 }}>
