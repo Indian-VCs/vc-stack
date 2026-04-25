@@ -26,7 +26,20 @@ export type SeedResult =
   | { ok: true; categories: number; tools: number; featured: number }
   | { ok: false; message: string }
 
+// Outermost wrapper: ensures NOTHING this action does ever throws past the
+// boundary into Next.js's framework code, so the user always sees a structured
+// error message instead of React's masked "Server Components render" error.
 export async function seedFromStaticCatalog(): Promise<SeedResult> {
+  try {
+    return await seedImpl()
+  } catch (err) {
+    const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+    console.error('[seed] uncaught', { message, err })
+    return { ok: false, message: `Seed failed (uncaught): ${message.slice(0, 400)}` }
+  }
+}
+
+async function seedImpl(): Promise<SeedResult> {
   let admin: { email: string }
   try {
     admin = await requireAdminAction()
@@ -34,16 +47,11 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
     if (err instanceof NotAuthenticatedError) {
       return { ok: false, message: 'Sign in again.' }
     }
-    throw err
+    const message = err instanceof Error ? err.message : String(err)
+    return { ok: false, message: `Auth failed: ${message.slice(0, 400)}` }
   }
 
-  try {
-    return await runSeed(admin)
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    console.error('[seed] failed', { message, err })
-    return { ok: false, message: `Seed failed: ${message.slice(0, 400)}` }
-  }
+  return await runSeed(admin)
 }
 
 async function runSeed(admin: { email: string }): Promise<SeedResult> {
@@ -106,10 +114,23 @@ async function runOnD1(seedSql: string): Promise<void> {
   const ctx = await getCloudflareContext({ async: true })
   const d1 = (ctx.env as { DB?: D1Database }).DB
   if (!d1) throw new Error('D1 binding `DB` is missing — check wrangler.jsonc')
-  // D1's exec() runs a multi-statement string in a single round-trip. Right
-  // tool here: ~120 inserts in one transaction, no per-statement overhead,
-  // no prepared-statement parameter ceiling.
-  await d1.exec(seedSql)
+
+  // Split the multi-statement string into prepared statements and submit via
+  // batch(). batch() is the production-grade D1 path: each statement runs in
+  // a single transaction, the API supports up to 100 statements per call,
+  // and parsing is per-statement (no fragile newline-splitting).
+  const lines = seedSql
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith('--'))
+
+  const statements = lines.map((line) => d1.prepare(line))
+  const CHUNK = 50
+  for (let i = 0; i < statements.length; i += CHUNK) {
+    const chunk = statements.slice(i, i + CHUNK)
+    if (chunk.length === 0) continue
+    await d1.batch(chunk as [D1PreparedStatement, ...D1PreparedStatement[]])
+  }
 }
 
 async function runOnSqliteDev(seedSql: string): Promise<void> {
