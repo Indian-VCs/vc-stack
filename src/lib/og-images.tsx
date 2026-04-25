@@ -1,7 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- next/og ImageResponse renders remote logos with raw img tags. */
 import { ImageResponse } from 'next/og'
-import { getCategoryBySlug, getToolBySlug, getToolsByCategory } from '@/lib/data'
+import {
+  getAllTools,
+  getCanonicalStats,
+  getCategories,
+  getCategoryBySlug,
+  getToolBySlug,
+  getToolsByCategory,
+} from '@/lib/data'
 import { OG_IMAGE_SIZE } from '@/lib/site'
+import type { Tool } from '@/lib/types'
 
 function BrandMark({ size = 36 }: { size?: number }) {
   return (
@@ -54,7 +62,190 @@ function FallbackImage() {
   )
 }
 
-export function renderSiteOgImage() {
+// ── Site OG: market-map poster ─────────────────────────────────────────
+// Matches the homepage `MarketMapPosterMini` aesthetic — same 5-column
+// landscape, dark category-header bars, tool pills. Uses initial badges
+// instead of remote logo fetches so Satori renders fast.
+
+const LEFT_COLS_OG: string[][] = [
+  ['ai', 'mailing', 'calendar', 'admin-ops', 'productivity'],
+  ['crm', 'research', 'browser'],
+  ['data', 'communication', 'portfolio-management', 'vibe-coding'],
+]
+const RIGHT_TOP_COLS_OG: string[][] = [
+  ['transcription', 'voice-to-text'],
+  ['news'],
+]
+const RIGHT_BOTTOM_STACK_OG: string[] = ['automation', 'other-tools']
+const WIDE_PILL_CATS_OG: Record<string, number> = {
+  'automation': 3,
+  'other-tools': 3,
+}
+
+const FALLBACK_SHADES_OG = [
+  '#1a1410', '#2f271f', '#3a322a', '#524a3c',
+  '#5a4731', '#6b5a3f', '#a41204', '#d21905',
+]
+
+function shadeFor(name: string): string {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
+  return FALLBACK_SHADES_OG[Math.abs(h) % FALLBACK_SHADES_OG.length]
+}
+
+function initialsFor(name: string): string {
+  const w = name.trim().split(/\s+/)
+  return w.length === 1
+    ? w[0].substring(0, 2).toUpperCase()
+    : (w[0][0] + w[1][0]).toUpperCase()
+}
+
+function PillOG({ tool }: { tool: Tool }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+        border: '1px solid #c8bfb0',
+        borderRadius: 3,
+        padding: '2px 4px',
+        background: '#F5F0E8',
+        minWidth: 0,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 12,
+          height: 12,
+          background: shadeFor(tool.name),
+          color: '#F5F0E8',
+          fontSize: 7,
+          fontWeight: 700,
+          flexShrink: 0,
+        }}
+      >
+        {initialsFor(tool.name)}
+      </div>
+      <div
+        style={{
+          fontSize: 9,
+          fontWeight: 500,
+          color: '#1a1410',
+          lineHeight: 1,
+          overflow: 'hidden',
+        }}
+      >
+        {tool.name.length > 11 ? `${tool.name.slice(0, 10)}…` : tool.name}
+      </div>
+    </div>
+  )
+}
+
+function CardOG({
+  name,
+  tools,
+  pillCols = 2,
+}: {
+  name: string
+  tools: Tool[]
+  pillCols?: number
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#F5F0E8',
+        border: '1px solid #1a1410',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          background: '#1a1410',
+          padding: '3px 6px',
+        }}
+      >
+        <div
+          style={{
+            fontSize: 8,
+            fontWeight: 700,
+            letterSpacing: '0.16em',
+            color: '#F5F0E8',
+            textTransform: 'uppercase',
+          }}
+        >
+          {name}
+        </div>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 3,
+          padding: '4px 5px 5px',
+          background: '#ede7db',
+        }}
+      >
+        {tools.map((t) => (
+          <div
+            key={t.id}
+            style={{
+              display: 'flex',
+              width: `calc((100% - ${(pillCols - 1) * 3}px) / ${pillCols})`,
+            }}
+          >
+            <PillOG tool={t} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export async function renderSiteOgImage() {
+  const [categories, tools, stats] = await Promise.all([
+    getCategories(),
+    getAllTools(),
+    getCanonicalStats(),
+  ])
+
+  // Group tools by category slug, mirroring MarketMapPoster.
+  const bySlug: Record<string, Tool[]> = {}
+  const slugToName: Record<string, string> = {}
+  for (const c of categories) slugToName[c.slug] = c.name
+  for (const t of tools) {
+    const all = [t.category?.slug, ...(t.extraCategorySlugs ?? [])].filter(Boolean) as string[]
+    for (const slug of all) {
+      if (!bySlug[slug]) bySlug[slug] = []
+      bySlug[slug].push(t)
+    }
+  }
+  Object.values(bySlug).forEach((list) =>
+    list.sort((a, b) =>
+      Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
+    ),
+  )
+
+  const renderCard = (slug: string) => {
+    const list = bySlug[slug]
+    if (!list || list.length === 0) return null
+    return (
+      <CardOG
+        key={slug}
+        name={slugToName[slug] || slug}
+        tools={list}
+        pillCols={WIDE_PILL_CATS_OG[slug] ?? 2}
+      />
+    )
+  }
+
   return new ImageResponse(
     (
       <div
@@ -63,53 +254,105 @@ export function renderSiteOgImage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: '#F5F0E8',
-          padding: 80,
+          background: '#FBE2D6',
+          padding: '24px 32px',
           fontFamily: 'serif',
         }}
       >
-        <BrandMark />
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {/* Header strip — kicker + masthead title */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div
+              style={{
+                display: 'flex',
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '0.22em',
+                textTransform: 'uppercase',
+                color: '#D21905',
+                marginBottom: 4,
+              }}
+            >
+              The Market Map · 2026 Edition
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                fontSize: 44,
+                fontWeight: 900,
+                color: '#1a1410',
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              <span>The Indian VC&nbsp;</span>
+              <span style={{ color: '#D21905' }}>tech stack.</span>
+            </div>
+          </div>
           <div
             style={{
               display: 'flex',
-              fontSize: 96,
-              fontWeight: 900,
-              color: '#1a1410',
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            <span>The Indian VC&nbsp;</span>
-            <span style={{ color: '#D21905' }}>tech stack.</span>
-          </div>
-          <div
-            style={{
-              fontSize: 30,
+              fontSize: 12,
+              fontWeight: 600,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
               color: '#524a3c',
-              lineHeight: 1.3,
-              maxWidth: 900,
+              paddingBottom: 6,
             }}
           >
-            119+ tools across 17 categories — the complete playbook used by India&apos;s top venture capital firms.
+            {stats.totalTools} tools · {stats.totalCategories} categories
           </div>
         </div>
 
+        {/* Poster grid — left 3 cols + right block (right-top 2 cols, then 2 stacked banners) */}
+        <div style={{ display: 'flex', flex: 1, gap: 6, alignItems: 'flex-start', minHeight: 0 }}>
+          {LEFT_COLS_OG.map((catList, idx) => (
+            <div
+              key={`l${idx}`}
+              style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 6, minWidth: 0 }}
+            >
+              {catList.map((slug) => renderCard(slug))}
+            </div>
+          ))}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 2,
+              gap: 6,
+              minWidth: 0,
+            }}
+          >
+            <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+              {RIGHT_TOP_COLS_OG.map((catList, idx) => (
+                <div
+                  key={`r${idx}`}
+                  style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 6, minWidth: 0 }}
+                >
+                  {catList.map((slug) => renderCard(slug))}
+                </div>
+              ))}
+            </div>
+            {RIGHT_BOTTOM_STACK_OG.map((slug) => renderCard(slug))}
+          </div>
+        </div>
+
+        {/* Footer rule */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            fontSize: 22,
-            color: '#524a3c',
+            marginTop: 14,
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            letterSpacing: '0.14em',
+            color: '#524a3c',
           }}
         >
           <span>indianvcs.com/vc-stack</span>
-          <span>Curated 2026</span>
+          <span>The Indian VC stack · curated 2026</span>
         </div>
       </div>
     ),
