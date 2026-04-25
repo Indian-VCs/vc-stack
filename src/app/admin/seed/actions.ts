@@ -63,6 +63,16 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
     throw err
   }
 
+  try {
+    return await runSeed(admin)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[seed] failed', { message, err })
+    return { ok: false, message: `Seed failed: ${message.slice(0, 400)}` }
+  }
+}
+
+async function runSeed(admin: { email: string }): Promise<SeedResult> {
   const db = await getDb()
   const now = Date.now()
 
