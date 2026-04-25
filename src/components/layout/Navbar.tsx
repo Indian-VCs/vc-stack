@@ -81,7 +81,7 @@ export default function Navbar() {
   }, [showMobile])
 
   return (
-    <header style={{ background: 'var(--paper)', borderBottom: '1px solid var(--ink)', position: 'sticky', top: 0, zIndex: 100 }}>
+    <header style={{ background: 'var(--paper)', borderBottom: '1px solid var(--ink)', position: 'sticky', top: 0, zIndex: 100, paddingTop: 'env(safe-area-inset-top)' }}>
       {/* ── Nav rail ───────────────────────────────────────────────── */}
       <nav
         className="page nav-rail"
@@ -566,6 +566,7 @@ export default function Navbar() {
           all: unset;
           position: fixed;
           inset: 56px 0 0 0;
+          height: calc(100dvh - 56px);
           background: rgba(26, 20, 16, 0.35);
           z-index: 90;
           cursor: pointer;
@@ -579,9 +580,10 @@ export default function Navbar() {
           border-top: 1px solid var(--rule);
           border-bottom: 1px solid var(--ink);
           box-shadow: var(--shadow-soft);
-          padding: 18px 24px 28px;
+          padding: 18px 16px 28px;
           z-index: 95;
           max-height: calc(100vh - 56px);
+          max-height: calc(100dvh - 56px);
           overflow-y: auto;
           animation: nav-sheet-in 180ms var(--ease-out);
         }

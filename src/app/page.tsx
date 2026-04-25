@@ -31,7 +31,7 @@ export default async function HomePage() {
       <section
         className="page hero-grid"
         style={{
-          padding: '28px 24px 28px',
+          padding: '28px 0',
           borderBottom: '1px solid var(--rule)',
         }}
       >
@@ -41,7 +41,7 @@ export default async function HomePage() {
             style={{
               fontFamily: 'var(--serif)',
               fontWeight: 900,
-              fontSize: 'clamp(1.9rem, 3.4vw, 2.9rem)',
+              fontSize: 'clamp(1.9rem, 6vw, 2.9rem)',
               lineHeight: 1.05,
               color: 'var(--ink)',
               letterSpacing: '-0.02em',
@@ -107,7 +107,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Market Map (Tech Stack 2026 poster) ─────────────────── */}
-      <section className="page" style={{ padding: '48px 24px 48px' }}>
+      <section className="page" style={{ padding: '48px 0' }}>
         <div
           style={{
             display: 'flex',
@@ -148,12 +148,14 @@ export default async function HomePage() {
       </section>
 
       {/* ── Browse by Category ──────────────────────────────────── */}
-      <section className="page" style={{ padding: '12px 24px 48px', borderTop: '1px solid var(--rule)' }}>
+      <section className="page" style={{ padding: '12px 0 48px', borderTop: '1px solid var(--rule)' }}>
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'baseline',
+            flexWrap: 'wrap',
+            gap: 12,
             paddingTop: 24,
             marginBottom: 20,
           }}

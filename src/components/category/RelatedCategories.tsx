@@ -56,7 +56,7 @@ export default function RelatedCategories({ relatedSlugs, allCategories, current
               fontWeight: 600,
               color: 'var(--ink)',
               textDecoration: 'none',
-              padding: '8px 14px',
+              padding: '12px 14px',
               border: '1px solid var(--rule)',
               background: 'var(--paper)',
             }}

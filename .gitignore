@@ -44,6 +44,8 @@ pnpm-debug.log*
 # Local databases
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
 prisma/*.db
@@ -76,3 +78,6 @@ public/design-previews/
 # gstack isolated agent worktrees and skill symlink caches
 .claude/
 
+
+# Playwright test artifacts
+test-results/

@@ -20,7 +20,7 @@ export default async function AllCategoriesPage() {
   ])
 
   return (
-    <div className="page" style={{ padding: '24px 24px 48px' }}>
+    <div className="page" style={{ padding: '24px 0 48px' }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
@@ -51,7 +51,7 @@ export default async function AllCategoriesPage() {
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
-            fontSize: 'var(--fs-name)',
+            fontSize: 'clamp(1.7rem, 6vw, 2.6rem)',
             color: 'var(--ink)',
             lineHeight: 1.1,
           }}

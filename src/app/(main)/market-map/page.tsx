@@ -15,7 +15,7 @@ export default async function MarketMapPage() {
   return (
     <div
       className="page"
-      style={{ padding: '24px 24px 64px', maxWidth: 'min(1600px, calc(100vw - 32px))' }}
+      style={{ padding: '24px 0 64px', maxWidth: 'min(1600px, calc(100vw - 32px))' }}
     >
       <div className="breadcrumb">
         <Link href="/">Home</Link>

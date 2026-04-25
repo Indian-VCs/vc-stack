@@ -448,9 +448,11 @@ export default function CommandK({ tools }: Props) {
         }
 
         @media (max-width: 640px) {
-          .ckk-overlay { padding-top: 40px; }
+          .ckk-overlay { padding: 16px 12px; }
+          .ckk-panel { max-height: calc(100vh - 32px); }
           .ckk-row-desc { display: none; }
-          .ckk-footer { font-size: 0.6rem; gap: 10px; }
+          .ckk-footer { font-size: 0.62rem; gap: 10px; letter-spacing: 0.08em; }
+          .ckk-row-cat { display: none; }
         }
       `}</style>
     </div>

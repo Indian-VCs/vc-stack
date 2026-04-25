@@ -16,31 +16,67 @@ interface Props {
 export default function Pagination({ page, totalPages, hrefFor }: Props) {
   if (totalPages <= 1) return null
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+  const prevPage = page > 1 ? page - 1 : null
+  const nextPage = page < totalPages ? page + 1 : null
 
   return (
     <nav aria-label="Pagination" className="pg">
-      {pages.map((p) => {
-        const isCurrent = p === page
-        return (
-          <Link
-            key={p}
-            href={hrefFor(p)}
-            aria-label={`Page ${p}`}
-            aria-current={isCurrent ? 'page' : undefined}
-            className={`pg-link ${isCurrent ? 'is-current' : ''}`}
-          >
-            {p}
+      {/* Numeric (desktop / tablet) */}
+      <div className="pg-numeric">
+        {pages.map((p) => {
+          const isCurrent = p === page
+          return (
+            <Link
+              key={p}
+              href={hrefFor(p)}
+              aria-label={`Page ${p}`}
+              aria-current={isCurrent ? 'page' : undefined}
+              className={`pg-link ${isCurrent ? 'is-current' : ''}`}
+            >
+              {p}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Compact (mobile) */}
+      <div className="pg-compact">
+        {prevPage ? (
+          <Link href={hrefFor(prevPage)} aria-label="Previous page" className="pg-link">
+            ← Prev
           </Link>
-        )
-      })}
+        ) : (
+          <span className="pg-link is-disabled" aria-hidden="true">← Prev</span>
+        )}
+        <span className="pg-status" aria-live="polite">
+          Page {page} of {totalPages}
+        </span>
+        {nextPage ? (
+          <Link href={hrefFor(nextPage)} aria-label="Next page" className="pg-link">
+            Next →
+          </Link>
+        ) : (
+          <span className="pg-link is-disabled" aria-hidden="true">Next →</span>
+        )}
+      </div>
 
       <style>{`
-        .pg {
+        .pg { margin-top: 32px; }
+        .pg-numeric {
           display: flex;
           justify-content: center;
           flex-wrap: wrap;
           gap: 0;
-          margin-top: 32px;
+        }
+        .pg-compact { display: none; }
+        @media (max-width: 640px) {
+          .pg-numeric { display: none; }
+          .pg-compact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+          }
         }
         .pg-link {
           display: flex;
@@ -76,6 +112,19 @@ export default function Pagination({ page, totalPages, hrefFor }: Props) {
           background: var(--ink);
           color: var(--paper);
           border-color: var(--ink);
+        }
+        .pg-link.is-disabled {
+          color: var(--ink-muted);
+          opacity: 0.5;
+          cursor: default;
+        }
+        .pg-status {
+          font-family: var(--mono);
+          font-size: var(--fs-btn);
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          color: var(--ink-muted);
+          padding: 0 8px;
         }
       `}</style>
     </nav>

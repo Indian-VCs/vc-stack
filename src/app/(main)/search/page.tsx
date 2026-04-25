@@ -31,7 +31,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const totalInCorpus = allTools.length
 
   return (
-    <div className="page" style={{ padding: '24px 24px 48px' }}>
+    <div className="page" style={{ padding: '24px 0 48px' }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
@@ -65,10 +65,11 @@ export default async function SearchPage({ searchParams }: Props) {
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
-            fontSize: 'var(--fs-name)',
+            fontSize: 'clamp(1.7rem, 6vw, 2.6rem)',
             color: 'var(--ink)',
             lineHeight: 1.1,
             marginBottom: 16,
+            wordBreak: 'break-word',
             animationDelay: '80ms',
           }}
         >
