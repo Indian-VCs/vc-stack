@@ -35,9 +35,17 @@ function isAllowedOrigin(request: Request): boolean {
   // Same-origin POSTs from the login form may omit Origin in some browsers.
   if (!origin) return true
   try {
-    const u = new URL(origin)
-    const host = request.headers.get('host')
-    return host === u.host
+    const originHost = new URL(origin).host
+    // Behind a proxy (Webflow Cloud / Cloudflare), `host` reflects the internal
+    // worker hostname, so accept any of: host, x-forwarded-host, request URL host.
+    // Cloudflare strips client-provided x-forwarded-host on the way in, so this
+    // remains trusted.
+    const candidates = [
+      request.headers.get('host'),
+      request.headers.get('x-forwarded-host'),
+      new URL(request.url).host,
+    ].filter((h): h is string => Boolean(h))
+    return candidates.includes(originHost)
   } catch {
     return false
   }
