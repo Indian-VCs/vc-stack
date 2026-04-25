@@ -98,6 +98,13 @@ export default function ToolCard({ tool }: ToolCardProps) {
               style={{
                 position: 'relative',
                 zIndex: 2,
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: 32,
+                paddingTop: 6,
+                paddingBottom: 6,
+                marginTop: -6,
+                marginBottom: -6,
                 fontFamily: 'var(--mono)',
                 fontSize: 'var(--fs-tag)',
                 color: 'var(--ink-muted)',
@@ -147,9 +154,15 @@ export default function ToolCard({ tool }: ToolCardProps) {
           href={tool.websiteUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Visit ${tool.name} (opens in a new tab)`}
           style={{
             position: 'relative',
             zIndex: 2,
+            display: 'inline-flex',
+            alignItems: 'center',
+            minHeight: 44,
+            padding: '10px 4px',
+            margin: '-10px -4px',
             fontFamily: 'var(--mono)',
             fontSize: 'var(--fs-tag)',
             textTransform: 'uppercase',

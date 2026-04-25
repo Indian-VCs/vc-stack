@@ -198,6 +198,4 @@ These are tracked but intentionally not built yet. Don't scope-creep them into u
 - Multi-admin via the `admin_users` table (schema is ready, login route still env-based).
 - pSEO content editing through `/admin` (currently only via `src/lib/category-content.ts`).
 - Privacy + Terms pages (footer links 404; the user will handle this separately).
-- Category-page touch-target sizes (Lighthouse a11y flag — design-level).
-- Per-user reviews / ratings schema.
 - Newsletter archive / Substack embed on home.

@@ -133,6 +133,11 @@ export default function Footer() {
         }
 
         .ftr-link {
+          /* WCAG 2.5.5 AAA — 44px hit area without altering visual weight. */
+          display: inline-flex;
+          align-items: center;
+          min-height: 44px;
+          padding: 8px 0;
           color: var(--ink-muted);
           text-decoration: none;
           transition: color 160ms ease;
@@ -143,8 +148,8 @@ export default function Footer() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 32px;
+          width: 44px;
+          height: 44px;
           color: var(--ink-muted);
           text-decoration: none;
           border-radius: 4px;
@@ -174,7 +179,7 @@ export default function Footer() {
             gap: 12px 16px;
           }
           .site-footer__socials { gap: 4px; }
-          .ftr-social { width: 40px; height: 40px; }
+          .ftr-social { width: 44px; height: 44px; }
           .site-footer__legal {
             text-align: center;
             padding: 0 24px 18px;
