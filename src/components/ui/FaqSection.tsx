@@ -40,7 +40,7 @@ export default function FaqSection() {
   }
 
   return (
-    <section className="page" style={{ padding: '12px 24px 56px', borderTop: '1px solid var(--rule)' }}>
+    <section className="page" style={{ padding: '12px 0 56px', borderTop: '1px solid var(--rule)' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

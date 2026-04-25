@@ -183,6 +183,46 @@ export default function SubmitProductForm({ categories }: { categories: Category
         />
       </Field>
 
+      <Field label="Your Name" name="submitterName" error={state.errors?.submitterName?.[0]}>
+        <input
+          id="submitterName"
+          type="text"
+          name="submitterName"
+          placeholder="Pavithran"
+          aria-invalid={Boolean(state.errors?.submitterName?.[0])}
+          aria-describedby={state.errors?.submitterName?.[0] ? 'submitterName-error' : undefined}
+          style={inputStyle}
+        />
+      </Field>
+
+      <Field label="Your Firm" name="submitterFirm" error={state.errors?.submitterFirm?.[0]}>
+        <input
+          id="submitterFirm"
+          type="text"
+          name="submitterFirm"
+          placeholder="DealQuick Labs"
+          aria-invalid={Boolean(state.errors?.submitterFirm?.[0])}
+          aria-describedby={state.errors?.submitterFirm?.[0] ? 'submitterFirm-error' : undefined}
+          style={inputStyle}
+        />
+      </Field>
+
+      <Field label="Your Relationship to This Tool" name="relationship" error={state.errors?.relationship?.[0]}>
+        <select
+          id="relationship"
+          name="relationship"
+          aria-invalid={Boolean(state.errors?.relationship?.[0])}
+          aria-describedby={state.errors?.relationship?.[0] ? 'relationship-error' : undefined}
+          style={inputStyle}
+          defaultValue=""
+        >
+          <option value="">—</option>
+          <option value="we_use">We use it at our firm</option>
+          <option value="i_built">I built it</option>
+          <option value="i_know">I know the team</option>
+        </select>
+      </Field>
+
       <button
         type="submit"
         disabled={pending}

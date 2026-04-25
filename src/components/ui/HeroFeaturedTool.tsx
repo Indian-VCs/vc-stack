@@ -461,6 +461,29 @@ export default function HeroFeaturedTool({ tools }: Props) {
         @media (prefers-reduced-motion: reduce) {
           .hft-body { animation: none; }
         }
+
+        @media (max-width: 480px) {
+          .hft-row-head { gap: 12px; }
+          .hft-icon-wrap { width: 44px; height: 44px; }
+          .hft-icon { width: 30px; height: 30px; }
+          .hft-title-wrap {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            justify-content: flex-start;
+          }
+          .hft-name {
+            font-size: 1.25rem;
+            white-space: normal;
+            height: auto;
+            overflow: visible;
+            text-overflow: clip;
+          }
+          .hft-cta { letter-spacing: 0.18em; }
+          .hft-footer { padding: 8px 10px; gap: 8px; }
+          .hft-dot-bar { width: 18px; }
+          .hft-dot-btn.is-on .hft-dot-bar { width: 28px; }
+        }
       `}</style>
     </div>
   )

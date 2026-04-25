@@ -528,6 +528,18 @@ export default function MarketMapPoster({ tools, categories }: Props) {
         }
         @media (max-width: 480px) {
           .poster .tools { grid-template-columns: 1fr; }
+          .poster .t span { font-size: 0.9rem; }
+        }
+        @media (max-width: 640px) {
+          .poster .poster-counter {
+            justify-content: flex-start;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+          }
+          .poster .disclaimer {
+            padding: 12px 4px 0;
+            font-size: 0.68rem;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {

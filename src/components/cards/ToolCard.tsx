@@ -69,7 +69,6 @@ export default function ToolCard({ tool }: ToolCardProps) {
         flexDirection: 'column',
         background: 'var(--paper)',
         border: '1px solid var(--rule)',
-        padding: 20,
         height: '100%',
       }}
     >

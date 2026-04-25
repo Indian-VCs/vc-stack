@@ -22,57 +22,52 @@ const SOCIAL: { label: string; href: string; icon: React.ReactNode }[] = [
   },
 ]
 
+const LEGAL: { label: string; href: string }[] = [
+  { label: 'Privacy', href: 'https://indianvcs.com/privacy-policy' },
+  { label: 'Terms', href: 'https://indianvcs.com/terms-of-service' },
+  { label: 'Cookies', href: 'https://indianvcs.com/cookies-policy' },
+  { label: 'Disclaimer', href: 'https://indianvcs.com/disclaimer' },
+]
+
 export default function Footer() {
   return (
-    <footer
-      style={{
-        background: 'var(--paper)',
-        color: 'var(--ink)',
-        borderTop: '1px solid var(--rule)',
-        marginTop: 48,
-      }}
-    >
-      <div
-        className="page"
-        style={{
-          padding: '14px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-          flexWrap: 'wrap',
-        }}
-      >
+    <footer className="site-footer">
+      <div className="page site-footer__row">
         <a
           href="https://www.indianvcs.com"
           aria-label="Indian VCs — back to indianvcs.com"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-            lineHeight: 1,
-          }}
+          className="site-footer__brand"
         >
           <IndianVCsLogo height={18} />
         </a>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 18,
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.16em',
-          }}
-        >
+        <nav aria-label="Footer" className="site-footer__links">
           <Link href="/submit-product" className="ftr-link">Submit a Tool</Link>
-          <Link href="/privacy-policy" className="ftr-link">Privacy</Link>
-          <Link href="/terms" className="ftr-link">Terms</Link>
-        </div>
+          <Link href="/contribute/stack" className="ftr-link">Share your stack</Link>
+          {LEGAL.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ftr-link"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
 
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="site-footer__socials">
+          <a
+            href="mailto:contact@indianvcs.com"
+            aria-label="Email contact@indianvcs.com"
+            className="ftr-social"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+          </a>
           {SOCIAL.map((s) => (
             <a
               key={s.label}
@@ -88,7 +83,55 @@ export default function Footer() {
         </div>
       </div>
 
+      <div className="page site-footer__legal">
+        © {new Date().getFullYear()} DealQuick Labs Private Limited
+      </div>
+
       <style>{`
+        .site-footer {
+          background: var(--paper);
+          color: var(--ink);
+          border-top: 1px solid var(--rule);
+          margin-top: 48px;
+        }
+        .site-footer__row {
+          padding: 16px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+        .site-footer__brand {
+          display: inline-flex;
+          align-items: center;
+          text-decoration: none;
+          line-height: 1;
+        }
+        .site-footer__links {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          flex-wrap: wrap;
+          font-family: var(--mono);
+          font-size: var(--fs-tag);
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+        }
+        .site-footer__socials {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .site-footer__legal {
+          padding: 0 24px 14px;
+          font-family: var(--mono);
+          font-size: var(--fs-tag);
+          color: var(--ink-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+        }
+
         .ftr-link {
           color: var(--ink-muted);
           text-decoration: none;
@@ -100,13 +143,47 @@ export default function Footer() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 26px;
-          height: 26px;
+          width: 32px;
+          height: 32px;
           color: var(--ink-muted);
           text-decoration: none;
-          transition: color 160ms ease;
+          border-radius: 4px;
+          transition: color 160ms ease, background 160ms ease;
         }
-        .ftr-social:hover { color: var(--ink); }
+        .ftr-social:hover {
+          color: var(--ink);
+          background: var(--rule);
+        }
+
+        @media (max-width: 900px) {
+          .site-footer__row { gap: 14px; padding: 14px 24px; }
+          .site-footer__links { gap: 14px; }
+        }
+
+        @media (max-width: 640px) {
+          .site-footer__row {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 14px;
+            padding: 20px 24px 14px;
+          }
+          .site-footer__links {
+            justify-content: center;
+            gap: 12px 16px;
+          }
+          .site-footer__socials { gap: 4px; }
+          .ftr-social { width: 40px; height: 40px; }
+          .site-footer__legal {
+            text-align: center;
+            padding: 0 24px 18px;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .site-footer__links { letter-spacing: 0.10em; gap: 10px 14px; }
+        }
       `}</style>
     </footer>
   )

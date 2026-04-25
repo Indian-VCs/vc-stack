@@ -105,7 +105,7 @@ export default function SubstackEmbed({
           border-right: 0;
           background: var(--paper);
           font-family: var(--body);
-          font-size: 0.95rem;
+          font-size: 1rem;
           color: var(--ink);
           line-height: 1.4;
           outline: none;
@@ -148,6 +148,11 @@ export default function SubstackEmbed({
           text-transform: uppercase;
           color: var(--ink-muted);
           margin: 10px 0 0;
+        }
+        @media (max-width: 480px) {
+          .ssb-form { flex-direction: column; gap: 10px; }
+          .ssb-input { border-right: 1px solid var(--ink); }
+          .ssb-btn { width: 100%; padding: 13px 18px; }
         }
       `}</style>
     </div>

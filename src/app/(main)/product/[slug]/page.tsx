@@ -141,7 +141,7 @@ export default async function ToolDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="page" style={{ padding: '24px 24px 48px' }}>
+    <div className="page" style={{ padding: '24px 0 48px' }}>
       <Script
         id={`tool-jsonld-${tool.slug}`}
         type="application/ld+json"
@@ -201,24 +201,19 @@ export default async function ToolDetailPage({ params }: Props) {
             display: flex;
             align-items: center;
             gap: 18px;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            flex-wrap: wrap;
           }
-          .tool-head-row::-webkit-scrollbar { display: none; }
           .tool-head-name {
             font-family: var(--serif);
             font-weight: 900;
-            font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+            font-size: clamp(1.4rem, 5vw, 2.6rem);
             line-height: 1.1;
             color: var(--ink);
             letter-spacing: -0.01em;
             margin: 0;
-            white-space: nowrap;
-            flex-shrink: 1;
+            flex: 1 1 auto;
             min-width: 0;
+            word-break: break-word;
           }
           .tool-head-visit {
             font-family: var(--mono);
@@ -256,6 +251,11 @@ export default async function ToolDetailPage({ params }: Props) {
           }
           @media (max-width: 640px) {
             .tool-head-row { gap: 12px; }
+            .tool-head-visit,
+            .tool-head-cat {
+              flex: 1 1 auto;
+              text-align: center;
+            }
           }
         `}</style>
       </header>

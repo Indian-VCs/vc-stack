@@ -1,48 +1,51 @@
 /**
- * Data-fetching layer.
- * Reads from the static STATIC_* catalog defined in tools-data.ts.
- * No DB; the catalog is the source of truth.
+ * Public data-fetching layer.
+ *
+ * Strategy: try Cloudflare D1 first; fall back to the static catalog
+ * (`./static-catalog.ts`) on any DB failure or empty result. The fallback
+ * makes this safe under three conditions:
+ *
+ *   1. **Build-time prerendering** — `next build` runs before D1 is bound.
+ *      `getDb()` throws, we silently fall back to STATIC.
+ *   2. **Local dev without `local.db`** — same fallback path.
+ *   3. **Production with empty D1** — admin hasn't seeded yet; STATIC keeps
+ *      the public site up.
+ *
+ * Once D1 is seeded, every read flows through the DB. Admin writes call
+ * `revalidatePath` to bust the prerender cache.
+ *
+ * pSEO content (intro, buyingCriteria, etc.) lives in `category-content.ts`
+ * and is overlaid on every Category — regardless of source — so the editorial
+ * copy doesn't drift if the DB is incomplete.
+ *
+ * The static catalog (STATIC_CATEGORIES, STATIC_TOOLS, categorySlugsForTool)
+ * lives in `./static-catalog.ts` and is re-exported here. Client components
+ * that only need the constants should import from `./static-catalog` directly
+ * — that path has no DB dependency and won't drag the D1 driver into the
+ * browser bundle.
  */
 
 import type { Category, CategoryPreviewTool, Tool, PaginatedResult, SearchFilters } from './types'
-import { setCategoryResolver, buildAllTools } from './tools-data'
 import { getCategoryContent } from './category-content'
+import {
+  dbGetCategories,
+  dbGetCategoryBySlug,
+  dbGetToolsByCategory,
+  dbGetAllTools,
+  dbGetToolBySlug,
+  dbSearchTools,
+  dbGetCategoryPreviewTools,
+  dbGetCanonicalStats,
+} from './db/queries'
+import {
+  STATIC_CATEGORIES,
+  STATIC_TOOLS,
+  categorySlugsForTool,
+} from './static-catalog'
 
-/** Merge static pSEO content (docs/pseo-strategy.md) into a Category. */
-function withPseoContent(cat: Category | null): Category | null {
-  if (!cat) return cat
-  const content = getCategoryContent(cat.slug)
-  return {
-    ...cat,
-    intro: content.intro ?? null,
-    buyingCriteria: content.buyingCriteria ?? null,
-    relatedSlugs: content.relatedSlugs ?? null,
-    seoTitle: content.seoTitle ?? null,
-    seoDescription: content.seoDescription ?? null,
-    heroAngle: content.heroAngle ?? null,
-  }
-}
-
-// ─── Public API ───────────────────────────────────────────────────────────────
-
-export async function getCategories(): Promise<Category[]> {
-  return STATIC_CATEGORIES.map((c) => withPseoContent(c)!)
-}
-
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  return withPseoContent(STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null)
-}
-
-export async function getToolsByCategory(
-  categorySlug: string,
-  filters: { page?: number; pageSize?: number } = {}
-): Promise<PaginatedResult<Tool>> {
-  const { page = 1, pageSize = 24 } = filters
-  const filtered = STATIC_TOOLS
-    .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
-    .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
-  return paginate(filtered, page, pageSize)
-}
+// Re-export the static catalog so existing `import { ... } from '@/lib/data'`
+// imports keep working unchanged.
+export { STATIC_CATEGORIES, STATIC_TOOLS, categorySlugsForTool }
 
 const PINNED_SLUG = 'evertrace'
 
@@ -67,18 +70,79 @@ function dedupeByWebsite<T extends { websiteUrl: string; name: string }>(list: T
   return out
 }
 
-export async function getAllTools(): Promise<Tool[]> {
-  const sorted = [...STATIC_TOOLS].sort((a, b) =>
-    (Number(b.isFeatured) - Number(a.isFeatured)) || a.name.localeCompare(b.name)
+/** Try a DB call; return null on failure or "empty" so callers can fall back to STATIC. */
+async function viaDb<T>(call: () => Promise<T>, isEmpty: (v: T) => boolean): Promise<T | null> {
+  try {
+    const result = await call()
+    return isEmpty(result) ? null : result
+  } catch {
+    return null
+  }
+}
+
+/** Merge static pSEO content (docs/pseo-strategy.md) into a Category. */
+function withPseoContent(cat: Category | null | undefined): Category | null {
+  if (!cat) return null
+  const content = getCategoryContent(cat.slug)
+  return {
+    ...cat,
+    intro: content.intro ?? cat.intro ?? null,
+    buyingCriteria: content.buyingCriteria ?? cat.buyingCriteria ?? null,
+    relatedSlugs: content.relatedSlugs ?? cat.relatedSlugs ?? null,
+    seoTitle: content.seoTitle ?? cat.seoTitle ?? null,
+    seoDescription: content.seoDescription ?? cat.seoDescription ?? null,
+    heroAngle: content.heroAngle ?? cat.heroAngle ?? null,
+  }
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
+export async function getCategories(): Promise<Category[]> {
+  const fromDb = await viaDb(dbGetCategories, (xs) => xs.length === 0)
+  const cats = fromDb ?? STATIC_CATEGORIES
+  return cats.map((c) => withPseoContent(c)!)
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const fromDb = await viaDb(() => dbGetCategoryBySlug(slug), (v) => v === null)
+  const cat = fromDb ?? STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
+  return withPseoContent(cat)
+}
+
+export async function getToolsByCategory(
+  categorySlug: string,
+  filters: { page?: number; pageSize?: number } = {},
+): Promise<PaginatedResult<Tool>> {
+  const { page = 1, pageSize = 24 } = filters
+  const fromDb = await viaDb(
+    () => dbGetToolsByCategory(categorySlug, page, pageSize),
+    (v) => v.total === 0,
   )
-  return pinEverTrace(dedupeByWebsite(sorted))
+  if (fromDb) return fromDb
+
+  const filtered = STATIC_TOOLS
+    .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
+    .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
+  return paginate(filtered, page, pageSize)
+}
+
+export async function getAllTools(): Promise<Tool[]> {
+  const fromDb = await viaDb(dbGetAllTools, (xs) => xs.length === 0)
+  const list = fromDb ?? [...STATIC_TOOLS].sort(
+    (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
+  )
+  return pinEverTrace(dedupeByWebsite(list))
 }
 
 export async function getToolBySlug(slug: string): Promise<Tool | null> {
-  return STATIC_TOOLS.find((t) => t.slug === slug) ?? null
+  const fromDb = await viaDb(() => dbGetToolBySlug(slug), (v) => v === null)
+  return fromDb ?? STATIC_TOOLS.find((t) => t.slug === slug) ?? null
 }
 
 export async function searchTools(filters: SearchFilters): Promise<PaginatedResult<Tool>> {
+  const fromDb = await viaDb(() => dbSearchTools(filters), (v) => v.total === 0)
+  if (fromDb) return fromDb
+
   const { query = '', category, pricing, page = 1, pageSize = 24 } = filters
   let results = STATIC_TOOLS
   if (query) {
@@ -87,13 +151,13 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
       (t) =>
         t.name.toLowerCase().includes(q) ||
         t.description.toLowerCase().includes(q) ||
-        (t.shortDesc ?? '').toLowerCase().includes(q)
+        (t.shortDesc ?? '').toLowerCase().includes(q),
     )
   }
   if (category) results = results.filter((t) => categorySlugsForTool(t).includes(category))
   if (pricing) results = results.filter((t) => t.pricingModel === pricing)
-  const sorted = [...results].sort((a, b) =>
-    (Number(b.isFeatured) - Number(a.isFeatured)) || a.name.localeCompare(b.name)
+  const sorted = [...results].sort(
+    (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
   )
   return paginate(sorted, page, pageSize)
 }
@@ -111,7 +175,13 @@ const FEATURED_TOOL_SLUGS = [
   'claude',
 ] as const
 
-/** Resolve FEATURED_TOOL_SLUGS to full Tool objects, preserving list order. */
+/**
+ * Resolve FEATURED_TOOL_SLUGS to full Tool objects, preserving list order.
+ *
+ * D1 path: when the DB has rows, the natural FEATURED_SORT in queries.ts
+ * already orders featured tools first by `featuredOrder ASC`. We still pick
+ * by slug here so the static fallback path keeps the same canonical list.
+ */
 export async function getCanonicalFeaturedTools(): Promise<Tool[]> {
   const all = await getAllTools()
   return FEATURED_TOOL_SLUGS
@@ -146,6 +216,9 @@ async function getRelatedTools(toolId: string, categoryId: string, limit = 4): P
 
 /** Returns up to 6 preview tools (name + logoUrl) per category slug. */
 export async function getCategoryPreviewTools(): Promise<Record<string, CategoryPreviewTool[]>> {
+  const fromDb = await viaDb(dbGetCategoryPreviewTools, (v) => Object.keys(v).length === 0)
+  if (fromDb) return fromDb
+
   const result: Record<string, CategoryPreviewTool[]> = {}
   for (const tool of STATIC_TOOLS) {
     for (const slug of categorySlugsForTool(tool)) {
@@ -156,61 +229,6 @@ export async function getCategoryPreviewTools(): Promise<Record<string, Category
     }
   }
   return result
-}
-
-// ─── Category images — served locally from public/images/categories/ ──────────
-const CAT_IMAGES: Record<string, string> = {
-  'crm':                      '/images/categories/crm.jpg',
-  'data':                     '/images/categories/data.jpg',
-  'research':                 '/images/categories/research.jpg',
-  'news':                     '/images/categories/news-resources.jpg',
-  'portfolio-management':     '/images/categories/portfolio-management.jpg',
-  'admin-ops':                '/images/categories/infrastructure.jpg',
-  'communication':            '/images/categories/video-conferencing.jpg',
-  'mailing':                  '/images/categories/email.jpg',
-  'calendar':                 '/images/categories/calendar.jpg',
-  'productivity':             '/images/categories/project-management.jpg',
-  'vibe-coding':              '/images/categories/platform.jpg',
-  'other-tools':              '/images/categories/other-tools.jpg',
-}
-
-// ─── Static fallback data (IndianVCs VC Stack 2026 — 19 sections) ─────────────
-
-export const STATIC_CATEGORIES: Category[] = [
-  { id: 'cat-1',  name: 'CRM',                 slug: 'crm',                 description: 'Relationship ledgers for private capital. Track every conversation, intro, and follow-up across the firm’s deal flow.',                                       icon: '🤝', imageUrl: CAT_IMAGES['crm'] ?? null,                 _count: { tools: 11 } },
-  { id: 'cat-2',  name: 'Data',                slug: 'data',                description: 'Market databases, company graphs, and private-market intelligence. The raw material behind every investment memo.',                                         icon: '📈', imageUrl: CAT_IMAGES['data'] ?? null,                _count: { tools: 12 } },
-  { id: 'cat-3',  name: 'Research',            slug: 'research',            description: 'Primary and secondary research workbenches. Expert calls, sector scans, and the long read behind a short decision.',                                     icon: '🔬', imageUrl: CAT_IMAGES['research'] ?? null,            _count: { tools: 14 } },
-  { id: 'cat-4',  name: 'News',                slug: 'news',                description: 'The daily broadsheet of venture. Feeds, aggregators, and newsletters investors read before the first coffee.',                                         icon: '📰', imageUrl: CAT_IMAGES['news'] ?? null,                _count: { tools: 14 } },
-  { id: 'cat-5',  name: 'AI',                  slug: 'ai',                  description: 'General-purpose copilots and assistants. The cognitive layer sitting under every other workflow on this page.',                                         icon: '✨', imageUrl: null,                                     _count: { tools: 6 } },
-  { id: 'cat-6',  name: 'Portfolio Management', slug: 'portfolio-management', description: 'Where a fund watches what it already owns. Metrics, KPIs, and quarterly letters for the companies on the cap table.',                              icon: '📊', imageUrl: CAT_IMAGES['portfolio-management'] ?? null, _count: { tools: 4 } },
-  // cat-7 Captable retired — startup-stack concern; tools moved into Other Tools.
-  // cat-8 Finance  retired — payroll/HRMS tools moved into Other Tools.
-  { id: 'cat-9',  name: 'Admin & Ops',         slug: 'admin-ops',           description: 'Fund administration, compliance, and the operational scaffolding behind running a venture firm.',                                                 icon: '⚙️', imageUrl: CAT_IMAGES['admin-ops'] ?? null,           _count: { tools: 4 } },
-  { id: 'cat-10', name: 'Automation',          slug: 'automation',          description: 'Workflow glue. No-code engines that wire your CRM, inbox, and data room together without a developer.',                                          icon: '🔁', imageUrl: null,                                     _count: { tools: 3 } },
-  { id: 'cat-11', name: 'Communication',       slug: 'communication',       description: 'Where the partnership talks to itself and the outside world. Chat, video, and the rooms where diligence happens.',                              icon: '💬', imageUrl: CAT_IMAGES['communication'] ?? null,       _count: { tools: 4 } },
-  { id: 'cat-12', name: 'Mailing',             slug: 'mailing',             description: 'Inbox infrastructure. From founder LPs mail to quarterly newsletters, this is where correspondence is sent and filed.',                          icon: '📧', imageUrl: CAT_IMAGES['mailing'] ?? null,             _count: { tools: 4 } },
-  { id: 'cat-13', name: 'Calendar',            slug: 'calendar',            description: 'Booking, blocking, and defending time. Tools that decide when the partnership meets and when the founder gets ten minutes.',                     icon: '📅', imageUrl: CAT_IMAGES['calendar'] ?? null,            _count: { tools: 4 } },
-  { id: 'cat-14', name: 'Transcription',       slug: 'transcription',       description: 'Meeting recorders and note-takers. Every call, pitch, and partner meeting turned into searchable text.',                                          icon: '📝', imageUrl: null,                                     _count: { tools: 6 } },
-  { id: 'cat-15', name: 'Voice to Text',       slug: 'voice-to-text',       description: 'Dictation for the investor on the move. Turn voice memos between meetings into memos in the CRM.',                                              icon: '🎙️', imageUrl: null,                                     _count: { tools: 4 } },
-  { id: 'cat-16', name: 'Productivity',        slug: 'productivity',        description: 'Docs, wikis, and task boards. The second brain where theses, diligence, and portfolio notes all live.',                                         icon: '🗂️', imageUrl: CAT_IMAGES['productivity'] ?? null,        _count: { tools: 4 } },
-  { id: 'cat-17', name: 'Vibe Coding',         slug: 'vibe-coding',         description: 'AI-native builders for non-engineers. Prototype a landing page, a dashboard, or a diligence tool before lunch.',                                  icon: '🛠️', imageUrl: CAT_IMAGES['vibe-coding'] ?? null,         _count: { tools: 4 } },
-  { id: 'cat-18', name: 'Browser',             slug: 'browser',             description: 'The window to the work. Investor-grade browsers with tabs, workspaces, and AI built into the address bar.',                                      icon: '🌐', imageUrl: null,                                     _count: { tools: 5 } },
-  { id: 'cat-19', name: 'Other Tools',         slug: 'other-tools',         description: 'Everything else on the investor’s desktop. Design files, storage, shortcuts, and the utilities that refuse a tidier shelf.',                icon: '🔧', imageUrl: CAT_IMAGES['other-tools'] ?? null,         _count: { tools: 21 } },
-]
-
-function catById(id: string): Category {
-  return STATIC_CATEGORIES.find((c) => c.id === id) ?? STATIC_CATEGORIES[0]
-}
-
-// Wire up category resolver and build the canonical tool catalog
-setCategoryResolver(catById)
-export const STATIC_TOOLS: Tool[] = buildAllTools()
-
-/** All category slugs a tool belongs to (primary + extras). */
-export function categorySlugsForTool(tool: Tool): string[] {
-  const primary = tool.category?.slug
-  const extras = tool.extraCategorySlugs ?? []
-  return primary ? [primary, ...extras] : extras
 }
 
 /** Total appearances = sum of all (tool × category) pairs across the catalog. */
@@ -237,18 +255,18 @@ function paginate<T>(items: T[], page: number | undefined, pageSize: number | un
   }
 }
 
-// Backfill STATIC_CATEGORIES._count.tools with live counts so nothing drifts.
-for (const cat of STATIC_CATEGORIES) {
-  const count = STATIC_TOOLS.filter((t) => categorySlugsForTool(t).includes(cat.slug)).length
-  cat._count = { tools: count }
-}
-
 /** Single source of truth for public-facing stats. */
 export async function getCanonicalStats(): Promise<{
   totalTools: number
   uniqueTools: number
   totalCategories: number
 }> {
+  const fromDb = await viaDb(
+    dbGetCanonicalStats,
+    (v) => v.uniqueTools === 0 && v.totalCategories === 0,
+  )
+  if (fromDb) return fromDb
+
   return {
     totalTools: totalAppearances(STATIC_TOOLS),
     uniqueTools: STATIC_TOOLS.length,

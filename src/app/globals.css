@@ -87,7 +87,13 @@
 /* ── Base Styles ───────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { font-size: 17px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html {
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Sticky 56px header + breathing room when navigating to in-page anchors */
+  scroll-padding-top: 64px;
+}
 
 body {
   background: var(--paper);
@@ -95,6 +101,8 @@ body {
   font-family: var(--body);
   line-height: 1.55;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 /* Subtle paper texture overlay */
@@ -288,6 +296,11 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   border-color: var(--ink);
   background: var(--paper);
 }
+/* iOS Safari auto-zooms on any focused input below 16px. Bump to 16px on
+   touch devices so the viewport stays put when the keyboard opens. */
+@media (pointer: coarse) {
+  .input, .textarea, .select { font-size: 16px; }
+}
 .label {
   display: block;
   font-family: var(--mono);
@@ -344,10 +357,14 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
 
 /* Tool card default variant — flat by default, border darkens on hover. */
 .tool-card {
+  padding: 20px;
   transition:
     border-color var(--dur-fast) var(--ease-out),
     background var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
+}
+@media (max-width: 640px) {
+  .tool-card { padding: 16px; }
 }
 .tool-card:hover {
   border-color: var(--ink);
@@ -456,3 +473,18 @@ a:hover { color: var(--red); text-decoration-color: var(--red); }
   font-weight: 400;
 }
 .breadcrumb > :last-child:not(.sep) { color: var(--ink); font-weight: 600; }
+
+/* ── Mobile legibility — bump small uppercase labels above iOS readability floor */
+@media (max-width: 640px) {
+  :root {
+    --fs-tag: 0.68rem;
+    --fs-btn: 0.72rem;
+  }
+  .breadcrumb {
+    margin-bottom: 18px;
+    letter-spacing: 0.1em;
+  }
+  .breadcrumb .sep::before {
+    font-size: 1.05rem;
+  }
+}

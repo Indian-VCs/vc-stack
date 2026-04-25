@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function SubmitProductPage() {
   const categories = await getCategories()
   return (
-    <div className="page" style={{ padding: '24px 24px 64px', maxWidth: 720 }}>
+    <div className="page" style={{ padding: '24px 0 64px', maxWidth: 720 }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
