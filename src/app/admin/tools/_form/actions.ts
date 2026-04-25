@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation'
 import { requireAdminAction, NotAuthenticatedError } from '@/lib/auth'
 import { getDb, schema } from '@/lib/db/client'
 import { audit } from '@/lib/audit'
+import { normalizeHttpUrl } from '@/lib/url'
 import {
   parseToolForm,
   parseUseCases,
@@ -50,6 +51,41 @@ async function categoryExists(categoryId: string): Promise<boolean> {
   return Boolean(hit)
 }
 
+async function categorySlugById(categoryId: string): Promise<string | null> {
+  const db = await getDb()
+  const [hit] = await db
+    .select({ slug: schema.categories.slug })
+    .from(schema.categories)
+    .where(eq(schema.categories.id, categoryId))
+    .limit(1)
+  return hit?.slug ?? null
+}
+
+function revalidateToolSlug(slug: string | null | undefined) {
+  if (!slug) return
+  revalidatePath(`/product/${slug}`)
+  revalidatePath(`/product/${slug}/og-image`)
+}
+
+function revalidateCategorySlug(slug: string | null | undefined) {
+  if (!slug) return
+  revalidatePath(`/category/${slug}`)
+  revalidatePath(`/category/${slug}/og-image`)
+}
+
+function revalidateCategorySlugs(slugs: Array<string | null | undefined>) {
+  for (const slug of new Set(slugs.filter(Boolean))) {
+    revalidateCategorySlug(slug)
+  }
+}
+
+function revalidateCatalogSurfaces() {
+  revalidatePath('/')
+  revalidatePath('/all-categories')
+  revalidatePath('/market-map')
+  revalidatePath('/search')
+}
+
 export async function createTool(_prev: ToolActionState, formData: FormData): Promise<ToolActionState> {
   const result = await withAdmin(async (admin): Promise<ToolActionState> => {
     const parsed = parseToolForm(formData)
@@ -71,6 +107,9 @@ export async function createTool(_prev: ToolActionState, formData: FormData): Pr
     const db = await getDb()
     const id = crypto.randomUUID()
     const now = Date.now()
+    const websiteUrl = normalizeHttpUrl(parsed.data.websiteUrl)!
+    const logoUrl = parsed.data.logoUrl ? normalizeHttpUrl(parsed.data.logoUrl) : null
+    const extraCategorySlugs = parseExtraSlugs(parsed.data.extraCategorySlugs)
     await db.insert(schema.tools).values({
       id,
       slug: parsed.data.slug,
@@ -78,13 +117,13 @@ export async function createTool(_prev: ToolActionState, formData: FormData): Pr
       description: parsed.data.description,
       shortDesc: parsed.data.shortDesc || null,
       useCases: parseUseCases(parsed.data.useCases),
-      websiteUrl: parsed.data.websiteUrl,
-      logoUrl: parsed.data.logoUrl || null,
+      websiteUrl,
+      logoUrl,
       pricingModel: parsed.data.pricingModel,
       isFeatured: parsed.data.isFeatured,
       featuredOrder: parsed.data.isFeatured ? parseFeaturedOrder(parsed.data.featuredOrder) : null,
       categoryId: parsed.data.categoryId,
-      extraCategorySlugs: parseExtraSlugs(parsed.data.extraCategorySlugs),
+      extraCategorySlugs,
       archivedAt: null,
       createdAt: now,
       updatedAt: now,
@@ -98,11 +137,12 @@ export async function createTool(_prev: ToolActionState, formData: FormData): Pr
       diff: { slug: parsed.data.slug, name: parsed.data.name },
     })
 
+    const categorySlug = await categorySlugById(parsed.data.categoryId)
     revalidatePath('/admin/tools')
     revalidatePath('/admin/dashboard')
-    revalidatePath('/')
-    revalidatePath('/all-categories')
-    revalidatePath(`/product/${parsed.data.slug}`)
+    revalidateCatalogSurfaces()
+    revalidateToolSlug(parsed.data.slug)
+    revalidateCategorySlugs([categorySlug, ...(extraCategorySlugs ?? [])])
     return { ok: true, message: 'Created.' }
   })
 
@@ -144,6 +184,10 @@ export async function updateTool(
       .limit(1)
     if (!before) return { ok: false, message: 'Tool not found.' }
 
+    const websiteUrl = normalizeHttpUrl(parsed.data.websiteUrl)!
+    const logoUrl = parsed.data.logoUrl ? normalizeHttpUrl(parsed.data.logoUrl) : null
+    const extraCategorySlugs = parseExtraSlugs(parsed.data.extraCategorySlugs)
+
     await db
       .update(schema.tools)
       .set({
@@ -152,13 +196,13 @@ export async function updateTool(
         description: parsed.data.description,
         shortDesc: parsed.data.shortDesc || null,
         useCases: parseUseCases(parsed.data.useCases),
-        websiteUrl: parsed.data.websiteUrl,
-        logoUrl: parsed.data.logoUrl || null,
+        websiteUrl,
+        logoUrl,
         pricingModel: parsed.data.pricingModel,
         isFeatured: parsed.data.isFeatured,
         featuredOrder: parsed.data.isFeatured ? parseFeaturedOrder(parsed.data.featuredOrder) : null,
         categoryId: parsed.data.categoryId,
-        extraCategorySlugs: parseExtraSlugs(parsed.data.extraCategorySlugs),
+        extraCategorySlugs,
         updatedAt: Date.now(),
       })
       .where(eq(schema.tools.id, id))
@@ -174,11 +218,19 @@ export async function updateTool(
       },
     })
 
+    const beforeCategorySlug = await categorySlugById(before.categoryId)
+    const nextCategorySlug = await categorySlugById(parsed.data.categoryId)
     revalidatePath('/admin/tools')
     revalidatePath('/admin/dashboard')
-    revalidatePath('/')
-    revalidatePath(`/product/${before.slug}`)
-    revalidatePath(`/product/${parsed.data.slug}`)
+    revalidateCatalogSurfaces()
+    revalidateToolSlug(before.slug)
+    revalidateToolSlug(parsed.data.slug)
+    revalidateCategorySlugs([
+      beforeCategorySlug,
+      nextCategorySlug,
+      ...(before.extraCategorySlugs ?? []),
+      ...(extraCategorySlugs ?? []),
+    ])
     return { ok: true, message: 'Saved.' }
   })
 
@@ -204,10 +256,12 @@ export async function archiveTool(id: string): Promise<{ ok: boolean; message?: 
       diff: { slug: before.slug, name: before.name },
     })
 
+    const categorySlug = await categorySlugById(before.categoryId)
     revalidatePath('/admin/tools')
     revalidatePath('/admin/dashboard')
-    revalidatePath('/')
-    revalidatePath(`/product/${before.slug}`)
+    revalidateCatalogSurfaces()
+    revalidateToolSlug(before.slug)
+    revalidateCategorySlugs([categorySlug, ...(before.extraCategorySlugs ?? [])])
     return { ok: true }
   })) as { ok: boolean; message?: string }
 }
@@ -228,10 +282,12 @@ export async function restoreTool(id: string): Promise<{ ok: boolean; message?: 
       diff: { restored: true },
     })
 
+    const categorySlug = await categorySlugById(before.categoryId)
     revalidatePath('/admin/tools')
     revalidatePath('/admin/dashboard')
-    revalidatePath('/')
-    revalidatePath(`/product/${before.slug}`)
+    revalidateCatalogSurfaces()
+    revalidateToolSlug(before.slug)
+    revalidateCategorySlugs([categorySlug, ...(before.extraCategorySlugs ?? [])])
     return { ok: true }
   })) as { ok: boolean; message?: string }
 }

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import type { ToolSubmissionRow } from '@/lib/db/schema'
+import { displayExternalUrl, externalHref } from '@/lib/url'
 import { approveSubmission, rejectSubmission, archiveSubmission } from './actions'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -15,6 +16,7 @@ export default function SubmissionRow({ row }: { row: ToolSubmissionRow }) {
   const [isPending, start] = useTransition()
   const [error, setError] = useState('')
   const [status, setStatus] = useState(row.status)
+  const websiteHref = externalHref(row.websiteUrl)
 
   function run(fn: () => Promise<{ ok: boolean; message?: string; status?: typeof row.status }>) {
     setError('')
@@ -49,19 +51,25 @@ export default function SubmissionRow({ row }: { row: ToolSubmissionRow }) {
           >
             {row.toolName}
           </div>
-          <a
-            href={row.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontFamily: 'var(--mono)',
-              fontSize: 'var(--fs-tag)',
-              color: 'var(--red)',
-              textDecoration: 'none',
-            }}
-          >
-            {row.websiteUrl.replace(/^https?:\/\//, '')}
-          </a>
+          {websiteHref ? (
+            <a
+              href={websiteHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: 'var(--fs-tag)',
+                color: 'var(--red)',
+                textDecoration: 'none',
+              }}
+            >
+              {displayExternalUrl(row.websiteUrl)}
+            </a>
+          ) : (
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 'var(--fs-tag)', color: 'var(--red)' }}>
+              Invalid URL
+            </span>
+          )}
         </div>
         <div style={{ textAlign: 'right' }}>
           <div

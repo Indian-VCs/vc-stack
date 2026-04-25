@@ -10,14 +10,13 @@
  * Cloudflare logs will show it.)
  */
 
-import { eq } from 'drizzle-orm'
 import { getDb, schema } from '@/lib/db/client'
 import type { AuditLogRow } from '@/lib/db/schema'
 
-export type AuditAction = AuditLogRow['action']
-export type AuditEntity = AuditLogRow['entity']
+type AuditAction = AuditLogRow['action']
+type AuditEntity = AuditLogRow['entity']
 
-export interface AuditEntry {
+interface AuditEntry {
   adminEmail: string
   action: AuditAction
   entity: AuditEntity
@@ -65,6 +64,3 @@ export async function auditFailedLogin(email: string, reason: string): Promise<v
 export async function auditSuccessfulLogin(email: string): Promise<void> {
   await audit({ adminEmail: email, action: 'login', entity: 'session', diff: { failed: false } })
 }
-
-// Re-export for ergonomic imports
-export { eq }

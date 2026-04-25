@@ -71,4 +71,3 @@ export async function getDb(): Promise<Db> {
 }
 
 export { schema }
-export type { Db }

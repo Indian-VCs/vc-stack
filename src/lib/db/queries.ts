@@ -79,7 +79,13 @@ export async function dbGetCategories(opts: CatOpts = {}): Promise<Category[]> {
 
 export async function dbGetCategoryBySlug(slug: string): Promise<Category | null> {
   const db = await getDb()
-  const row = (await db.select().from(categories).where(eq(categories.slug, slug)).limit(1))[0]
+  const row = (
+    await db
+      .select()
+      .from(categories)
+      .where(and(eq(categories.slug, slug), isNull(categories.archivedAt)))
+      .limit(1)
+  )[0]
   if (!row) return null
   const counts = await dbCategoryToolCounts()
   return categoryFromRow(row, counts.get(row.slug) ?? 0)
@@ -126,15 +132,13 @@ export async function dbGetAllTools(): Promise<Tool[]> {
 
 export async function dbGetToolBySlug(slug: string): Promise<Tool | null> {
   const db = await getDb()
-  const row = (await db.select().from(tools).where(eq(tools.slug, slug)).limit(1))[0]
-  if (!row) return null
-  const cats = await loadCategoryMap()
-  return toolFromRow(row, cats.get(row.categoryId))
-}
-
-export async function dbGetToolById(id: string): Promise<Tool | null> {
-  const db = await getDb()
-  const row = (await db.select().from(tools).where(eq(tools.id, id)).limit(1))[0]
+  const row = (
+    await db
+      .select()
+      .from(tools)
+      .where(and(eq(tools.slug, slug), isNull(tools.archivedAt)))
+      .limit(1)
+  )[0]
   if (!row) return null
   const cats = await loadCategoryMap()
   return toolFromRow(row, cats.get(row.categoryId))
@@ -146,7 +150,13 @@ export async function dbGetToolsByCategory(
   pageSize = 24,
 ): Promise<PaginatedResult<Tool>> {
   const db = await getDb()
-  const cat = (await db.select().from(categories).where(eq(categories.slug, categorySlug)).limit(1))[0]
+  const cat = (
+    await db
+      .select()
+      .from(categories)
+      .where(and(eq(categories.slug, categorySlug), isNull(categories.archivedAt)))
+      .limit(1)
+  )[0]
 
   // Pull both primary-category matches and extras in one query, then dedupe.
   const primaryRows = cat
@@ -211,17 +221,6 @@ export async function dbSearchTools(filters: SearchFilters): Promise<PaginatedRe
   return paginate(rows.map((r) => toolFromRow(r, cats.get(r.categoryId))), page, pageSize)
 }
 
-export async function dbGetFeaturedTools(): Promise<Tool[]> {
-  const db = await getDb()
-  const rows = await db
-    .select()
-    .from(tools)
-    .where(and(eq(tools.isFeatured, true), isNull(tools.archivedAt)))
-    .orderBy(asc(tools.featuredOrder), asc(tools.name))
-  const cats = await loadCategoryMap()
-  return rows.map((r) => toolFromRow(r, cats.get(r.categoryId)))
-}
-
 export async function dbGetCategoryPreviewTools(): Promise<Record<string, CategoryPreviewTool[]>> {
   const all = await dbGetAllTools()
   const out: Record<string, CategoryPreviewTool[]> = {}
@@ -249,6 +248,13 @@ export async function dbGetCanonicalStats(): Promise<{
   return { totalTools: totalAppearances, uniqueTools: all.length, totalCategories: cats.length }
 }
 
+export async function dbCatalogHasRows(): Promise<boolean> {
+  const db = await getDb()
+  const [cat] = await db.select({ id: categories.id }).from(categories).limit(1)
+  const [tool] = await db.select({ id: tools.id }).from(tools).limit(1)
+  return Boolean(cat || tool)
+}
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 let categoryMapCache: { at: number; map: Map<string, Category> } | null = null
@@ -263,11 +269,6 @@ async function loadCategoryMap(): Promise<Map<string, Category>> {
   const map = new Map(cats.map((c) => [c.id, c]))
   categoryMapCache = { at: now, map }
   return map
-}
-
-/** Invalidate any in-memory caches. Call after admin writes. */
-export function invalidateQueryCache() {
-  categoryMapCache = null
 }
 
 function paginate<T>(items: T[], page: number, pageSize: number): PaginatedResult<T> {

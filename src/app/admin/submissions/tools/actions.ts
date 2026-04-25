@@ -18,6 +18,7 @@ import { requireAdminAction, NotAuthenticatedError } from '@/lib/auth'
 import { getDb, schema } from '@/lib/db/client'
 import type { ToolSubmissionRow } from '@/lib/db/schema'
 import { audit } from '@/lib/audit'
+import { normalizeHttpUrl } from '@/lib/url'
 
 type ActionResult = {
   ok: boolean
@@ -94,7 +95,7 @@ export async function approveSubmission(id: string): Promise<ActionResult> {
   // Verify the category still exists & isn't archived.
   const db = await getDb()
   const [cat] = await db
-    .select({ id: schema.categories.id })
+    .select({ id: schema.categories.id, slug: schema.categories.slug })
     .from(schema.categories)
     .where(eq(schema.categories.id, sub.categoryId))
     .limit(1)
@@ -103,6 +104,11 @@ export async function approveSubmission(id: string): Promise<ActionResult> {
   }
 
   const slug = await ensureUniqueSlug(slugify(sub.toolName))
+  const websiteUrl = normalizeHttpUrl(sub.websiteUrl)
+  if (!websiteUrl) {
+    return { ok: false, message: 'Submission website must be a valid http(s) URL before approval.' }
+  }
+
   const newToolId = crypto.randomUUID()
   const now = Date.now()
 
@@ -113,7 +119,7 @@ export async function approveSubmission(id: string): Promise<ActionResult> {
     description: sub.description,
     shortDesc: null,
     useCases: null,
-    websiteUrl: sub.websiteUrl,
+    websiteUrl,
     logoUrl: null,
     pricingModel: sub.pricingModel ?? 'FREEMIUM',
     isFeatured: false,
@@ -142,6 +148,14 @@ export async function approveSubmission(id: string): Promise<ActionResult> {
 
   revalidatePath('/admin/submissions/tools')
   revalidatePath('/admin/dashboard')
+  revalidatePath('/')
+  revalidatePath('/all-categories')
+  revalidatePath('/market-map')
+  revalidatePath('/search')
+  revalidatePath(`/product/${slug}`)
+  revalidatePath(`/product/${slug}/og-image`)
+  revalidatePath(`/category/${cat.slug}`)
+  revalidatePath(`/category/${cat.slug}/og-image`)
   return { ok: true, status: 'approved' }
 }
 

@@ -148,6 +148,26 @@ export default function StackContributionForm({ tools }: { tools: Tool[] }) {
 
   return (
     <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '-10000px',
+          width: 1,
+          height: 1,
+          overflow: 'hidden',
+        }}
+      >
+        <label htmlFor="companyWebsite">Company website</label>
+        <input
+          id="companyWebsite"
+          type="text"
+          name="companyWebsite"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       {state.message && !state.success && (
         <div
           style={{

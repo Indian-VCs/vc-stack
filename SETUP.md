@@ -21,7 +21,7 @@ npx drizzle-kit generate
 npx drizzle-kit push
 
 # Seed local DB from the static catalog
-npx tsx scripts/seed.ts --reset
+npm run seed:reset
 ```
 
 You should see: `✓ seeded 17 categories and 119 tools into ./local.db`.
@@ -29,7 +29,7 @@ You should see: `✓ seeded 17 categories and 119 tools into ./local.db`.
 ## 3. Generate the admin password hash
 
 ```bash
-npx tsx scripts/hash-password.ts 'your-very-strong-password-here'
+npm run hash-password -- 'your-very-strong-password-here'
 ```
 
 Copy the printed `$2b$12$...` string — you'll paste it as `ADMIN_PASSWORD_HASH`.
@@ -72,8 +72,8 @@ Apply migrations + seed to remote D1:
 
 ```bash
 npx wrangler d1 migrations apply vc-stack --remote
-npx wrangler d1 execute vc-stack --remote --command "$(cat scripts/seed.sql)"
-# (Or run the seed script against a local file then pipe — see scripts/seed.ts header)
+npm run --silent seed:sql > /tmp/vc-stack-seed.sql
+npx wrangler d1 execute vc-stack --remote --file /tmp/vc-stack-seed.sql
 ```
 
 Set Cloudflare secrets:

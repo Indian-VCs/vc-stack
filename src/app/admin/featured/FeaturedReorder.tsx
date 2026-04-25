@@ -11,6 +11,7 @@
 
 import { useState, useTransition } from 'react'
 import type { ToolRow } from '@/lib/db/schema'
+import { displayExternalUrl, externalHref } from '@/lib/url'
 import { saveFeaturedOrder } from './actions'
 
 type Status = { ok: boolean; message: string } | null
@@ -111,38 +112,7 @@ export default function FeaturedReorder({ tools }: { tools: ToolRow[] }) {
               </div>
 
               <div style={{ minWidth: 0 }}>
-                <div
-                  style={{
-                    fontFamily: 'var(--serif)',
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: 'var(--ink)',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {tool.name}
-                </div>
-                <div
-                  style={{
-                    marginTop: 4,
-                    display: 'flex',
-                    gap: 12,
-                    flexWrap: 'wrap',
-                    fontFamily: 'var(--mono)',
-                    fontSize: 'var(--fs-tag)',
-                    color: 'var(--ink-muted)',
-                  }}
-                >
-                  <span>/{tool.slug}</span>
-                  <a
-                    href={tool.websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: 'var(--ink-light)', textDecoration: 'underline' }}
-                  >
-                    {tool.websiteUrl}
-                  </a>
-                </div>
+                <FeaturedToolMeta tool={tool} />
               </div>
 
               <div style={{ display: 'flex', gap: 6 }}>
@@ -246,6 +216,49 @@ export default function FeaturedReorder({ tools }: { tools: ToolRow[] }) {
         )}
       </div>
     </div>
+  )
+}
+
+function FeaturedToolMeta({ tool }: { tool: ToolRow }) {
+  const websiteHref = externalHref(tool.websiteUrl)
+
+  return (
+    <>
+      <div
+        style={{
+          fontFamily: 'var(--serif)',
+          fontWeight: 700,
+          fontSize: '1.1rem',
+          color: 'var(--ink)',
+          lineHeight: 1.2,
+        }}
+      >
+        {tool.name}
+      </div>
+      <div
+        style={{
+          marginTop: 4,
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          fontFamily: 'var(--mono)',
+          fontSize: 'var(--fs-tag)',
+          color: 'var(--ink-muted)',
+        }}
+      >
+        <span>/{tool.slug}</span>
+        {websiteHref && (
+          <a
+            href={websiteHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--ink-light)', textDecoration: 'underline' }}
+          >
+            {displayExternalUrl(tool.websiteUrl)}
+          </a>
+        )}
+      </div>
+    </>
   )
 }
 

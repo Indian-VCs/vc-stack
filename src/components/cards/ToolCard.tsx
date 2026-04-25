@@ -4,6 +4,7 @@
 
 import Link from 'next/link'
 import type { Tool } from '@/lib/types'
+import { externalHref } from '@/lib/url'
 
 function Logo({ name, logoUrl, size = 40 }: { name: string; logoUrl?: string | null; size?: number }) {
   if (logoUrl) {
@@ -60,6 +61,8 @@ interface ToolCardProps {
 }
 
 export default function ToolCard({ tool }: ToolCardProps) {
+  const websiteHref = externalHref(tool.websiteUrl)
+
   return (
     <div
       className="tool-card"
@@ -150,29 +153,31 @@ export default function ToolCard({ tool }: ToolCardProps) {
           borderTop: '1px solid var(--rule)',
         }}
       >
-        <a
-          href={tool.websiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Visit ${tool.name} (opens in a new tab)`}
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            display: 'inline-flex',
-            alignItems: 'center',
-            minHeight: 44,
-            padding: '10px 4px',
-            margin: '-10px -4px',
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            color: 'var(--ink-muted)',
-            textDecoration: 'none',
-          }}
-        >
-          Visit ↗
-        </a>
+        {websiteHref && (
+          <a
+            href={websiteHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Visit ${tool.name} (opens in a new tab)`}
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 44,
+              padding: '10px 4px',
+              margin: '-10px -4px',
+              fontFamily: 'var(--mono)',
+              fontSize: 'var(--fs-tag)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: 'var(--ink-muted)',
+              textDecoration: 'none',
+            }}
+          >
+            Visit ↗
+          </a>
+        )}
       </div>
     </div>
   )

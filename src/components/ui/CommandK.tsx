@@ -4,10 +4,20 @@
 
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Tool } from '@/lib/types'
+
+export interface CommandKTool {
+  id: string
+  name: string
+  slug: string
+  shortDesc?: string | null
+  categoryName?: string | null
+  logoUrl?: string | null
+  websiteUrl: string
+  isFeatured: boolean
+}
 
 interface Props {
-  tools: Tool[]
+  tools: CommandKTool[]
 }
 
 const MAX_RESULTS = 8
@@ -28,12 +38,11 @@ function initials(name: string) {
   return w.length === 1 ? w[0].substring(0, 2).toUpperCase() : (w[0][0] + w[1][0]).toUpperCase()
 }
 
-function matches(tool: Tool, q: string): boolean {
+function matches(tool: CommandKTool, q: string): boolean {
   const haystack = [
     tool.name,
     tool.shortDesc ?? '',
-    tool.description ?? '',
-    tool.category?.name ?? '',
+    tool.categoryName ?? '',
   ].join(' ').toLowerCase()
   return haystack.includes(q)
 }
@@ -132,7 +141,7 @@ export default function CommandK({ tools }: Props) {
     return () => window.removeEventListener('keydown', handleFocusTrap)
   }, [open])
 
-  const select = useCallback((tool: Tool) => {
+  const select = useCallback((tool: CommandKTool) => {
     close()
     router.push(`/product/${tool.slug}`)
   }, [close, router])
@@ -238,8 +247,8 @@ export default function CommandK({ tools }: Props) {
                       <div className="ckk-row-name">{tool.name}</div>
                       {tool.shortDesc && <div className="ckk-row-desc">{tool.shortDesc}</div>}
                     </div>
-                    {tool.category && (
-                      <span className="ckk-row-cat">{tool.category.name}</span>
+                    {tool.categoryName && (
+                      <span className="ckk-row-cat">{tool.categoryName}</span>
                     )}
                   </button>
                 </li>

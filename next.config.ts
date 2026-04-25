@@ -11,16 +11,17 @@ import type { NextConfig } from "next";
 // Without that domain in script-src/style-src/font-src, every fresh visitor
 // sees an unstyled, un-hydrated page in production.
 //
-// `'unsafe-inline'` for scripts is required by Next.js 16 hydration and inline
-// JSON-LD <script> tags. A nonce-based CSP is the next upgrade once the public
-// site stabilises.
+// `'unsafe-inline'` for scripts is required by Next.js hydration and inline
+// JSON-LD <script> tags. `unsafe-eval` is dev-only for the Next.js overlay.
+// A nonce-based CSP is the next upgrade once the public site stabilises.
 //
 // Roll changes out in `Content-Security-Policy-Report-Only` first if you tune
 // the directives below — a broken CSP silently breaks GTM and GA.
 const WEBFLOW_CDN = "https://*.cosmic.webflow.services"
+const DEV_SCRIPT_SRC = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'"
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${WEBFLOW_CDN} https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com`,
+  `script-src 'self' 'unsafe-inline'${DEV_SCRIPT_SRC} ${WEBFLOW_CDN} https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com`,
   `style-src 'self' 'unsafe-inline' ${WEBFLOW_CDN} https://fonts.googleapis.com`,
   "img-src 'self' data: blob: https:",
   `font-src 'self' data: ${WEBFLOW_CDN} https://fonts.gstatic.com`,

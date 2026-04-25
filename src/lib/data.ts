@@ -36,6 +36,7 @@ import {
   dbSearchTools,
   dbGetCategoryPreviewTools,
   dbGetCanonicalStats,
+  dbCatalogHasRows,
 } from './db/queries'
 import {
   STATIC_CATEGORIES,
@@ -70,13 +71,21 @@ function dedupeByWebsite<T extends { websiteUrl: string; name: string }>(list: T
   return out
 }
 
-/** Try a DB call; return null on failure or "empty" so callers can fall back to STATIC. */
+/** Try a DB call; return null on failure or caller-defined "empty" fallback cases. */
 async function viaDb<T>(call: () => Promise<T>, isEmpty: (v: T) => boolean): Promise<T | null> {
   try {
     const result = await call()
     return isEmpty(result) ? null : result
   } catch {
     return null
+  }
+}
+
+async function dbHasSeedData(): Promise<boolean> {
+  try {
+    return await dbCatalogHasRows()
+  } catch {
+    return false
   }
 }
 
@@ -98,14 +107,19 @@ function withPseoContent(cat: Category | null | undefined): Category | null {
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  const fromDb = await viaDb(dbGetCategories, (xs) => xs.length === 0)
-  const cats = fromDb ?? STATIC_CATEGORIES
+  const fromDb = await viaDb(dbGetCategories, () => false)
+  const cats =
+    fromDb && (fromDb.length > 0 || await dbHasSeedData())
+      ? fromDb
+      : STATIC_CATEGORIES
   return cats.map((c) => withPseoContent(c)!)
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const fromDb = await viaDb(() => dbGetCategoryBySlug(slug), (v) => v === null)
-  const cat = fromDb ?? STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
+  const fromDb = await viaDb(() => dbGetCategoryBySlug(slug), () => false)
+  if (fromDb) return withPseoContent(fromDb)
+  if (fromDb === null && await dbHasSeedData()) return null
+  const cat = STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
   return withPseoContent(cat)
 }
 
@@ -116,9 +130,9 @@ export async function getToolsByCategory(
   const { page = 1, pageSize = 24 } = filters
   const fromDb = await viaDb(
     () => dbGetToolsByCategory(categorySlug, page, pageSize),
-    (v) => v.total === 0,
+    () => false,
   )
-  if (fromDb) return fromDb
+  if (fromDb && (fromDb.total > 0 || await dbHasSeedData())) return fromDb
 
   const filtered = STATIC_TOOLS
     .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
@@ -127,21 +141,26 @@ export async function getToolsByCategory(
 }
 
 export async function getAllTools(): Promise<Tool[]> {
-  const fromDb = await viaDb(dbGetAllTools, (xs) => xs.length === 0)
-  const list = fromDb ?? [...STATIC_TOOLS].sort(
+  const fromDb = await viaDb(dbGetAllTools, () => false)
+  if (fromDb && (fromDb.length > 0 || await dbHasSeedData())) {
+    return pinEverTrace(dedupeByWebsite(fromDb))
+  }
+  const list = [...STATIC_TOOLS].sort(
     (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
   )
   return pinEverTrace(dedupeByWebsite(list))
 }
 
 export async function getToolBySlug(slug: string): Promise<Tool | null> {
-  const fromDb = await viaDb(() => dbGetToolBySlug(slug), (v) => v === null)
+  const fromDb = await viaDb(() => dbGetToolBySlug(slug), () => false)
+  if (fromDb) return fromDb
+  if (fromDb === null && await dbHasSeedData()) return null
   return fromDb ?? STATIC_TOOLS.find((t) => t.slug === slug) ?? null
 }
 
 export async function searchTools(filters: SearchFilters): Promise<PaginatedResult<Tool>> {
-  const fromDb = await viaDb(() => dbSearchTools(filters), (v) => v.total === 0)
-  if (fromDb) return fromDb
+  const fromDb = await viaDb(() => dbSearchTools(filters), () => false)
+  if (fromDb && (fromDb.total > 0 || await dbHasSeedData())) return fromDb
 
   const { query = '', category, pricing, page = 1, pageSize = 24 } = filters
   let results = STATIC_TOOLS
@@ -217,7 +236,7 @@ async function getRelatedTools(toolId: string, categoryId: string, limit = 4): P
 /** Returns up to 6 preview tools (name + logoUrl) per category slug. */
 export async function getCategoryPreviewTools(): Promise<Record<string, CategoryPreviewTool[]>> {
   const fromDb = await viaDb(dbGetCategoryPreviewTools, (v) => Object.keys(v).length === 0)
-  if (fromDb) return fromDb
+  if (fromDb || await dbHasSeedData()) return fromDb ?? {}
 
   const result: Record<string, CategoryPreviewTool[]> = {}
   for (const tool of STATIC_TOOLS) {
@@ -263,9 +282,11 @@ export async function getCanonicalStats(): Promise<{
 }> {
   const fromDb = await viaDb(
     dbGetCanonicalStats,
-    (v) => v.uniqueTools === 0 && v.totalCategories === 0,
+    () => false,
   )
-  if (fromDb) return fromDb
+  if (fromDb && (fromDb.uniqueTools > 0 || fromDb.totalCategories > 0 || await dbHasSeedData())) {
+    return fromDb
+  }
 
   return {
     totalTools: totalAppearances(STATIC_TOOLS),

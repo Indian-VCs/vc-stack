@@ -19,6 +19,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkLogin } from '@/lib/auth/credentials'
 import { getSession } from '@/lib/auth/session'
+import { isSameOriginRequest } from '@/lib/auth/origin'
 import * as rateLimit from '@/lib/rate-limit'
 import { auditFailedLogin, auditSuccessfulLogin } from '@/lib/audit'
 
@@ -30,21 +31,8 @@ const LoginSchema = z.object({
 const LIMIT = 5
 const WINDOW_MS = 15 * 60 * 1000
 
-function isAllowedOrigin(request: Request): boolean {
-  const origin = request.headers.get('origin')
-  // Same-origin POSTs from the login form may omit Origin in some browsers.
-  if (!origin) return true
-  try {
-    const u = new URL(origin)
-    const host = request.headers.get('host')
-    return host === u.host
-  } catch {
-    return false
-  }
-}
-
 export async function POST(request: Request) {
-  if (!isAllowedOrigin(request)) {
+  if (!isSameOriginRequest(request)) {
     return NextResponse.json({ error: 'Cross-site request blocked.' }, { status: 403 })
   }
 

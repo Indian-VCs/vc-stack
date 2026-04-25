@@ -7,12 +7,12 @@
 
 import { verifyPassword } from './password'
 
-export interface AdminCredentials {
+interface AdminCredentials {
   email: string
   passwordHash: string
 }
 
-export function getConfiguredAdmin(): AdminCredentials | null {
+function getConfiguredAdmin(): AdminCredentials | null {
   const email = process.env.ADMIN_EMAIL
   const passwordHash = process.env.ADMIN_PASSWORD_HASH
   if (!email || !passwordHash) return null

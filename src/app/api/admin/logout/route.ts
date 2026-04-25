@@ -5,9 +5,14 @@
 
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth/session'
+import { isSameOriginRequest } from '@/lib/auth/origin'
 import { audit } from '@/lib/audit'
 
-export async function POST() {
+export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: 'Cross-site request blocked.' }, { status: 403 })
+  }
+
   const session = await getSession()
   const email = session.email
   session.destroy()

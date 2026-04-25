@@ -2,12 +2,20 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
-import { getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
+import { getAllTools, getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
 import { OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
+import { domainForHttpUrl, externalHref } from '@/lib/url'
 import LogoCard from '@/components/ui/LogoCard'
 
 interface Props {
   params: Promise<{ slug: string }>
+}
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const tools = await getAllTools()
+  return tools.map((tool) => ({ slug: tool.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -63,14 +71,6 @@ const PRICING_TAG: Record<string, string> = {
   ENTERPRISE: 'tag tag--solid',
 }
 
-function domainFor(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return url
-  }
-}
-
 export default async function ToolDetailPage({ params }: Props) {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
@@ -80,7 +80,8 @@ export default async function ToolDetailPage({ params }: Props) {
   const FEATURED_CAP = 5
   const spotlightShown = spotlight.slice(0, FEATURED_CAP)
   const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
-  const domain = domainFor(tool.websiteUrl)
+  const websiteHref = externalHref(tool.websiteUrl)
+  const domain = domainForHttpUrl(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
   const toolPageUrl = buildToolUrl(tool.slug)
@@ -176,15 +177,17 @@ export default async function ToolDetailPage({ params }: Props) {
           <h1 className="tool-head-name hero-enter" style={{ animationDelay: '80ms' }}>
             {tool.name}
           </h1>
-          <a
-            href={tool.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="tool-head-visit hero-enter"
-            style={{ animationDelay: '200ms' }}
-          >
-            Visit Website ↗
-          </a>
+          {websiteHref && (
+            <a
+              href={websiteHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tool-head-visit hero-enter"
+              style={{ animationDelay: '200ms' }}
+            >
+              Visit Website ↗
+            </a>
+          )}
           {tool.category && (
             <Link
               href={`/category/${tool.category.slug}`}
@@ -286,21 +289,27 @@ export default async function ToolDetailPage({ params }: Props) {
         )}
         <span>
           <span style={{ color: 'var(--ink-muted)' }}>Site · </span>
-          <a
-            href={tool.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: 'var(--ink)',
-              textDecoration: 'none',
-              borderBottom: '1px solid var(--rule)',
-              textTransform: 'lowercase',
-              letterSpacing: '0',
-              fontFamily: 'var(--body)',
-            }}
-          >
-            {domain}
-          </a>
+          {websiteHref ? (
+            <a
+              href={websiteHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'var(--ink)',
+                textDecoration: 'none',
+                borderBottom: '1px solid var(--rule)',
+                textTransform: 'lowercase',
+                letterSpacing: '0',
+                fontFamily: 'var(--body)',
+              }}
+            >
+              {domain}
+            </a>
+          ) : (
+            <span style={{ color: 'var(--red)', letterSpacing: '0', fontFamily: 'var(--body)' }}>
+              Invalid URL
+            </span>
+          )}
         </span>
       </div>
 
