@@ -36,7 +36,7 @@ Editor-only newsroom at `/admin/login`. Triages tool / firm-stack submissions an
 - iron-session cookies (encrypted + signed)
 - bcrypt password verification (env-based single admin)
 - IP-based rate limiting on the login endpoint
-- `src/proxy.ts` (Next.js 16 convention; the file MUST be `proxy.ts` exporting `proxy` — the prior `middleware.ts` name is deprecated) gating every `/admin/*` and `/api/admin/*`
+- `src/middleware.ts` with `runtime = 'experimental-edge'` gating every `/admin/*` and `/api/admin/*`. **Do NOT rename to `proxy.ts`** — Next.js 16's new `proxy.ts` convention is Node.js-runtime only, and OpenNext for Cloudflare Workers (Webflow Cloud) rejects Node.js middleware ("Node.js middleware is not currently supported"). The legacy `middleware.ts` name is the only path that still supports Edge.
 - `requireAdmin()` defense-in-depth on every admin page
 - `audit_log` table writes for every mutation
 

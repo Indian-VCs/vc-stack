@@ -1,14 +1,16 @@
 /**
- * Edge proxy — admin route protection.
+ * Edge middleware — admin route protection.
  *
- * THE FILE NAME MATTERS. Next.js 16+ invokes the proxy from `proxy.ts` (or
- * .js/.tsx/.jsx) at the project root or src/ root, exporting a function named
- * `proxy`. Renaming this file or its export silently disables the gate.
- * (Next 15 and earlier called this "middleware" — the rename is documented
- * at https://nextjs.org/docs/messages/middleware-to-proxy.)
+ * Why `middleware.ts` and not `proxy.ts`: Next.js 16 introduced `proxy.ts` as
+ * the successor convention, but it runs only on the Node.js runtime. OpenNext
+ * for Cloudflare Workers (which is what Webflow Cloud uses) rejects Node.js
+ * middleware ("Node.js middleware is not currently supported. Consider
+ * switching to Edge Middleware."). The legacy `middleware.ts` name is the
+ * only path that still supports Edge runtime, so we keep it until either
+ * OpenNext supports Node.js proxy or Next.js allows Edge proxy.
  *
  * CI guardrail:
- *   grep -q "export async function proxy" src/proxy.ts
+ *   grep -q "export async function middleware" src/middleware.ts
  *
  * Note on basePath: Next.js applies the `basePath: "/vc-stack"` from
  * next.config.ts transparently. The `matcher` below is written WITHOUT the
@@ -20,7 +22,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth/session'
 
-export async function proxy(request: NextRequest) {
+export const runtime = 'experimental-edge'
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // /admin/login is the only admin path open to unauthed users.
@@ -57,7 +61,10 @@ export async function proxy(request: NextRequest) {
         return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 })
       }
 
-      const loginUrl = new URL('/admin/login', request.url)
+      // Clone nextUrl so basePath (`/vc-stack`) is preserved in the redirect.
+      const loginUrl = request.nextUrl.clone()
+      loginUrl.pathname = '/admin/login'
+      loginUrl.search = ''
       const next = pathname + (request.nextUrl.search ?? '')
       if (next !== '/admin' && next !== '/admin/login') {
         loginUrl.searchParams.set('next', next)
