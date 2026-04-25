@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useTransition, useState } from 'react'
 import type { ToolRow } from '@/lib/db/schema'
-import { externalHref } from '@/lib/url'
 import { archiveTool, restoreTool } from './_form/actions'
 
 export default function ToolListItem({
@@ -16,7 +15,6 @@ export default function ToolListItem({
   const [isPending, start] = useTransition()
   const [error, setError] = useState('')
   const [archived, setArchived] = useState(Boolean(row.archivedAt))
-  const websiteHref = externalHref(row.websiteUrl)
 
   function toggle() {
     setError('')
@@ -110,16 +108,14 @@ export default function ToolListItem({
           color: 'var(--ink-light)',
         }}
       >
-        {websiteHref && (
-          <a
-            href={websiteHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--red)', textDecoration: 'none' }}
-          >
-            ↗ open
-          </a>
-        )}
+        <a
+          href={row.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'var(--red)', textDecoration: 'none' }}
+        >
+          ↗ open
+        </a>
       </div>
 
       <div style={{ alignSelf: 'center', display: 'flex', gap: 8 }}>

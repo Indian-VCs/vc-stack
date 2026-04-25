@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react'
 import type { StackSubmissionRow } from '@/lib/db/schema'
-import { displayExternalUrl, externalHref } from '@/lib/url'
 import { publishStack, rejectStack, archiveStack } from './actions'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -17,7 +16,6 @@ export default function StackRow({ row }: { row: StackSubmissionRow }) {
   const [error, setError] = useState('')
   const [status, setStatus] = useState(row.status)
   const [publishedSlug, setPublishedSlug] = useState(row.publishedSlug ?? '')
-  const firmWebsiteHref = externalHref(row.firmWebsite)
 
   function run(fn: () => Promise<{ ok: boolean; message?: string; status?: typeof row.status }>) {
     setError('')
@@ -52,9 +50,9 @@ export default function StackRow({ row }: { row: StackSubmissionRow }) {
           >
             {row.firmName}
           </div>
-          {firmWebsiteHref && (
+          {row.firmWebsite && (
             <a
-              href={firmWebsiteHref}
+              href={row.firmWebsite}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -64,7 +62,7 @@ export default function StackRow({ row }: { row: StackSubmissionRow }) {
                 textDecoration: 'none',
               }}
             >
-              {displayExternalUrl(row.firmWebsite)}
+              {row.firmWebsite.replace(/^https?:\/\//, '')}
             </a>
           )}
         </div>

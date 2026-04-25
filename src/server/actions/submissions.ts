@@ -3,8 +3,6 @@
 import { z } from 'zod'
 import { STATIC_CATEGORIES } from '@/lib/data'
 import { getDb, schema } from '@/lib/db/client'
-import { isHttpUrl, normalizeHttpUrl } from '@/lib/url'
-import { checkSubmissionLimit, hitHoneypot } from './publicSubmissionGuards'
 
 const CATEGORY_IDS = new Set(STATIC_CATEGORIES.map((category) => category.id))
 
@@ -12,7 +10,7 @@ const CATEGORY_IDS = new Set(STATIC_CATEGORIES.map((category) => category.id))
 
 const submitToolSchema = z.object({
   toolName: z.string().trim().min(2, 'Tool name must be at least 2 characters').max(100),
-  websiteUrl: z.string().trim().max(500).refine(isHttpUrl, 'Please enter a valid http(s) URL'),
+  websiteUrl: z.string().trim().url('Please enter a valid URL').max(500),
   description: z.string().trim().min(20, 'Description must be at least 20 characters').max(1000),
   submitterEmail: z.string().trim().toLowerCase().email('Please enter a valid email').max(200),
   submitterName: z.string().trim().max(100).optional(),
@@ -42,22 +40,6 @@ export async function submitTool(
   _prev: SubmitToolState,
   formData: FormData,
 ): Promise<SubmitToolState> {
-  if (hitHoneypot(formData)) {
-    return {
-      success: true,
-      message:
-        'Thanks — submission received. An editor will review it within a few days. Reply to your confirmation email for follow-up.',
-    }
-  }
-
-  const limit = await checkSubmissionLimit('tool')
-  if (!limit.allowed) {
-    return {
-      success: false,
-      message: 'Too many submissions from this network. Please try again later.',
-    }
-  }
-
   const raw = {
     toolName: formData.get('toolName'),
     websiteUrl: formData.get('websiteUrl'),
@@ -80,19 +62,10 @@ export async function submitTool(
 
   try {
     const db = await getDb()
-    const websiteUrl = normalizeHttpUrl(parsed.data.websiteUrl)
-    if (!websiteUrl) {
-      return {
-        success: false,
-        message: 'Please fix the errors below.',
-        errors: { websiteUrl: ['Please enter a valid http(s) URL'] },
-      }
-    }
-
     await db.insert(schema.toolSubmissions).values({
       id: crypto.randomUUID(),
       toolName: parsed.data.toolName,
-      websiteUrl,
+      websiteUrl: parsed.data.websiteUrl,
       description: parsed.data.description,
       categoryId: parsed.data.categoryId,
       submitterEmail: parsed.data.submitterEmail,

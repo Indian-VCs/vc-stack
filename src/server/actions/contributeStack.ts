@@ -3,8 +3,6 @@
 import { z } from 'zod'
 import { inArray } from 'drizzle-orm'
 import { getDb, schema } from '@/lib/db/client'
-import { isHttpUrl, normalizeHttpUrl } from '@/lib/url'
-import { checkSubmissionLimit, hitHoneypot } from './publicSubmissionGuards'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -53,7 +51,7 @@ const submitStackSchema = z.object({
     .string()
     .trim()
     .max(500)
-    .refine(isHttpUrl, 'Please enter a valid http(s) URL')
+    .url('Please enter a valid URL')
     .optional()
     .or(z.literal('').transform(() => undefined)),
   submitterName: z.string().trim().min(1, 'Your name is required').max(100),
@@ -95,22 +93,6 @@ export async function submitStack(
   _prev: SubmitStackState,
   formData: FormData,
 ): Promise<SubmitStackState> {
-  if (hitHoneypot(formData)) {
-    return {
-      success: true,
-      message:
-        'Thanks — we have your stack. An editor will review it within a few days and reach out before publishing a firm profile.',
-    }
-  }
-
-  const limit = await checkSubmissionLimit('stack')
-  if (!limit.allowed) {
-    return {
-      success: false,
-      message: 'Too many submissions from this network. Please try again later.',
-    }
-  }
-
   const raw = {
     firmName: formData.get('firmName') ?? '',
     firmWebsite: formData.get('firmWebsite') ?? '',
@@ -173,7 +155,7 @@ export async function submitStack(
     await db.insert(schema.stackSubmissions).values({
       id: crypto.randomUUID(),
       firmName: data.firmName,
-      firmWebsite: data.firmWebsite ? normalizeHttpUrl(data.firmWebsite) : null,
+      firmWebsite: data.firmWebsite ?? null,
       submitterName: data.submitterName,
       submitterRole: data.submitterRole ?? null,
       submitterEmail: data.submitterEmail,

@@ -43,19 +43,6 @@ async function slugInUse(slug: string, excludeId?: string): Promise<boolean> {
   return Boolean(hit)
 }
 
-function revalidateCategorySlug(slug: string | null | undefined) {
-  if (!slug) return
-  revalidatePath(`/category/${slug}`)
-  revalidatePath(`/category/${slug}/og-image`)
-}
-
-function revalidateCatalogSurfaces() {
-  revalidatePath('/')
-  revalidatePath('/all-categories')
-  revalidatePath('/market-map')
-  revalidatePath('/search')
-}
-
 export async function createCategory(
   _prev: CategoryActionState,
   formData: FormData,
@@ -105,9 +92,8 @@ export async function createCategory(
     })
 
     revalidatePath('/admin/categories')
-    revalidatePath('/admin/dashboard')
-    revalidateCatalogSurfaces()
-    revalidateCategorySlug(parsed.data.slug)
+    revalidatePath('/all-categories')
+    revalidatePath(`/category/${parsed.data.slug}`)
     return { ok: true, message: 'Created.' }
   })
 
@@ -169,10 +155,9 @@ export async function updateCategory(
     })
 
     revalidatePath('/admin/categories')
-    revalidatePath('/admin/dashboard')
-    revalidateCatalogSurfaces()
-    revalidateCategorySlug(before.slug)
-    revalidateCategorySlug(parsed.data.slug)
+    revalidatePath('/all-categories')
+    revalidatePath(`/category/${before.slug}`)
+    revalidatePath(`/category/${parsed.data.slug}`)
     return { ok: true, message: 'Saved.' }
   })
 
@@ -219,9 +204,8 @@ export async function archiveCategory(id: string): Promise<{ ok: boolean; messag
     })
 
     revalidatePath('/admin/categories')
-    revalidatePath('/admin/dashboard')
-    revalidateCatalogSurfaces()
-    revalidateCategorySlug(before.slug)
+    revalidatePath('/all-categories')
+    revalidatePath(`/category/${before.slug}`)
     return { ok: true }
   })) as { ok: boolean; message?: string }
 }
@@ -250,9 +234,8 @@ export async function restoreCategory(id: string): Promise<{ ok: boolean; messag
     })
 
     revalidatePath('/admin/categories')
-    revalidatePath('/admin/dashboard')
-    revalidateCatalogSurfaces()
-    revalidateCategorySlug(before.slug)
+    revalidatePath('/all-categories')
+    revalidatePath(`/category/${before.slug}`)
     return { ok: true }
   })) as { ok: boolean; message?: string }
 }

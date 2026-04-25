@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const CategorySchema = z.object({
+export const CategorySchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(80),
   slug: z
     .string()

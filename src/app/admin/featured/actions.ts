@@ -101,7 +101,6 @@ export async function saveFeaturedOrder(orderedIds: string[]): Promise<Result> {
   revalidatePath('/admin/tools')
   revalidatePath('/admin/dashboard')
   revalidatePath('/')
-  revalidatePath('/product/[slug]', 'page')
 
   return { ok: true, message: 'Order saved.' }
 }

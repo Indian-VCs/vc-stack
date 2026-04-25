@@ -1,14 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "types": [
-      "@cloudflare/workers-types"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["@cloudflare/workers-types"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,15 +20,7 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "next": [
-        "./node_modules/next"
-      ],
-      "next/*": [
-        "./node_modules/next/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
@@ -47,8 +33,5 @@
     "../../.cache/vcstack-next/types/**/*.ts",
     "../../.cache/vcstack-next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "prisma"
-  ]
+  "exclude": ["node_modules", "prisma"]
 }

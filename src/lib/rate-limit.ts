@@ -24,7 +24,7 @@ interface Bucket {
 
 const buckets = new Map<string, Bucket>()
 
-interface RateLimitResult {
+export interface RateLimitResult {
   allowed: boolean
   remaining: number
   /** Unix ms when the bucket resets. */
@@ -68,7 +68,7 @@ export function reset(key: string): void {
  * Pull the client IP out of common headers Cloudflare / proxies set.
  * Falls back to a static "unknown" key — those requests share a bucket.
  */
-export function clientIp(request: Request | { headers: Pick<Headers, 'get'> }): string {
+export function clientIp(request: Request | { headers: Headers }): string {
   const h = request.headers
   return (
     h.get('cf-connecting-ip') ??

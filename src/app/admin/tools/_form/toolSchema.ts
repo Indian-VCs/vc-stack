@@ -1,9 +1,8 @@
 import { z } from 'zod'
-import { isHttpUrl } from '@/lib/url'
 
 const PRICING = ['FREE', 'FREEMIUM', 'PAID', 'ENTERPRISE'] as const
 
-const ToolSchema = z.object({
+export const ToolSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(120),
   slug: z
     .string()
@@ -19,14 +18,14 @@ const ToolSchema = z.object({
     .max(2000)
     .optional()
     .default(''), // textarea, one bullet per line
-  websiteUrl: z.string().trim().max(500).refine(isHttpUrl, 'Must be a valid http(s) URL'),
+  websiteUrl: z.string().trim().url('Must be a valid URL').max(500),
   logoUrl: z
     .string()
     .trim()
     .max(500)
     .optional()
     .default('')
-    .refine((v) => !v || isHttpUrl(v), {
+    .refine((v) => !v || /^https?:\/\//i.test(v), {
       message: 'Must be a valid http(s) URL',
     }),
   categoryId: z.string().trim().min(1, 'Section is required'),
@@ -38,6 +37,8 @@ const ToolSchema = z.object({
     .optional()
     .default(''),
 })
+
+export type ToolFormShape = z.infer<typeof ToolSchema>
 
 export type ToolActionState = {
   ok: boolean
