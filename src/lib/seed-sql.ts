@@ -39,10 +39,13 @@ function upsert(
     .filter((c) => c !== 'id' && c !== 'created_at')
     .map((c) => `${c} = excluded.${c}`)
     .join(', ')
+  // One statement per line — D1 splits the multi-statement string on newlines
+  // and treats each line as its own SQL statement. Embedded line breaks here
+  // would cause D1 to try parsing fragments. SQLite locally does not care.
   const valuesSql = rows
     .map((row) => `(${columns.map((c) => sqlValue(row[c])).join(', ')})`)
-    .join(',\n  ')
-  return `INSERT INTO ${table} (${cols}) VALUES\n  ${valuesSql}\nON CONFLICT(id) DO UPDATE SET ${updates};`
+    .join(', ')
+  return `INSERT INTO ${table} (${cols}) VALUES ${valuesSql} ON CONFLICT(id) DO UPDATE SET ${updates};`
 }
 
 export interface SeedSqlOptions {
