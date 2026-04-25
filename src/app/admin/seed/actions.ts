@@ -55,25 +55,43 @@ async function runSeed(admin: { email: string }): Promise<SeedResult> {
     await runOnSqliteDev(seedSql)
   }
 
-  await audit({
-    adminEmail: admin.email,
-    action: 'create',
-    entity: 'tool',
-    entityId: null,
-    diff: {
-      seed: true,
-      categories: STATIC_CATEGORIES.length,
-      tools: STATIC_TOOLS.length,
-      featured: FEATURED_TOOL_SLUGS.length,
-    },
-  })
+  // Audit + cache revalidation are best-effort — they should never bring down
+  // the seed itself. revalidatePath in particular triggers a server-side
+  // re-render of the named paths under OpenNext, and those renders can fail
+  // independently of whether the seed succeeded. Wrap each so a render
+  // failure post-seed doesn't surface as "Server Components render error"
+  // when the data has already landed.
+  try {
+    await audit({
+      adminEmail: admin.email,
+      action: 'create',
+      entity: 'tool',
+      entityId: null,
+      diff: {
+        seed: true,
+        categories: STATIC_CATEGORIES.length,
+        tools: STATIC_TOOLS.length,
+        featured: FEATURED_TOOL_SLUGS.length,
+      },
+    })
+  } catch {
+    // already logged inside audit()
+  }
 
-  revalidatePath('/admin/dashboard')
-  revalidatePath('/admin/seed')
-  revalidatePath('/admin/tools')
-  revalidatePath('/admin/categories')
-  revalidatePath('/admin/featured')
-  revalidatePath('/')
+  for (const path of [
+    '/admin/dashboard',
+    '/admin/seed',
+    '/admin/tools',
+    '/admin/categories',
+    '/admin/featured',
+    '/',
+  ]) {
+    try {
+      revalidatePath(path)
+    } catch (err) {
+      console.error('[seed] revalidatePath failed', { path, err })
+    }
+  }
 
   return {
     ok: true,
