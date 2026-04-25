@@ -50,6 +50,13 @@ const nextConfig: NextConfig = {
   // <Link>, and static asset with this path — no other code changes needed.
   basePath: "/vc-stack",
   assetPrefix: "/vc-stack",
+  // ── Native modules excluded from the prod bundle ──
+  // better-sqlite3 is dev-only (local SQLite). It compiles native code via
+  // node-gyp + Python, which Webflow Cloud's Linux build container doesn't
+  // have, so we keep it out of the bundle entirely. The dynamic imports in
+  // src/lib/db/client.ts and src/app/admin/seed/actions.ts are gated by
+  // NODE_ENV !== 'production' and therefore never fire on Cloudflare.
+  serverExternalPackages: ['better-sqlite3'],
   // ── Dev escape hatch for iCloud-synced project paths ──
   // The repo lives under ~/Documents which macOS file-provider syncs to
   // iCloud. iCloud silently empties .next/dev/ mid-session, breaking every
