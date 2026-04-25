@@ -32,10 +32,14 @@ export default function RevealStagger({
     if (!el) return
     const reveal = () => el.classList.add('is-in')
 
-    // No observer support or reduced motion — render visible, never prime.
+    // No observer support, reduced motion, or narrow viewport — render
+    // visible immediately, never prime. On mobile the stagger reads as
+    // jank rather than polish, and skipping it shaves both JS work and
+    // the perceived "empty section" flash on first paint.
     if (
       typeof IntersectionObserver === 'undefined' ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      window.matchMedia('(max-width: 640px)').matches
     ) {
       reveal()
       return

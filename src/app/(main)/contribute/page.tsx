@@ -38,7 +38,7 @@ const PATHS: PathCard[] = [
 
 export default function ContributePage() {
   return (
-    <div className="page" style={{ padding: '24px 0 64px', maxWidth: 880 }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 64 }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
@@ -51,28 +51,16 @@ export default function ContributePage() {
           borderBottom: '1px solid var(--ink)',
           padding: '24px 0',
           marginBottom: 32,
-          textAlign: 'center',
         }}
       >
-        <div
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.24em',
-            color: 'var(--red)',
-            marginBottom: 10,
-          }}
-        >
-          Submissions
-        </div>
         <h1
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
-            fontSize: 'var(--fs-name)',
+            fontSize: 'clamp(1.7rem, 6vw, 2.6rem)',
             color: 'var(--ink)',
             lineHeight: 1.05,
+            letterSpacing: '-0.01em',
           }}
         >
           Contribute to the VC Stack
@@ -82,11 +70,8 @@ export default function ContributePage() {
             fontFamily: 'var(--body)',
             fontSize: '1.05rem',
             color: 'var(--ink-light)',
-            marginTop: 14,
-            fontStyle: 'italic',
-            maxWidth: 600,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            marginTop: 12,
+            maxWidth: 760,
           }}
         >
           Two ways in. Pick the one that fits.
@@ -107,7 +92,6 @@ export default function ContributePage() {
       <p
         style={{
           marginTop: 28,
-          textAlign: 'center',
           fontFamily: 'var(--mono)',
           fontSize: 'var(--fs-tag)',
           textTransform: 'uppercase',

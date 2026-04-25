@@ -82,10 +82,6 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="page site-footer__legal">
-        © {new Date().getFullYear()} DealQuick Labs Private Limited
-      </div>
-
       <style>{`
         .site-footer {
           background: var(--paper);
@@ -121,14 +117,6 @@ export default function Footer() {
           display: flex;
           align-items: center;
           gap: 6px;
-        }
-        .site-footer__legal {
-          padding: 0 24px 14px;
-          font-family: var(--mono);
-          font-size: var(--fs-tag);
-          color: var(--ink-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.16em;
         }
 
         .ftr-link {
@@ -179,10 +167,6 @@ export default function Footer() {
           }
           .site-footer__socials { gap: 4px; }
           .ftr-social { width: 44px; height: 44px; }
-          .site-footer__legal {
-            text-align: center;
-            padding: 0 24px 18px;
-          }
         }
 
         @media (max-width: 380px) {

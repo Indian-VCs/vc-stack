@@ -20,7 +20,7 @@ export default async function AllCategoriesPage() {
   ])
 
   return (
-    <div className="page" style={{ padding: '24px 0 48px' }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 48 }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function SubmitProductPage() {
   const categories = await getCategories()
   return (
-    <div className="page" style={{ padding: '24px 0 64px', maxWidth: 720 }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 64 }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
@@ -26,28 +26,16 @@ export default async function SubmitProductPage() {
           borderBottom: '1px solid var(--ink)',
           padding: '24px 0',
           marginBottom: 32,
-          textAlign: 'center',
         }}
       >
-        <div
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.24em',
-            color: 'var(--red)',
-            marginBottom: 10,
-          }}
-        >
-          Submissions
-        </div>
         <h1
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
-            fontSize: 'var(--fs-name)',
+            fontSize: 'clamp(1.7rem, 6vw, 2.6rem)',
             color: 'var(--ink)',
             lineHeight: 1.05,
+            letterSpacing: '-0.01em',
           }}
         >
           File a Submission
@@ -57,11 +45,8 @@ export default async function SubmitProductPage() {
             fontFamily: 'var(--body)',
             fontSize: '1.05rem',
             color: 'var(--ink-light)',
-            marginTop: 14,
-            fontStyle: 'italic',
-            maxWidth: 560,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            marginTop: 12,
+            maxWidth: 760,
           }}
         >
           Know a tool that belongs on the paper? Send it to the editors — we review
@@ -69,7 +54,9 @@ export default async function SubmitProductPage() {
         </p>
       </header>
 
-      <SubmitProductForm categories={categories} />
+      <div style={{ maxWidth: 720 }}>
+        <SubmitProductForm categories={categories} />
+      </div>
     </div>
   )
 }

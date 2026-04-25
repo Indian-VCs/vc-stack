@@ -49,28 +49,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const PRICING_LABEL: Record<string, string> = {
-  FREE: 'Free',
-  FREEMIUM: 'Freemium',
-  PAID: 'Paid',
-  ENTERPRISE: 'Enterprise',
-}
-
-const PRICING_TAG: Record<string, string> = {
-  FREE: 'tag tag--positive',
-  FREEMIUM: 'tag',
-  PAID: 'tag',
-  ENTERPRISE: 'tag tag--solid',
-}
-
-function domainFor(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return url
-  }
-}
-
 export default async function ToolDetailPage({ params }: Props) {
   const { slug } = await params
   const tool = await getToolBySlug(slug)
@@ -80,7 +58,6 @@ export default async function ToolDetailPage({ params }: Props) {
   const FEATURED_CAP = 5
   const spotlightShown = spotlight.slice(0, FEATURED_CAP)
   const spotlightOverflow = Math.max(0, spotlight.length - FEATURED_CAP)
-  const domain = domainFor(tool.websiteUrl)
 
   // Structured data: SoftwareApplication + BreadcrumbList
   const toolPageUrl = buildToolUrl(tool.slug)
@@ -141,7 +118,7 @@ export default async function ToolDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="page" style={{ padding: '24px 0 48px' }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 48 }}>
       <Script
         id={`tool-jsonld-${tool.slug}`}
         type="application/ld+json"
@@ -193,6 +170,14 @@ export default async function ToolDetailPage({ params }: Props) {
             >
               {tool.category.name}
             </Link>
+          )}
+          {tool.isFeatured && (
+            <span
+              className="tool-head-featured hero-enter"
+              style={{ animationDelay: '320ms' }}
+            >
+              Featured
+            </span>
           )}
         </div>
 
@@ -249,10 +234,23 @@ export default async function ToolDetailPage({ params }: Props) {
           .tool-head-cat:hover {
             border-color: var(--ink);
           }
+          .tool-head-featured {
+            font-family: var(--mono);
+            font-size: var(--fs-tag);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--red);
+            background: var(--paper);
+            border: 1px solid var(--red);
+            padding: 7px 12px;
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
           @media (max-width: 640px) {
             .tool-head-row { gap: 12px; }
             .tool-head-visit,
-            .tool-head-cat {
+            .tool-head-cat,
+            .tool-head-featured {
               flex: 1 1 auto;
               text-align: center;
             }
@@ -260,52 +258,8 @@ export default async function ToolDetailPage({ params }: Props) {
         `}</style>
       </header>
 
-      {/* ── Dateline meta strip (pricing · domain) ── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '8px 14px',
-          fontFamily: 'var(--mono)',
-          fontSize: 'var(--fs-tag)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.14em',
-          color: 'var(--ink-muted)',
-          marginTop: 14,
-          marginBottom: 28,
-          paddingBottom: 16,
-          borderBottom: '1px solid var(--rule)',
-        }}
-      >
-        <span className={PRICING_TAG[tool.pricingModel] ?? 'tag'}>
-          {PRICING_LABEL[tool.pricingModel] ?? tool.pricingModel}
-        </span>
-        {tool.isFeatured && (
-          <span className="tag tag--accent">Featured</span>
-        )}
-        <span>
-          <span style={{ color: 'var(--ink-muted)' }}>Site · </span>
-          <a
-            href={tool.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: 'var(--ink)',
-              textDecoration: 'none',
-              borderBottom: '1px solid var(--rule)',
-              textTransform: 'lowercase',
-              letterSpacing: '0',
-              fontFamily: 'var(--body)',
-            }}
-          >
-            {domain}
-          </a>
-        </span>
-      </div>
-
       {/* ── Description (full width, compact section, larger font) ─── */}
-      <article style={{ marginBottom: 32 }}>
+      <article style={{ marginTop: 28, marginBottom: 32 }}>
         <p
           style={{
             fontFamily: 'var(--body)',

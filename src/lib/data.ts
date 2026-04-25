@@ -118,17 +118,18 @@ export async function getToolsByCategory(
     () => dbGetToolsByCategory(categorySlug, page, pageSize),
     (v) => v.total === 0,
   )
-  if (fromDb) return fromDb
+  if (fromDb) return { ...fromDb, data: fromDb.data.map(withCanonicalFeatured) }
 
   const filtered = STATIC_TOOLS
     .filter((t) => t.category?.slug === categorySlug || (t.extraCategorySlugs ?? []).includes(categorySlug))
+    .map(withCanonicalFeatured)
     .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
   return paginate(filtered, page, pageSize)
 }
 
 export async function getAllTools(): Promise<Tool[]> {
   const fromDb = await viaDb(dbGetAllTools, (xs) => xs.length === 0)
-  const list = fromDb ?? [...STATIC_TOOLS].sort(
+  const list = (fromDb ?? STATIC_TOOLS).map(withCanonicalFeatured).sort(
     (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
   )
   return pinEverTrace(dedupeByWebsite(list))
@@ -136,12 +137,13 @@ export async function getAllTools(): Promise<Tool[]> {
 
 export async function getToolBySlug(slug: string): Promise<Tool | null> {
   const fromDb = await viaDb(() => dbGetToolBySlug(slug), (v) => v === null)
-  return fromDb ?? STATIC_TOOLS.find((t) => t.slug === slug) ?? null
+  const tool = fromDb ?? STATIC_TOOLS.find((t) => t.slug === slug) ?? null
+  return tool ? withCanonicalFeatured(tool) : null
 }
 
 export async function searchTools(filters: SearchFilters): Promise<PaginatedResult<Tool>> {
   const fromDb = await viaDb(() => dbSearchTools(filters), (v) => v.total === 0)
-  if (fromDb) return fromDb
+  if (fromDb) return { ...fromDb, data: fromDb.data.map(withCanonicalFeatured) }
 
   const { query = '', category, pricing, page = 1, pageSize = 24 } = filters
   let results = STATIC_TOOLS
@@ -156,9 +158,9 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
   }
   if (category) results = results.filter((t) => categorySlugsForTool(t).includes(category))
   if (pricing) results = results.filter((t) => t.pricingModel === pricing)
-  const sorted = [...results].sort(
-    (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
-  )
+  const sorted = results
+    .map(withCanonicalFeatured)
+    .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
   return paginate(sorted, page, pageSize)
 }
 
@@ -174,6 +176,16 @@ const FEATURED_TOOL_SLUGS = [
   'wispr-flow',
   'claude',
 ] as const
+
+const FEATURED_SET: ReadonlySet<string> = new Set(FEATURED_TOOL_SLUGS)
+
+/** Canonical featured flag — derived from FEATURED_TOOL_SLUGS so the Tool
+ *  object's `isFeatured` always matches what the homepage hero, the per-page
+ *  Featured tag, and the featured-first sort all use. */
+function withCanonicalFeatured<T extends Tool>(tool: T): T {
+  const isFeatured = FEATURED_SET.has(tool.slug)
+  return tool.isFeatured === isFeatured ? tool : { ...tool, isFeatured }
+}
 
 /**
  * Resolve FEATURED_TOOL_SLUGS to full Tool objects, preserving list order.

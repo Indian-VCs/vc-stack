@@ -15,7 +15,7 @@ export default async function ContributeStackPage() {
   const tools = await getAllTools()
 
   return (
-    <div className="page" style={{ padding: '24px 0 64px', maxWidth: 820 }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 64 }}>
       <div className="breadcrumb">
         <Link href="/">Home</Link>
         <span className="sep">·</span>
@@ -28,28 +28,16 @@ export default async function ContributeStackPage() {
           borderBottom: '1px solid var(--ink)',
           padding: '24px 0',
           marginBottom: 32,
-          textAlign: 'center',
         }}
       >
-        <div
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.24em',
-            color: 'var(--red)',
-            marginBottom: 10,
-          }}
-        >
-          Firm Profiles
-        </div>
         <h1
           style={{
             fontFamily: 'var(--serif)',
             fontWeight: 900,
-            fontSize: 'var(--fs-name)',
+            fontSize: 'clamp(1.7rem, 6vw, 2.6rem)',
             color: 'var(--ink)',
             lineHeight: 1.05,
+            letterSpacing: '-0.01em',
           }}
         >
           Share your firm&apos;s stack
@@ -59,11 +47,8 @@ export default async function ContributeStackPage() {
             fontFamily: 'var(--body)',
             fontSize: '1.05rem',
             color: 'var(--ink-light)',
-            marginTop: 14,
-            fontStyle: 'italic',
-            maxWidth: 580,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            marginTop: 12,
+            maxWidth: 760,
           }}
         >
           Tell us which tools your firm actually runs on — pick from the
@@ -72,7 +57,9 @@ export default async function ContributeStackPage() {
         </p>
       </header>
 
-      <StackContributionForm tools={tools} />
+      <div style={{ maxWidth: 820 }}>
+        <StackContributionForm tools={tools} />
+      </div>
     </div>
   )
 }

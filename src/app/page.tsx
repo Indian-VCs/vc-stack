@@ -3,6 +3,7 @@ import CategoryCard from '@/components/cards/CategoryCard'
 import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
+import MarketMapPreview from '@/components/ui/MarketMapPreview'
 import FaqSection from '@/components/ui/FaqSection'
 import RevealStagger from '@/components/ui/RevealStagger'
 import Link from 'next/link'
@@ -31,7 +32,8 @@ export default async function HomePage() {
       <section
         className="page hero-grid"
         style={{
-          padding: '28px 0',
+          paddingTop: 28,
+          paddingBottom: 28,
           borderBottom: '1px solid var(--rule)',
         }}
       >
@@ -107,7 +109,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Market Map (Tech Stack 2026 poster) ─────────────────── */}
-      <section className="page" style={{ padding: '48px 0' }}>
+      <section className="page" style={{ paddingTop: 48, paddingBottom: 48 }}>
         <div
           style={{
             display: 'flex',
@@ -144,11 +146,24 @@ export default async function HomePage() {
             Every tool, grouped by section. Click any entry for the full report.
           </p>
         </div>
-        <MarketMapPoster tools={allTools} categories={categories} />
+        <div className="market-map-mobile">
+          <MarketMapPreview categories={categories} totalTools={stats.totalTools} />
+        </div>
+        <div className="market-map-desktop">
+          <MarketMapPoster tools={allTools} categories={categories} />
+        </div>
+
+        <style>{`
+          .market-map-mobile { display: none; }
+          @media (max-width: 900px) {
+            .market-map-mobile { display: block; }
+            .market-map-desktop { display: none; }
+          }
+        `}</style>
       </section>
 
       {/* ── Browse by Category ──────────────────────────────────── */}
-      <section className="page" style={{ padding: '12px 0 48px', borderTop: '1px solid var(--rule)' }}>
+      <section className="page" style={{ paddingTop: 12, paddingBottom: 48, borderTop: '1px solid var(--rule)' }}>
         <div
           style={{
             display: 'flex',

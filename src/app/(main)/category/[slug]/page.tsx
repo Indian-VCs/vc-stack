@@ -126,7 +126,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   }
 
   return (
-    <div className="page" style={{ padding: '24px 0 48px' }}>
+    <div className="page" style={{ paddingTop: 24, paddingBottom: 48 }}>
       <Script
         id={`category-jsonld-${category.slug}`}
         type="application/ld+json"
@@ -152,20 +152,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           marginBottom: 28,
         }}
       >
-        <div
-          className="hero-enter"
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-tag)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.24em',
-            color: 'var(--red)',
-            marginBottom: 8,
-            animationDelay: '0ms',
-          }}
-        >
-          Section · {category.slug}
-        </div>
         <h1
           className="hero-enter"
           style={{
@@ -175,26 +161,25 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             lineHeight: 1.1,
             color: 'var(--ink)',
             letterSpacing: '-0.01em',
-            animationDelay: '80ms',
+            animationDelay: '0ms',
           }}
         >
           {category.name}
         </h1>
-        {(category.heroAngle ?? category.description) && (
+        {(category.description ?? category.heroAngle) && (
           <p
             className="hero-enter"
             style={{
               fontFamily: 'var(--body)',
-              fontSize: '1rem',
-              lineHeight: 1.5,
+              fontSize: '1.05rem',
+              lineHeight: 1.6,
               color: 'var(--ink-light)',
-              marginTop: 10,
+              marginTop: 12,
               maxWidth: 760,
-              fontStyle: 'italic',
-              animationDelay: '160ms',
+              animationDelay: '120ms',
             }}
           >
-            {category.heroAngle ?? category.description}
+            {category.description ?? category.heroAngle}
           </p>
         )}
         <div
@@ -206,7 +191,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             letterSpacing: '0.14em',
             color: 'var(--ink-muted)',
             marginTop: 14,
-            animationDelay: '240ms',
+            animationDelay: '200ms',
           }}
         >
           {total} {total === 1 ? 'tool' : 'tools'} in this beat
