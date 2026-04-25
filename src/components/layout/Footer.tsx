@@ -42,8 +42,7 @@ export default function Footer() {
         </a>
 
         <nav aria-label="Footer" className="site-footer__links">
-          <Link href="/submit-product" className="ftr-link">Submit a Tool</Link>
-          <Link href="/contribute/stack" className="ftr-link">Share your stack</Link>
+          <Link href="/contribute" className="ftr-link">Contribute</Link>
           {LEGAL.map((l) => (
             <a
               key={l.href}
