@@ -1,56 +1,30 @@
 'use server'
 
 /**
- * Seed action — upserts STATIC_CATEGORIES + STATIC_TOOLS into D1.
+ * Seed action — populates D1 from STATIC_CATEGORIES + STATIC_TOOLS.
  *
- * Idempotent: running it on a populated DB updates existing rows in place
- * without dropping admin-created data. Featured order is rewritten to mirror
- * FEATURED_TOOL_SLUGS each time.
+ * Builds one big multi-statement SQL string (multi-row INSERTs + featured
+ * updates) and executes it via D1's native multi-statement runner in a
+ * single round-trip. Avoids drizzle's per-statement overhead that was
+ * killing the Cloudflare Worker on the previous batched approach.
  *
- * Uses D1's batch API in production so all 17 + 119 + clear + 5 statements
- * land in a handful of round-trips rather than 142 sequential ones — the
- * sequential pattern was hitting Cloudflare Worker time limits and crashing
- * mid-seed. Local SQLite (dev) doesn't expose batch(); we fall back to
- * sequential awaits there, which is fine because better-sqlite3 is sync-fast.
+ * Idempotent: every INSERT uses ON CONFLICT(id) DO UPDATE, so re-running
+ * refreshes content without dropping admin-created rows.
  */
 
-import { eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { requireAdminAction, NotAuthenticatedError } from '@/lib/auth'
-import { getDb, schema, type Db } from '@/lib/db/client'
 import { audit } from '@/lib/audit'
 import {
   STATIC_CATEGORIES,
   STATIC_TOOLS,
   FEATURED_TOOL_SLUGS,
 } from '@/lib/static-catalog'
+import { buildSeedSql } from '@/lib/seed-sql'
 
 export type SeedResult =
   | { ok: true; categories: number; tools: number; featured: number }
   | { ok: false; message: string }
-
-// D1's batch ceiling is 100 statements per call; we leave headroom.
-const BATCH_CHUNK = 50
-
-type Statement = unknown
-
-async function runBatched(db: Db, statements: Statement[]): Promise<void> {
-  if (statements.length === 0) return
-  const dbAny = db as unknown as {
-    batch?: (stmts: [Statement, ...Statement[]]) => Promise<unknown>
-  }
-  if (typeof dbAny.batch === 'function') {
-    for (let i = 0; i < statements.length; i += BATCH_CHUNK) {
-      const chunk = statements.slice(i, i + BATCH_CHUNK)
-      if (chunk.length === 0) continue
-      await dbAny.batch(chunk as [Statement, ...Statement[]])
-    }
-  } else {
-    for (const stmt of statements) {
-      await (stmt as Promise<unknown>)
-    }
-  }
-}
 
 export async function seedFromStaticCatalog(): Promise<SeedResult> {
   let admin: { email: string }
@@ -73,84 +47,13 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
 }
 
 async function runSeed(admin: { email: string }): Promise<SeedResult> {
-  const db = await getDb()
-  const now = Date.now()
+  const seedSql = buildSeedSql()
 
-  // ── 1. Categories upsert (one batched round-trip) ──
-  const catStatements = STATIC_CATEGORIES.map((c, i) => {
-    const row = {
-      id: c.id,
-      slug: c.slug,
-      name: c.name,
-      description: c.description ?? null,
-      icon: c.icon ?? null,
-      imageUrl: c.imageUrl ?? null,
-      intro: c.intro ?? null,
-      buyingCriteria: c.buyingCriteria ?? null,
-      relatedSlugs: c.relatedSlugs ?? null,
-      seoTitle: c.seoTitle ?? null,
-      seoDescription: c.seoDescription ?? null,
-      heroAngle: c.heroAngle ?? null,
-      sortOrder: i,
-      archivedAt: null,
-      createdAt: now,
-      updatedAt: now,
-    }
-    return db
-      .insert(schema.categories)
-      .values(row)
-      .onConflictDoUpdate({
-        target: schema.categories.id,
-        set: { ...row, createdAt: undefined as never },
-      })
-  })
-
-  // ── 2. Tools upsert (chunked into batches of 50) ──
-  const toolStatements = STATIC_TOOLS.map((t) => {
-    const row = {
-      id: t.id,
-      slug: t.slug,
-      name: t.name,
-      description: t.description,
-      shortDesc: t.shortDesc ?? null,
-      useCases: t.useCases ?? null,
-      websiteUrl: t.websiteUrl,
-      logoUrl: t.logoUrl ?? null,
-      pricingModel: t.pricingModel,
-      isFeatured: t.isFeatured,
-      featuredOrder: null as number | null,
-      categoryId: t.categoryId,
-      extraCategorySlugs: t.extraCategorySlugs ?? null,
-      archivedAt: null,
-      createdAt: now,
-      updatedAt: now,
-    }
-    return db
-      .insert(schema.tools)
-      .values(row)
-      .onConflictDoUpdate({
-        target: schema.tools.id,
-        set: { ...row, createdAt: undefined as never },
-      })
-  })
-
-  // ── 3. Reset + re-apply the canonical Featured order ──
-  const featuredStatements: Statement[] = [
-    db
-      .update(schema.tools)
-      .set({ featuredOrder: null, isFeatured: false, updatedAt: now })
-      .where(sql`${schema.tools.featuredOrder} IS NOT NULL OR ${schema.tools.isFeatured} = 1`),
-    ...FEATURED_TOOL_SLUGS.map((slug, i) =>
-      db
-        .update(schema.tools)
-        .set({ featuredOrder: i, isFeatured: true, updatedAt: now })
-        .where(eq(schema.tools.slug, slug)),
-    ),
-  ]
-
-  await runBatched(db, catStatements)
-  await runBatched(db, toolStatements)
-  await runBatched(db, featuredStatements)
+  if (process.env.NODE_ENV === 'production') {
+    await runOnD1(seedSql)
+  } else {
+    await runOnSqliteDev(seedSql)
+  }
 
   await audit({
     adminEmail: admin.email,
@@ -177,5 +80,27 @@ async function runSeed(admin: { email: string }): Promise<SeedResult> {
     categories: STATIC_CATEGORIES.length,
     tools: STATIC_TOOLS.length,
     featured: FEATURED_TOOL_SLUGS.length,
+  }
+}
+
+async function runOnD1(seedSql: string): Promise<void> {
+  const { getCloudflareContext } = await import('@opennextjs/cloudflare')
+  const ctx = await getCloudflareContext({ async: true })
+  const d1 = (ctx.env as { DB?: D1Database }).DB
+  if (!d1) throw new Error('D1 binding `DB` is missing — check wrangler.jsonc')
+  // D1's exec() runs a multi-statement string in a single round-trip. Right
+  // tool here: ~120 inserts in one transaction, no per-statement overhead,
+  // no prepared-statement parameter ceiling.
+  await d1.exec(seedSql)
+}
+
+async function runOnSqliteDev(seedSql: string): Promise<void> {
+  const { default: Database } = await import('better-sqlite3')
+  const sqlite = new Database(process.env.DB_PATH ?? './local.db')
+  sqlite.pragma('foreign_keys = ON')
+  try {
+    sqlite.exec(seedSql)
+  } finally {
+    sqlite.close()
   }
 }

@@ -12,9 +12,14 @@ export default function SeedButton() {
   function onClick() {
     setResult(null)
     startTransition(async () => {
-      const r = await seedFromStaticCatalog()
-      setResult(r)
-      if (r.ok) router.refresh()
+      try {
+        const r = await seedFromStaticCatalog()
+        setResult(r)
+        if (r.ok) router.refresh()
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        setResult({ ok: false, message: `Action threw: ${message.slice(0, 400)}` })
+      }
     })
   }
 
