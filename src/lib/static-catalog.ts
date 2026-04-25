@@ -60,6 +60,19 @@ function catById(id: string): Category {
 setCategoryResolver(catById)
 export const STATIC_TOOLS: Tool[] = buildAllTools()
 
+/**
+ * Canonical Featured list — the single source of truth for which tools rotate
+ * through the homepage hero and the per-page "Featured Tools" row. Edit this
+ * to change either surface. Mirrored by the admin Seed action and scripts/seed.ts.
+ */
+export const FEATURED_TOOL_SLUGS = [
+  'evertrace',
+  'notion',
+  'superhuman',
+  'wispr-flow',
+  'claude',
+] as const
+
 /** All category slugs a tool belongs to (primary + extras). */
 export function categorySlugsForTool(tool: Tool): string[] {
   const primary = tool.category?.slug

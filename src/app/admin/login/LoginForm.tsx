@@ -18,7 +18,7 @@ export default function LoginForm({ next }: { next?: string }) {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch('/vc-stack/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

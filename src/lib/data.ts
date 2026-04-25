@@ -40,12 +40,13 @@ import {
 import {
   STATIC_CATEGORIES,
   STATIC_TOOLS,
+  FEATURED_TOOL_SLUGS,
   categorySlugsForTool,
 } from './static-catalog'
 
 // Re-export the static catalog so existing `import { ... } from '@/lib/data'`
 // imports keep working unchanged.
-export { STATIC_CATEGORIES, STATIC_TOOLS, categorySlugsForTool }
+export { STATIC_CATEGORIES, STATIC_TOOLS, FEATURED_TOOL_SLUGS, categorySlugsForTool }
 
 const PINNED_SLUG = 'evertrace'
 
@@ -163,19 +164,6 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
     .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name))
   return paginate(sorted, page, pageSize)
 }
-
-/**
- * Canonical list of featured tools — the single source of truth used across
- * the homepage hero rotator and every tool detail page's "Featured Tools" row.
- * Edit this list to change which tools are featured everywhere.
- */
-const FEATURED_TOOL_SLUGS = [
-  'evertrace',
-  'notion',
-  'superhuman',
-  'wispr-flow',
-  'claude',
-] as const
 
 const FEATURED_SET: ReadonlySet<string> = new Set(FEATURED_TOOL_SLUGS)
 

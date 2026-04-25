@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: '/admin/submissions/tools', label: 'Tool submissions' },
   { href: '/admin/submissions/stack', label: 'Stack submissions' },
   { href: '/admin/audit', label: 'Audit log' },
+  { href: '/admin/seed', label: 'Seed catalog' },
 ] as const
 
 export default function AdminSidebar() {
@@ -23,7 +24,7 @@ export default function AdminSidebar() {
   const router = useRouter()
 
   async function logout() {
-    await fetch('/api/admin/logout', { method: 'POST' })
+    await fetch('/vc-stack/api/admin/logout', { method: 'POST' })
     router.push('/admin/login')
     router.refresh()
   }

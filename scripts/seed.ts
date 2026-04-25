@@ -16,7 +16,7 @@ import * as schema from '../src/lib/db/schema'
 // Import the static catalog directly — going through `data.ts` would pull in
 // the D1 query layer (which is `server-only` and not loadable from a plain
 // Node script).
-import { STATIC_CATEGORIES, STATIC_TOOLS } from '../src/lib/static-catalog'
+import { STATIC_CATEGORIES, STATIC_TOOLS, FEATURED_TOOL_SLUGS } from '../src/lib/static-catalog'
 
 const args = new Set(process.argv.slice(2))
 const RESET = args.has('--reset')
@@ -105,13 +105,11 @@ function main() {
     toolUpserts++
   }
 
-  // Re-apply the canonical Featured order (mirror of FEATURED_TOOL_SLUGS).
-  const FEATURED_ORDER = ['evertrace', 'notion', 'superhuman', 'wispr-flow', 'claude']
-  sqlite.prepare('UPDATE tools SET featured_order = NULL').run()
-  for (let i = 0; i < FEATURED_ORDER.length; i++) {
+  sqlite.prepare('UPDATE tools SET featured_order = NULL, is_featured = 0').run()
+  for (let i = 0; i < FEATURED_TOOL_SLUGS.length; i++) {
     db.update(schema.tools)
       .set({ featuredOrder: i, isFeatured: true })
-      .where(eq(schema.tools.slug, FEATURED_ORDER[i]))
+      .where(eq(schema.tools.slug, FEATURED_TOOL_SLUGS[i]))
       .run()
   }
 
