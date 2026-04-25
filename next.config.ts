@@ -50,6 +50,19 @@ const nextConfig: NextConfig = {
   // <Link>, and static asset with this path — no other code changes needed.
   basePath: "/vc-stack",
   assetPrefix: "/vc-stack",
+  // ── Dev escape hatch for iCloud-synced project paths ──
+  // The repo lives under ~/Documents which macOS file-provider syncs to
+  // iCloud. iCloud silently empties .next/dev/ mid-session, breaking every
+  // request with manifest-not-found 500s. Setting NEXT_DIST_DIR to a path
+  // outside ~/Documents keeps the build cache off iCloud's hands.
+  //
+  // Use a RELATIVE path (e.g. "../../.cache/vcstack-next" from this repo
+  // resolves to ~/.cache/vcstack-next). Next.js 16 mishandles absolute
+  // paths here — it treats them as project-relative and creates a literal
+  // ./Users/pc/... tree inside the repo, defeating the whole purpose.
+  //
+  // No effect on prod: Webflow Cloud and OpenNext don't set this env var.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   images: {
     remotePatterns: [
       { hostname: 'cdn.prod.website-files.com' },
