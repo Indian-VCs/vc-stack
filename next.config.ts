@@ -57,6 +57,22 @@ const nextConfig: NextConfig = {
   // src/lib/db/client.ts and src/app/admin/seed/actions.ts are gated by
   // NODE_ENV !== 'production' and therefore never fire on Cloudflare.
   serverExternalPackages: ['better-sqlite3'],
+  // ── Server Actions allowed origins ──
+  // Webflow Cloud routes traffic through its own CDN: the worker sees
+  // `x-forwarded-host: <uuid>.wf-app-prod.cosmic.webflow.services` while the
+  // browser's Origin is `www.indianvcs.com`. Next.js's built-in CSRF guard for
+  // Server Actions rejects this mismatch with "Invalid Server Actions request"
+  // and refuses to invoke the action body at all. Listing the public hosts
+  // explicitly tells Next.js to trust them as legitimate origins.
+  experimental: {
+    serverActions: {
+      allowedOrigins: [
+        'www.indianvcs.com',
+        'indianvcs.com',
+        '*.cosmic.webflow.services',
+      ],
+    },
+  },
   // ── Dev escape hatch for iCloud-synced project paths ──
   // The repo lives under ~/Documents which macOS file-provider syncs to
   // iCloud. iCloud silently empties .next/dev/ mid-session, breaking every
