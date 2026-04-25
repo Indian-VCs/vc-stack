@@ -7,14 +7,17 @@
  * without dropping admin-created data. Featured order is rewritten to mirror
  * FEATURED_TOOL_SLUGS each time.
  *
- * Mirrors scripts/seed.ts but talks to the live D1 binding instead of
- * better-sqlite3, so it works in production without wrangler access.
+ * Uses D1's batch API in production so all 17 + 119 + clear + 5 statements
+ * land in a handful of round-trips rather than 142 sequential ones — the
+ * sequential pattern was hitting Cloudflare Worker time limits and crashing
+ * mid-seed. Local SQLite (dev) doesn't expose batch(); we fall back to
+ * sequential awaits there, which is fine because better-sqlite3 is sync-fast.
  */
 
 import { eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { requireAdminAction, NotAuthenticatedError } from '@/lib/auth'
-import { getDb, schema } from '@/lib/db/client'
+import { getDb, schema, type Db } from '@/lib/db/client'
 import { audit } from '@/lib/audit'
 import {
   STATIC_CATEGORIES,
@@ -25,6 +28,29 @@ import {
 export type SeedResult =
   | { ok: true; categories: number; tools: number; featured: number }
   | { ok: false; message: string }
+
+// D1's batch ceiling is 100 statements per call; we leave headroom.
+const BATCH_CHUNK = 50
+
+type Statement = unknown
+
+async function runBatched(db: Db, statements: Statement[]): Promise<void> {
+  if (statements.length === 0) return
+  const dbAny = db as unknown as {
+    batch?: (stmts: [Statement, ...Statement[]]) => Promise<unknown>
+  }
+  if (typeof dbAny.batch === 'function') {
+    for (let i = 0; i < statements.length; i += BATCH_CHUNK) {
+      const chunk = statements.slice(i, i + BATCH_CHUNK)
+      if (chunk.length === 0) continue
+      await dbAny.batch(chunk as [Statement, ...Statement[]])
+    }
+  } else {
+    for (const stmt of statements) {
+      await (stmt as Promise<unknown>)
+    }
+  }
+}
 
 export async function seedFromStaticCatalog(): Promise<SeedResult> {
   let admin: { email: string }
@@ -40,9 +66,8 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
   const db = await getDb()
   const now = Date.now()
 
-  let catUpserts = 0
-  for (let i = 0; i < STATIC_CATEGORIES.length; i++) {
-    const c = STATIC_CATEGORIES[i]
+  // ── 1. Categories upsert (one batched round-trip) ──
+  const catStatements = STATIC_CATEGORIES.map((c, i) => {
     const row = {
       id: c.id,
       slug: c.slug,
@@ -61,18 +86,17 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
       createdAt: now,
       updatedAt: now,
     }
-    await db
+    return db
       .insert(schema.categories)
       .values(row)
       .onConflictDoUpdate({
         target: schema.categories.id,
         set: { ...row, createdAt: undefined as never },
       })
-    catUpserts++
-  }
+  })
 
-  let toolUpserts = 0
-  for (const t of STATIC_TOOLS) {
+  // ── 2. Tools upsert (chunked into batches of 50) ──
+  const toolStatements = STATIC_TOOLS.map((t) => {
     const row = {
       id: t.id,
       slug: t.slug,
@@ -91,29 +115,32 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
       createdAt: now,
       updatedAt: now,
     }
-    await db
+    return db
       .insert(schema.tools)
       .values(row)
       .onConflictDoUpdate({
         target: schema.tools.id,
         set: { ...row, createdAt: undefined as never },
       })
-    toolUpserts++
-  }
+  })
 
-  // Re-apply the canonical Featured order. Clear all flags first, then set
-  // the listed slugs in order.
-  await db
-    .update(schema.tools)
-    .set({ featuredOrder: null, isFeatured: false, updatedAt: now })
-    .where(sql`${schema.tools.featuredOrder} IS NOT NULL OR ${schema.tools.isFeatured} = 1`)
-
-  for (let i = 0; i < FEATURED_TOOL_SLUGS.length; i++) {
-    await db
+  // ── 3. Reset + re-apply the canonical Featured order ──
+  const featuredStatements: Statement[] = [
+    db
       .update(schema.tools)
-      .set({ featuredOrder: i, isFeatured: true, updatedAt: now })
-      .where(eq(schema.tools.slug, FEATURED_TOOL_SLUGS[i]))
-  }
+      .set({ featuredOrder: null, isFeatured: false, updatedAt: now })
+      .where(sql`${schema.tools.featuredOrder} IS NOT NULL OR ${schema.tools.isFeatured} = 1`),
+    ...FEATURED_TOOL_SLUGS.map((slug, i) =>
+      db
+        .update(schema.tools)
+        .set({ featuredOrder: i, isFeatured: true, updatedAt: now })
+        .where(eq(schema.tools.slug, slug)),
+    ),
+  ]
+
+  await runBatched(db, catStatements)
+  await runBatched(db, toolStatements)
+  await runBatched(db, featuredStatements)
 
   await audit({
     adminEmail: admin.email,
@@ -122,8 +149,8 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
     entityId: null,
     diff: {
       seed: true,
-      categories: catUpserts,
-      tools: toolUpserts,
+      categories: STATIC_CATEGORIES.length,
+      tools: STATIC_TOOLS.length,
       featured: FEATURED_TOOL_SLUGS.length,
     },
   })
@@ -137,8 +164,8 @@ export async function seedFromStaticCatalog(): Promise<SeedResult> {
 
   return {
     ok: true,
-    categories: catUpserts,
-    tools: toolUpserts,
+    categories: STATIC_CATEGORIES.length,
+    tools: STATIC_TOOLS.length,
     featured: FEATURED_TOOL_SLUGS.length,
   }
 }
