@@ -3,7 +3,7 @@ import CategoryCard from '@/components/cards/CategoryCard'
 import SubstackEmbed from '@/components/ui/SubstackEmbed'
 import HeroFeaturedTool from '@/components/ui/HeroFeaturedTool'
 import MarketMapPoster from '@/components/ui/MarketMapPoster'
-import MarketMapPreview from '@/components/ui/MarketMapPreview'
+import MarketMapPosterMini from '@/components/ui/MarketMapPosterMini'
 import FaqSection from '@/components/ui/FaqSection'
 import RevealStagger from '@/components/ui/RevealStagger'
 import Link from 'next/link'
@@ -147,7 +147,7 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="market-map-mobile">
-          <MarketMapPreview categories={categories} totalTools={stats.totalTools} />
+          <MarketMapPosterMini tools={allTools} categories={categories} />
         </div>
         <div className="market-map-desktop">
           <MarketMapPoster tools={allTools} categories={categories} />
