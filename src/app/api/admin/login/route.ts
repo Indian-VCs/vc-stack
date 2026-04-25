@@ -34,18 +34,30 @@ function isAllowedOrigin(request: Request): boolean {
   const origin = request.headers.get('origin')
   // Same-origin POSTs from the login form may omit Origin in some browsers.
   if (!origin) return true
+
+  // Optional explicit allowlist (comma-separated origins or hosts) via env.
+  // If not configured, trust the request: sameSite=strict on the session
+  // cookie is already the primary CSRF defence, and inferring the public
+  // hostname from request headers is unreliable behind Webflow Cloud's
+  // proxy (Host / x-forwarded-host / request.url all surface the internal
+  // worker hostname rather than indianvcs.com).
+  const allowlist = process.env.ADMIN_ORIGIN_ALLOWLIST
+  if (!allowlist) return true
+
   try {
     const originHost = new URL(origin).host
-    // Behind a proxy (Webflow Cloud / Cloudflare), `host` reflects the internal
-    // worker hostname, so accept any of: host, x-forwarded-host, request URL host.
-    // Cloudflare strips client-provided x-forwarded-host on the way in, so this
-    // remains trusted.
-    const candidates = [
-      request.headers.get('host'),
-      request.headers.get('x-forwarded-host'),
-      new URL(request.url).host,
-    ].filter((h): h is string => Boolean(h))
-    return candidates.includes(originHost)
+    const allowed = allowlist
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((entry) => {
+        try {
+          return new URL(entry).host
+        } catch {
+          return entry
+        }
+      })
+    return allowed.includes(originHost)
   } catch {
     return false
   }
