@@ -29,6 +29,11 @@ function sqlValue(v: unknown): string {
   return sqlString(JSON.stringify(v))
 }
 
+// D1 enforces a per-statement size limit (around 100KB). One INSERT for all
+// 119 tools sits at ~105KB and fails with SQLITE_TOOBIG, so we chunk into
+// smaller statements. Each chunk averages ~22KB at this size.
+const ROWS_PER_STATEMENT = 25
+
 function upsert(
   table: string,
   columns: string[],
@@ -42,10 +47,17 @@ function upsert(
   // One statement per line — D1 splits the multi-statement string on newlines
   // and treats each line as its own SQL statement. Embedded line breaks here
   // would cause D1 to try parsing fragments. SQLite locally does not care.
-  const valuesSql = rows
-    .map((row) => `(${columns.map((c) => sqlValue(row[c])).join(', ')})`)
-    .join(', ')
-  return `INSERT INTO ${table} (${cols}) VALUES ${valuesSql} ON CONFLICT(id) DO UPDATE SET ${updates};`
+  const stmts: string[] = []
+  for (let i = 0; i < rows.length; i += ROWS_PER_STATEMENT) {
+    const chunk = rows.slice(i, i + ROWS_PER_STATEMENT)
+    const valuesSql = chunk
+      .map((row) => `(${columns.map((c) => sqlValue(row[c])).join(', ')})`)
+      .join(', ')
+    stmts.push(
+      `INSERT INTO ${table} (${cols}) VALUES ${valuesSql} ON CONFLICT(id) DO UPDATE SET ${updates};`,
+    )
+  }
+  return stmts.join('\n')
 }
 
 export interface SeedSqlOptions {
