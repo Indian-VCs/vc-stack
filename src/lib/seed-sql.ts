@@ -17,7 +17,18 @@ import {
 } from './static-catalog'
 
 function sqlString(value: string): string {
-  return `'${value.replace(/'/g, "''")}'`
+  // Escape single quotes (SQL standard). Then split on newlines and rebuild as
+  // ''chunk' || char(10) || 'chunk'' — D1's batch invocation splits the
+  // multi-statement payload on '\n', so embedded newlines inside string
+  // literals would corrupt the batch (the runtime treats fragments as
+  // separate SQL statements). char(10) keeps the runtime value identical
+  // while keeping the SQL itself single-line.
+  const escaped = value.replace(/'/g, "''")
+  if (!escaped.includes('\n')) return `'${escaped}'`
+  return escaped
+    .split('\n')
+    .map((part) => `'${part}'`)
+    .join(' || char(10) || ')
 }
 
 function sqlValue(v: unknown): string {
