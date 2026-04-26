@@ -1,0 +1,28 @@
+{
+  "slug": "browser",
+  "name": "Browser",
+  "description": "The window to the work. Investor-grade browsers with tabs, workspaces, and AI built into the address bar.",
+  "intro": "The browser is where a VC actually spends the day — CRM, Gmail, Notion, portfolio dashboards, decks, and forty open tabs at any moment. After a decade of Chrome being the only answer, AI has made the layer interesting again: the browser can now read the page, summarise it, fill it, and act on it, not just render it.\n\nThe split is simple. Comet and Atlas treat AI as the primary interface, with the address bar acting as a question-and-action surface over whatever you're looking at. Arc rethinks organisation around Spaces and profiles for people who live in tab chaos. Brave leans on default privacy. Chrome remains the universal fallback because shared screens, LP portals, and enterprise tools assume it. Most investors end up running two browsers — one personal daily driver, Chrome for everything external.",
+  "journey": null,
+  "buying_criteria": [
+    {
+      "label": "AI integration depth.",
+      "description": "Whether the AI is genuinely embedded in the address bar and sidebar (Comet, Atlas) or bolted on as a chat panel. The first changes how you work; the second is just a shortcut to ChatGPT."
+    },
+    {
+      "label": "Tab and workspace management.",
+      "description": "At 40+ tabs a day, Arc-style Spaces and profiles are the difference between a working browser and visual noise."
+    },
+    {
+      "label": "Shared-screen and enterprise reliability.",
+      "description": "Chrome compatibility is non-negotiable for demos, Zoom webinars, and LP portals. Whatever you pick as primary, Chrome stays installed."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Treating the AI browser as your only browser.",
+      "description": "Agentic browsers are still early — sessions break, extensions misbehave, some enterprise flows silently fail. Run the AI browser for personal work, keep Chrome for anything load-bearing."
+    }
+  ],
+  "reading_list": []
+}

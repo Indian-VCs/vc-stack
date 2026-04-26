@@ -14,9 +14,10 @@
  * Once D1 is seeded, every read flows through the DB. Admin writes call
  * `revalidatePath` to bust the prerender cache.
  *
- * pSEO content (intro, buyingCriteria, etc.) lives in `category-content.ts`
- * and is overlaid on every Category — regardless of source — so the editorial
- * copy doesn't drift if the DB is incomplete.
+ * Editorial content (intro, buyingCriteria, journey, pitfalls, readingList,
+ * description) lives in JSON files at `./category-content/*.json`. Both the
+ * static catalog and the D1 rows hydrate from those files; admin edits in
+ * D1 win at runtime.
  *
  * The static catalog (STATIC_CATEGORIES, STATIC_TOOLS, categorySlugsForTool)
  * lives in `./static-catalog.ts` and is re-exported here. Client components
@@ -26,7 +27,6 @@
  */
 
 import type { Category, CategoryPreviewTool, Tool, PaginatedResult, SearchFilters } from './types'
-import { getCategoryContent } from './category-content'
 import {
   dbGetCategories,
   dbGetCategoryBySlug,
@@ -81,18 +81,23 @@ async function viaDb<T>(call: () => Promise<T>, isEmpty: (v: T) => boolean): Pro
   }
 }
 
-/** Merge static pSEO content (docs/pseo-strategy.md) into a Category. */
-function withPseoContent(cat: Category | null | undefined): Category | null {
-  if (!cat) return null
-  const content = getCategoryContent(cat.slug)
+/**
+ * Per-slug fields the static catalog owns regardless of whether D1 has a row.
+ * D1 only stores editorial/structured fields — the icon, image, SEO copy,
+ * hero angle, and related-slug map all live in `static-catalog.ts`. We
+ * overlay those on every D1-sourced Category so both paths render identically.
+ */
+function overlayStaticConstants(cat: Category): Category {
+  const stat = STATIC_CATEGORIES.find((c) => c.slug === cat.slug)
+  if (!stat) return cat
   return {
     ...cat,
-    intro: content.intro ?? cat.intro ?? null,
-    buyingCriteria: content.buyingCriteria ?? cat.buyingCriteria ?? null,
-    relatedSlugs: content.relatedSlugs ?? cat.relatedSlugs ?? null,
-    seoTitle: content.seoTitle ?? cat.seoTitle ?? null,
-    seoDescription: content.seoDescription ?? cat.seoDescription ?? null,
-    heroAngle: content.heroAngle ?? cat.heroAngle ?? null,
+    icon: cat.icon ?? stat.icon ?? null,
+    imageUrl: cat.imageUrl ?? stat.imageUrl ?? null,
+    relatedSlugs: cat.relatedSlugs ?? stat.relatedSlugs ?? null,
+    seoTitle: cat.seoTitle ?? stat.seoTitle ?? null,
+    seoDescription: cat.seoDescription ?? stat.seoDescription ?? null,
+    heroAngle: cat.heroAngle ?? stat.heroAngle ?? null,
   }
 }
 
@@ -101,13 +106,13 @@ function withPseoContent(cat: Category | null | undefined): Category | null {
 export async function getCategories(): Promise<Category[]> {
   const fromDb = await viaDb(dbGetCategories, (xs) => xs.length === 0)
   const cats = fromDb ?? STATIC_CATEGORIES
-  return cats.map((c) => withPseoContent(c)!)
+  return cats.map(overlayStaticConstants)
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const fromDb = await viaDb(() => dbGetCategoryBySlug(slug), (v) => v === null)
   const cat = fromDb ?? STATIC_CATEGORIES.find((c) => c.slug === slug) ?? null
-  return withPseoContent(cat)
+  return cat ? overlayStaticConstants(cat) : null
 }
 
 export async function getToolsByCategory(
@@ -167,11 +172,12 @@ export async function searchTools(filters: SearchFilters): Promise<PaginatedResu
 
 const FEATURED_SET: ReadonlySet<string> = new Set(FEATURED_TOOL_SLUGS)
 
-/** Canonical featured flag — derived from FEATURED_TOOL_SLUGS so the Tool
- *  object's `isFeatured` always matches what the homepage hero, the per-page
- *  Featured tag, and the featured-first sort all use. */
+/** Canonical featured flag — featured if the tool is on the homepage hero list
+ *  (FEATURED_TOOL_SLUGS, 5 sponsor placements) OR if the per-tool seed flag is
+ *  true (per-category curation). The OR keeps the homepage-5 invariant while
+ *  letting category pages surface curated favourites independently. */
 function withCanonicalFeatured<T extends Tool>(tool: T): T {
-  const isFeatured = FEATURED_SET.has(tool.slug)
+  const isFeatured = tool.isFeatured || FEATURED_SET.has(tool.slug)
   return tool.isFeatured === isFeatured ? tool : { ...tool, isFeatured }
 }
 

@@ -10,7 +10,13 @@
  */
 
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
-import type { BuyingCriterion, PricingModel } from '@/lib/types'
+import type {
+  BuyingCriterion,
+  JourneyTier,
+  Pitfall,
+  PricingModel,
+  ReadingItem,
+} from '@/lib/types'
 
 // ─── categories ──────────────────────────────────────────────────────────────
 export const categories = sqliteTable(
@@ -26,6 +32,9 @@ export const categories = sqliteTable(
     // pSEO content
     intro: text('intro'),
     buyingCriteria: text('buying_criteria', { mode: 'json' }).$type<BuyingCriterion[] | null>(),
+    journey: text('journey', { mode: 'json' }).$type<JourneyTier | null>(),
+    pitfalls: text('pitfalls', { mode: 'json' }).$type<Pitfall[] | null>(),
+    readingList: text('reading_list', { mode: 'json' }).$type<ReadingItem[] | null>(),
     relatedSlugs: text('related_slugs', { mode: 'json' }).$type<string[] | null>(),
     seoTitle: text('seo_title'),
     seoDescription: text('seo_description'),
@@ -49,6 +58,7 @@ export const tools = sqliteTable(
     description: text('description').notNull(),
     shortDesc: text('short_desc'),
     useCases: text('use_cases', { mode: 'json' }).$type<string[] | null>(),
+    keyFeatures: text('key_features', { mode: 'json' }).$type<string[] | null>(),
     websiteUrl: text('website_url').notNull(),
     logoUrl: text('logo_url'),
     pricingModel: text('pricing_model').notNull().$type<PricingModel>(),

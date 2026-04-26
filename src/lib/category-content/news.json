@@ -1,0 +1,36 @@
+{
+  "slug": "news",
+  "name": "News",
+  "description": "The daily broadsheet of Indian venture: feeds, paywalled scoops, and curated newsletters investors read before chai.",
+  "intro": "News tooling is a fund's early-warning system: deal alerts before the term sheet hardens, sector signal that re-prices a thesis, founder back-channel monitoring (who's hiring, who's quietly moving), and ecosystem awareness so partners walk into Monday already aligned. The morning scan is not entertainment — it's pipeline. Miss a story, miss a round.\n\nIn India, the global tech press is a trailing indicator. Inc42, Entrackr, YourStory, and Moneycontrol break funding rounds first; The Ken and The Morning Context own the longform paywalled angle that matters for diligence. Vernacular trade press surfaces Tier-2 stories Bangalore Twitter never sees. The real problem is signal-to-noise — twenty tabs, fifteen WhatsApp groups, and one missed Inc42 paragraph that would have flagged the down-round.",
+  "journey": {
+    "beginner": "Inc42, Entrackr, YourStory, VCCircle, Moneycontrol, Economic Times, Live Mint. The free India-scoop layer. If you're not reading these daily, nothing else matters.",
+    "intermediate": "Add The Ken and The Morning Context for paid longform that turns headlines into thesis. Arc and The Generalist for global context.",
+    "advanced": "TechCrunch, Forbes, Entrepreneur India as the global context layer once the India base is dialled. Layer AI summarisation on top to collapse the firehose into a five-minute brief."
+  },
+  "buying_criteria": [
+    {
+      "label": "India coverage depth.",
+      "description": "The Ken and Morning Context out-report TechCrunch on every Indian deal that matters. Budget two paid Indian subs before any global one."
+    },
+    {
+      "label": "Speed vs analysis split.",
+      "description": "Entrackr and Inc42 break the round; Ken and Morning Context explain why it priced that way. Pick one of each, not three of either."
+    },
+    {
+      "label": "Inbox vs app discipline.",
+      "description": "Match delivery format to how your team actually consumes — newsletters die in apps nobody opens, apps die in inboxes nobody filters."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Confusing reading for sourcing.",
+      "description": "Headlines feel productive; they don't fill a pipeline. News informs the call, it doesn't replace it."
+    },
+    {
+      "label": "Subscription bloat.",
+      "description": "Five paywalls and zero discipline equals five unread newsletters. Two well-read Indian paid subs beat the entire menu."
+    }
+  ],
+  "reading_list": []
+}

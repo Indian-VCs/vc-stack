@@ -1,0 +1,44 @@
+{
+  "slug": "voice-to-text",
+  "name": "Voice to Text",
+  "description": "Dictation tools that turn cab-ride monologues, Hinglish voice notes, and between-meeting thoughts into clean CRM-ready text.",
+  "intro": "Voice-to-text has quietly become one of the highest-leverage unlocks in a VC's stack. The work is verbal: founder calls, partner debates, IC pitches, hallway chatter. Typing is the bottleneck. With modern dictation, you push a hotkey in the back of an Uber and a 400-word Affinity update lands clean. You triage WhatsApp founder threads at 3x typing speed. You prompt Claude in full paragraphs instead of tortured fragments. You file IC memos before reaching the office. Once your brain rewires to it, there's no going back.\n\nIndia makes this harder than the demo videos suggest. Most associates code-mix mid-sentence — the ARR ka trajectory looks solid but burn thoda zyada hai — and weak engines collapse the moment Hinglish appears. Regional language dictation is still mostly a promise, not a product. Founder voice notes arrive in Hindi, Tamil, Marathi, often layered with English jargon. The right engine compounds; the wrong one wastes you a week before you give up.",
+  "journey": {
+    "beginner": "Wispr Flow. Default starting point. Clean dictation across every app, handles Indian English well, two-minute setup. Most VCs who stick with voice-to-text started here and stayed.",
+    "intermediate": "Aqua Voice or Willow Voice. Hotkey dictation with style-matching and name accuracy for portfolio-heavy workflows.",
+    "advanced": "Superwhisper. Offline mode and configurable LLM post-processing for funds that need local processing on regulated diligence or term-sheet drafts."
+  },
+  "buying_criteria": [
+    {
+      "label": "Hinglish and code-mix accuracy.",
+      "description": "Test with your real voice, not a clean script — code-mixed sentences are where most engines silently fail."
+    },
+    {
+      "label": "System-wide hotkey.",
+      "description": "Must dictate into Affinity, Slack, Gmail, Notion, and Claude without context-switching or copy-paste detours."
+    },
+    {
+      "label": "Privacy posture.",
+      "description": "Confirm whether audio processes locally or hits a cloud — regulated deals and term-sheet drafts often need on-device only."
+    },
+    {
+      "label": "Post-processing quality.",
+      "description": "The gap between raw transcript and publishable draft is huge. Demand AI cleanup that removes filler and respects your voice."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Buying on demo, not daily use.",
+      "description": "Vendor demos use studio audio; your real test is a noisy cab with two languages and a weak signal."
+    },
+    {
+      "label": "Ignoring name and term accuracy.",
+      "description": "Indian founder names, fund acronyms, and sector jargon get mangled. Check custom-dictionary support before committing."
+    },
+    {
+      "label": "Cloud transcription on sensitive notes.",
+      "description": "Sensitive IC notes and founder commitments shouldn't be uploaded blindly. Default to local mode where the workflow allows."
+    }
+  ],
+  "reading_list": []
+}

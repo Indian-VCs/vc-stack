@@ -68,7 +68,8 @@ export interface SeedSqlOptions {
 export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string {
   const catColumns = [
     'id', 'slug', 'name', 'description', 'icon', 'image_url',
-    'intro', 'buying_criteria', 'related_slugs',
+    'intro', 'buying_criteria', 'journey', 'pitfalls', 'reading_list',
+    'related_slugs',
     'seo_title', 'seo_description', 'hero_angle',
     'sort_order', 'archived_at', 'created_at', 'updated_at',
   ]
@@ -82,6 +83,9 @@ export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string 
     image_url: c.imageUrl ?? null,
     intro: c.intro ?? null,
     buying_criteria: c.buyingCriteria ?? null,
+    journey: c.journey ?? null,
+    pitfalls: c.pitfalls ?? null,
+    reading_list: c.readingList ?? null,
     related_slugs: c.relatedSlugs ?? null,
     seo_title: c.seoTitle ?? null,
     seo_description: c.seoDescription ?? null,
@@ -93,7 +97,7 @@ export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string 
   }))
 
   const toolColumns = [
-    'id', 'slug', 'name', 'description', 'short_desc', 'use_cases',
+    'id', 'slug', 'name', 'description', 'short_desc', 'use_cases', 'key_features',
     'website_url', 'logo_url', 'pricing_model',
     'is_featured', 'featured_order',
     'category_id', 'extra_category_slugs',
@@ -107,6 +111,7 @@ export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string 
     description: t.description,
     short_desc: t.shortDesc ?? null,
     use_cases: t.useCases ?? null,
+    key_features: t.keyFeatures ?? null,
     website_url: t.websiteUrl,
     logo_url: t.logoUrl ?? null,
     pricing_model: t.pricingModel,
@@ -119,8 +124,13 @@ export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string 
     updated_at: now,
   }))
 
+  // Preserve per-tool is_featured from STATIC_TOOLS (per-category curation).
+  // Only wipe featured_order, then re-apply it for the canonical 5 sponsor
+  // placements. Canonical tools also get is_featured = 1 forced in case the
+  // source flag drifted. Non-canonical featured tools keep is_featured = 1
+  // with featured_order = NULL → they sort after canonical 5 by name.
   const featuredOrderSql = [
-    'UPDATE tools SET is_featured = 0, featured_order = NULL;',
+    'UPDATE tools SET featured_order = NULL;',
     ...FEATURED_TOOL_SLUGS.map(
       (slug, i) =>
         `UPDATE tools SET is_featured = 1, featured_order = ${i}, updated_at = ${now} WHERE slug = ${sqlString(slug)};`,

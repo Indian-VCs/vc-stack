@@ -1,0 +1,44 @@
+{
+  "slug": "ai",
+  "name": "AI",
+  "description": "General-purpose AI copilots — the cognitive layer underneath every memo, model, and WhatsApp deal triage at an Indian fund.",
+  "intro": "AI tools have stopped being a budget line and become the substrate. Inside a 2026 fund, the first tab opened isn't email — it's a chat window. Inbound deck triage, memo skeletons, call summaries, market maps, thesis pressure-tests, LP update drafts, even reference-call prep all start in a copilot. The funds compounding fastest aren't the ones with the cleverest prompts; they're the ones who've moved firm context — playbook, ICP, portfolio, anti-portfolio — into reusable skills and shared assistants so every analyst inherits the partners' brain.\n\nThe India reality is messier than the Twitter version. Most teams quietly run two assistants — ChatGPT for breadth, Claude for long diligence reads — on personal logins, expensed in INR. Founder decks arrive in Hinglish, Tamil-English, regional WhatsApp voice notes; reasoning quality on code-mixed input still varies sharply by model. Sensitive diligence — cap tables, founder backgrounds, MCA filings — demands enterprise plans where training is disabled and data residency is auditable.\n\nThe journey isn't about which tool. Most funds use the same handful — Claude, ChatGPT, Perplexity, Gemini. It's about how deeply you use them.",
+  "journey": {
+    "beginner": "Daily chat. Paid seats of Claude or ChatGPT for deck triage, memo skeletons, call summaries, market scans. Free tiers leak data — start paid.",
+    "intermediate": "Same models, deeper leverage. ChatGPT Projects and Custom GPTs, Claude with skills and shared assistants, Notion AI over your wiki, Perplexity for sourced research, Gemini if your fund lives in Google Workspace. The firm's playbook starts living inside the tool.",
+    "advanced": "Claude Code, Codex, the API layer. Multi-tool routing — different models for different jobs based on token cost, latency, context window, security posture. Internal platforms for sourcing, screening, and memo automation. Manus for autonomous multi-step work; DeepSeek where INR-economics matter on high-volume API calls."
+  },
+  "buying_criteria": [
+    {
+      "label": "Workspace integration.",
+      "description": "The assistant that wins is the one already inside Gmail, Slack, or Notion where your team spends 80% of the day. Everything else stays a tab."
+    },
+    {
+      "label": "Team plan with shared context.",
+      "description": "Personal seats die when the analyst leaves. Team plans let you build skills and shared projects the whole firm inherits — and someone updates weekly."
+    },
+    {
+      "label": "Enterprise privacy and data retention.",
+      "description": "Confirm training-off, audit logs, SSO, and a retention policy that matches your LP commitments before any cap table touches the model."
+    },
+    {
+      "label": "Reliability and support.",
+      "description": "Even category leaders go down — Claude has had meaningful, repeated outages, and support response on consumer plans is uneven. Check the status page, support SLAs, and have a fallback model wired up."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Personal accounts on firm data.",
+      "description": "Knowledge walks with the person. Skills, projects, and prompt libraries built on personal seats vanish when the analyst leaves — that's pure technical debt. Team plans aren't optional."
+    },
+    {
+      "label": "Tool sprawl too early.",
+      "description": "Five assistants tested in parallel before one is dialled in usually leaves you with five half-used seats. Standardise on one; experiment with the rest only after the first is working."
+    },
+    {
+      "label": "Clever prompts without team-wide skills.",
+      "description": "A partner's good prompts in a personal chat don't compound. Skills, projects, and shared assistants — owned by someone, updated weekly — do."
+    }
+  ],
+  "reading_list": []
+}

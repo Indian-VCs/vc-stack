@@ -26,6 +26,7 @@ export default function EditToolForm({
     description: tool.description,
     shortDesc: tool.shortDesc ?? '',
     useCases: (tool.useCases ?? []).join('\n'),
+    keyFeatures: (tool.keyFeatures ?? []).join('\n'),
     websiteUrl: tool.websiteUrl,
     logoUrl: tool.logoUrl ?? '',
     categoryId: tool.categoryId,

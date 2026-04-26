@@ -1,0 +1,24 @@
+{
+  "slug": "other-tools",
+  "name": "Other Tools",
+  "description": "The catch-all shelf. Design files, storage, forms, shortcuts, and utilities that don't fit a focused category.",
+  "intro": "This is a catch-all by design. Tools here span unrelated jobs — building a deck visual in Canva or Gamma, capturing a form response in Tally or Typeform, hosting an event in Luma, automating a desktop shortcut in Raycast, storing a fund deck in DocSend. There's no shared workflow that binds them and no single buyer profile to optimise for. Most are picked up opportunistically when a specific need surfaces, kept if they earn their keep, and dropped without ceremony when they don't.\n\nTreat this category as a reference shelf rather than a stack to assemble. Each tool stands on its own merits for the narrow job it does. If a tool here matters to your workflow, it usually matters a lot for one specific task and not at all for the rest of the week.",
+  "journey": null,
+  "buying_criteria": [
+    {
+      "label": "Single-job clarity.",
+      "description": "The tool should do one thing obviously well. Catch-all utilities that try to expand into adjacent categories tend to underperform the focused incumbents."
+    },
+    {
+      "label": "Low switching cost.",
+      "description": "These sit at the edges of the workflow. Anything that locks in data, contacts, or assets deserves extra scrutiny before adoption."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Stack creep.",
+      "description": "Easy to accumulate five overlapping utilities (three form tools, two design tools) because each was added for a one-off need. Audit this shelf periodically and consolidate where workflows have drifted into overlap."
+    }
+  ],
+  "reading_list": []
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "calendar",
+  "name": "Calendar",
+  "description": "Booking, blocking, and defending time. Calendars built for funds juggling IST partner blocks, founder triage across cities, and 9pm LP calls.",
+  "intro": "A VC's calendar is the firm's real org chart. It decides which founder gets ten minutes on Tuesday, which IC slot survives the week, and which LP gets a 9pm IST callback. Booking links route inbound founder triage off your inbox; dedicated calendar clients give partners keyboard speed across stacked days; AI on top now reads context, drafts agendas, and defends focus blocks. Calendar isn't admin work — it's the throughput control on partner attention, and often the difference between a fund that ships an IC every week and one that doesn't.\n\nIndia makes this harder. Most funds run a US, UK, or Singapore LP base, so every week has at least three timezones doing math against IST. Tools that show LPs an IST slot read amateur and cost you the second meeting. Founders ricochet across Bangalore, Mumbai, and Delhi; partner-meeting Mondays are sacred and routinely deflected; Friday afternoons disappear into dinner-prep traffic. The calendar tool that wins is the one that holds those constraints without you reminding it weekly.",
+  "journey": {
+    "beginner": "Cal.com. Open-source, generous free tier, one shared booking link across the partnership. Cheapest way to stop fragmenting your top-of-funnel.",
+    "intermediate": "Calendly for routed inbound — round-robin across partners, sector-specific links — plus Notion Calendar as the daily client that pulls pipeline, IC, portfolio, and personal events into one surface. Notion Calendar is, frankly, the most refined daily calendar available; if you already live in Notion, the integration is unfair.",
+    "advanced": "Vimcal. Keyboard-first, multi-timezone, EA-friendly. The calendar a heavy-schedule partner runs the day from. Layer AI on top for prep briefs, defended focus, and natural-language scheduling."
+  },
+  "buying_criteria": [
+    {
+      "label": "Firm-wide consistency.",
+      "description": "Every partner on the same booking link. Mixed setups confuse founders on warm intros and quietly kill conversion at the top of the funnel."
+    },
+    {
+      "label": "Multi-timezone hygiene.",
+      "description": "IST, PST, GMT, and SGT in one week is the baseline. The tool should show LP slots in the LP's timezone by default — not yours."
+    },
+    {
+      "label": "CRM and notetaker hookup.",
+      "description": "Events should auto-log to the CRM and auto-trigger your transcription tool. If a partner has to copy-paste, the workflow is broken."
+    },
+    {
+      "label": "AI agenda and prep.",
+      "description": "A 30-second pre-meeting brief — last touch, last memo, last commitment — turns a partner's calendar into a working pipeline tool, not just a clock."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "One link per partner.",
+      "description": "Personal Calendly pages fragment the firm. Founders get four links from four partners and pick the wrong one — or none."
+    },
+    {
+      "label": "Calendar as inbox.",
+      "description": "Letting any founder self-book directly destroys deep-work blocks. Route inbound through an EA, a form, or a triage layer first."
+    },
+    {
+      "label": "Manual timezone math.",
+      "description": "Every week a partner accidentally proposes 9am IST to a London LP. Fix it once, in the tool — don't keep apologising."
+    }
+  ],
+  "reading_list": []
+}

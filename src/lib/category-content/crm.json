@@ -1,0 +1,44 @@
+{
+  "slug": "crm",
+  "name": "CRM",
+  "description": "Where a fund's relationships actually live. Founders, co-investors, LPs, angels — tracked from first DM to the next round.",
+  "intro": "A CRM is a fund's long-term memory. Every founder met at a demo day, every co-investor intro, every LP check-in, every \"let's talk in two quarters\" — captured once, surfaced again when the next round, exit, or fund close suddenly makes it relevant. The good ones do this without anyone manually logging anything. The bad ones become Excel-with-extra-steps and get abandoned by Q3.\n\nIndian VC dealflow doesn't behave like a Salesforce funnel. Half the conversations start on WhatsApp; intros come through founder networks and angel syndicates; the same person is a founder one cycle and an angel investor the next. A working CRM here pulls from inbox, calendar, and LinkedIn natively, ideally enriches with India-specific signals — MCA filings, syndicate activity, Tracxn, Venture Intelligence, Inc42 — and lets the firm carry one contact graph across stages, sectors, and decades.",
+  "journey": {
+    "beginner": "Notion. A single shared database for founders and conversations beats spreadsheets and beats nothing. Low cost, the rest of the stack can bolt on later.",
+    "intermediate": "A purpose-built CRM layered in. Folk, Streak, or HubSpot if your team lives in inbox; Notion stays as the wiki layer; Taghash if you want a fund-OS that already understands Indian LP and portfolio workflows.",
+    "advanced": "Affinity or Attio for relationship intelligence at scale; Clay layered on top for enrichment and outbound; Airtable for custom workflows; Taghash deepened across deal flow, portfolio, and LP comms."
+  },
+  "buying_criteria": [
+    {
+      "label": "Auto-capture from inbox and calendar.",
+      "description": "If your team has to manually log every meeting, the data decays inside a month."
+    },
+    {
+      "label": "One contact graph across founder, angel, LP, co-investor.",
+      "description": "The same person plays multiple roles in Indian VC. The CRM has to know that."
+    },
+    {
+      "label": "India-native enrichment.",
+      "description": "MCA, Tracxn, Venture Intelligence, Inc42, syndicate data — table stakes for any tool you'll keep beyond a year."
+    },
+    {
+      "label": "Plays well with the rest of the stack.",
+      "description": "Email, calendar, Notion or Slack, your data tools. A walled-garden CRM dies inside two quarters."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Buying the global category leader and using 10% of it.",
+      "description": "Salesforce and HubSpot are powerful, but most Indian funds end up leaking the real data into WhatsApp anyway."
+    },
+    {
+      "label": "A CRM that depends on manual logging.",
+      "description": "If the analyst has to remember to enter the note, it'll be empty by the next IC. Pick one that listens."
+    },
+    {
+      "label": "Treating CRM as a sourcing tool only.",
+      "description": "The compounding value is in the \"we met them in 2022, they were too early — what about now\" lookup, not the new-deal pipeline view."
+    }
+  ],
+  "reading_list": []
+}

@@ -18,6 +18,12 @@ export const ToolSchema = z.object({
     .max(2000)
     .optional()
     .default(''), // textarea, one bullet per line
+  keyFeatures: z
+    .string()
+    .trim()
+    .max(1500)
+    .optional()
+    .default(''), // textarea, one bullet per line — 2–3 expected
   websiteUrl: z.string().trim().url('Must be a valid URL').max(500),
   logoUrl: z
     .string()
@@ -53,6 +59,7 @@ export function parseToolForm(formData: FormData) {
     description: formData.get('description'),
     shortDesc: formData.get('shortDesc') ?? '',
     useCases: formData.get('useCases') ?? '',
+    keyFeatures: formData.get('keyFeatures') ?? '',
     websiteUrl: formData.get('websiteUrl'),
     logoUrl: formData.get('logoUrl') ?? '',
     categoryId: formData.get('categoryId'),
@@ -70,6 +77,8 @@ export function parseUseCases(raw: string): string[] | null {
     .filter(Boolean)
   return lines.length === 0 ? null : lines
 }
+
+export const parseKeyFeatures = parseUseCases
 
 export function parseExtraSlugs(raw: string): string[] | null {
   const slugs = raw

@@ -1,0 +1,44 @@
+{
+  "slug": "mailing",
+  "name": "Mailing",
+  "description": "Inbox infrastructure for funds. Founder threads, LP letters, deliverability — and the AI triage that turns 200 daily threads into 30 minutes of work.",
+  "intro": "Email is where every VC's day starts and ends. Term sheets get negotiated in threads. Founders judge response speed before they judge the term sheet. LPs read your name in a subject line before they open the memo. The quarterly letter is the single piece of writing investors actually finish — and the only writing the firm produces that lands in the inboxes that fund the next vehicle. Most Indian funds end up in inbox bankruptcy by Wednesday; the ones that don't have moved off Gmail's default surface.\n\nIndian VC inboxes are dense, not high-volume. Founders WhatsApp first and email second, so what lands in your inbox is mostly warm intros, data rooms, and follow-ups — slower per thread, weightier per reply. US LPs read your update at 7am ET (your dinner time); Singapore LPs at 9am SGT (your morning) — schedule-send isn't a feature, it's table stakes. And Indian Gmail inboxes are saturated with promotional noise, so deliverability for LP letters matters more than design — a beautiful quarterly that lands in Promotions might as well not exist.",
+  "journey": {
+    "beginner": "Gmail or Outlook with keyboard shortcuts, labels, and saved replies. Free, universal, no lock-in. Get inbox hygiene right before paying for anything.",
+    "intermediate": "Shortwave or Notion Mail. AI triage, bundles, and team views once founder volume crosses 50 threads a day. Pick the one that already lives where your team works.",
+    "advanced": "Superhuman. Multiple inboxes (dealflow, portfolio, LP, ecosystem), read receipts on every founder reply, Smart Send to land at the recipient's actual open-time, share-an-email-as-link to kill the dead \"FYI\" forward chain, cadences for follow-ups your team would otherwise lose. The cost is real; so is the leverage."
+  },
+  "buying_criteria": [
+    {
+      "label": "Speed and keyboard depth.",
+      "description": "A partner reads 200+ threads a day. Mouse-driven UIs cost real hours; keyboard-first clients pay for themselves in week one."
+    },
+    {
+      "label": "AI triage that fits your workflow.",
+      "description": "Bundles, summaries, and reply drafts done well save 30–40 minutes a morning. Done badly, they add a step."
+    },
+    {
+      "label": "Smart-send and timezone awareness.",
+      "description": "Indian funds mailing US, UK, and Singapore LPs need the email to land at the recipient's open-time, not yours. Without it, your update reads as the late-night blast it actually was."
+    },
+    {
+      "label": "Calendar and CRM hooks.",
+      "description": "Native handoff to Cal.com, Calendly, Affinity, or Attio matters more than any AI feature. Friction here breaks first-meeting conversion."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Buying AI features you'll never configure.",
+      "description": "Most teams adopt 10% of the surface. Pilot with one partner for two weeks before a firm-wide rollout."
+    },
+    {
+      "label": "Ignoring deliverability on LP letters.",
+      "description": "A quarterly sent from a fancy client into a saturated Indian inbox lands in Promotions. Warm the domain, plain-text it, test before send."
+    },
+    {
+      "label": "One inbox for everything.",
+      "description": "Dealflow, portfolio, LP, and ecosystem in one undifferentiated stack guarantees the LP email you needed to surface gets buried under founder follow-ups. Split inboxes by purpose; triage by priority."
+    }
+  ],
+  "reading_list": []
+}

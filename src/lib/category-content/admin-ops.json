@@ -1,0 +1,36 @@
+{
+  "slug": "admin-ops",
+  "name": "Admin & Ops",
+  "description": "Fund administration, SEBI AIF compliance, capital calls, and the back-office scaffolding that lets an Indian VC firm actually run.",
+  "intro": "The whole question of fund admin in India collapses into one decision: where does the fund live, and what regulator does it answer to? A SEBI-registered Cat I or Cat II AIF in Mumbai means quarterly compliance reports, custodian arrangements, valuation under SEBI norms, and audit cycles that look nothing like a Delaware LLC. A GIFT City IFSC fund layers on USD-denominated reporting, FATCA/CRS, and a different regulator (IFSCA). Pick the wrong tool for the wrong structure and you spend year two re-platforming instead of investing.\n\nThe Indian platform layer has matured. A sub-INR 100 Cr fund or syndicate-style vehicle can run end-to-end on AngelList India, LetsVenture, or Trica. Mid-sized AIFs typically split: an Indian platform or admin firm for SEBI, FEMA, and RoC, plus a cap-table and waterfall layer (Carta) for portfolio and carry tracking. Above that, institutional GPs move to traditional fund admins — Apex, IQ-EQ, Vistra — not because the platforms can't handle scale, but because LPs at that ticket size expect a Big-4-audited admin name on the K-1 equivalent.",
+  "journey": {
+    "beginner": "Single SPV or rolling vehicle. Pick one Indian platform — AngelList India, LetsVenture, or Trica — and live inside it.",
+    "intermediate": "Sub-INR 250 Cr Cat II AIF with a real CFO or ops lead. Stitch a platform plus Carta plus an external CA firm.",
+    "advanced": "Multi-fund, GIFT City plus domestic structure, institutional LPs. You're now buying a fund admin relationship, not a SaaS product."
+  },
+  "buying_criteria": [
+    {
+      "label": "Structure-native, not retrofitted.",
+      "description": "A tool built for Delaware C-corps will leak abstractions into every SEBI filing. Indian-built platforms understand contribution agreements, INR drawdown notices, and Form III out of the box."
+    },
+    {
+      "label": "LP reporting that looks institutional.",
+      "description": "Capital account statements, IRR/DPI/TVPI, drawdown notices go to family offices and DFIs comparing you to global GPs. PDFs from a spreadsheet template stop scaling at fund II."
+    },
+    {
+      "label": "Switching cost is the real lock-in.",
+      "description": "Migrating fund admin mid-vintage is brutal — historical NAVs, audit trails, LP records all have to come along. Pick for fund III, not fund I."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Treating GIFT City as a tax hack instead of an ops decision.",
+      "description": "The IFSCA regime is a different rulebook with different admin, audit, and reporting. Decide structure before tooling."
+    },
+    {
+      "label": "Outsourcing compliance entirely to the platform.",
+      "description": "SEBI quarterlies, valuation policy, PPM updates — all still the GP's liability. The platform automates the filing; it does not own the obligation."
+    }
+  ],
+  "reading_list": []
+}

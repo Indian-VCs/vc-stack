@@ -1,0 +1,36 @@
+{
+  "slug": "automation",
+  "name": "Automation",
+  "description": "Workflow glue for funds. No-code engines that wire CRM, inbox, and data room together — and where AI agents start replacing analyst grunt hours.",
+  "intro": "Most Indian fund workflows have manual seams an analyst is paid to stitch: pitch landing in inbox, deck saved to Drive, founder pushed into CRM, sector-tagged, routed to the right partner, LinkedIn checked for hiring signal. Each step is small. Stack thirty deals a week and it eats a junior's day. Automation tools collapse that into a flow that runs while you sleep — and the new generation of agent-native builders means the flow can now reason, not just route.\n\nThe Indian gravity to fight is the \"arre, the analyst will just do it\" reflex. People are cheap here, automation feels expensive, so funds delay building flows that would compound for years. Rule of thumb: if a task happens more than twice a week, automate it before you hire for it.",
+  "journey": {
+    "beginner": "Zapier. The default. Best app coverage in the world, including Indian-relevant ones — Razorpay, Zoho, WhatsApp Business. Use for the boring 80%: route emails, log forms, sync calendars. Ten reliable Zaps beats fifty broken ones.",
+    "intermediate": "Make for visual branching and multi-step logic, cheaper at volume. Or n8n self-hosted, open-source — the default for funds nervous about LP data on US SaaS.",
+    "advanced": "Lindy and Bardeen. AI-agent layer. Instead of \"if this then that,\" you brief an agent: watch these 40 LinkedIn profiles, alert me when anyone changes job, draft an intro in my voice. This is where analyst hours stop existing."
+  },
+  "buying_criteria": [
+    {
+      "label": "Native connectors for your stack.",
+      "description": "Affinity, Attio, Notion, Gmail, Slack, Drive, plus India-local connectors like WhatsApp Business, Razorpay, Zoho. Missing one connector kills the whole flow."
+    },
+    {
+      "label": "Branching and error handling.",
+      "description": "Real workflows fork and fail. Check retry logic, error notifications, run logs. Cheap tools skip this and you find out three weeks of deal data is missing."
+    },
+    {
+      "label": "Agent-readiness.",
+      "description": "Does it expose an MCP server, webhook in/out, or LLM steps? The stack you pick today should plug into the agent layer you'll add in 12 months."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Building 50 workflows, maintaining zero.",
+      "description": "Automations rot — APIs change, tokens expire, edge cases break. Without a named owner, your \"automated fund\" silently turns back into a manual one."
+    },
+    {
+      "label": "Automating the wrong layer.",
+      "description": "Funds wire up beautiful Zapier flows around a CRM nobody updates. Fix source-of-truth discipline first; automating chaos just produces faster chaos."
+    }
+  ],
+  "reading_list": []
+}

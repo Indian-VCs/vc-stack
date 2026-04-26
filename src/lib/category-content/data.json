@@ -1,0 +1,40 @@
+{
+  "slug": "data",
+  "name": "Data",
+  "description": "Private-market databases, founder graphs, and registry-grade intel — the raw material every Indian VC memo is forged from.",
+  "intro": "Data tools are the substrate of every workflow inside a fund: sourcing pipelines, comp pulls before a term sheet, sector mapping for thesis work, valuation triangulation, and the citation layer that turns a partner's hunch into an IC-ready memo. The serious shift in the last 18 months is upstream — stealth detection from GitHub commits, domain registrations, and LinkedIn delta signals now beats waiting for a TechCrunch post by six to nine months. The fund that sees the founder first usually wins the round.\n\nIndia breaks the global playbook. Tracxn is the benchmark for Indian coverage with a clean UI; Venture Intelligence has strong coverage but a weaker UI; PrivateCircle is improving fast. LinkedIn Sales Navigator has a data set you can't buy anywhere else. EverTrace is genuinely strong on stealth founders and the founder graph. Crunchbase, CB Insights, and PitchBook thin out fast below Series B; Preqin is its own world for LP and fund data. MCA and RoC filings remain the only real source for cap-table and ESOP truth. Series A and below is still mostly opaque — expect to triangulate three sources for any number you put in writing.",
+  "journey": {
+    "beginner": "Tracxn or Crunchbase plus LinkedIn Sales Navigator. Tracxn for India coverage and clean UI; LinkedIn for the data set nothing else has.",
+    "intermediate": "Add Venture Intelligence and PrivateCircle for deeper India depth. Stack by job: stealth founders go to EverTrace; Indian early-stage to Tracxn or VI; LP database to Preqin.",
+    "advanced": "Harmonic and EverTrace for predictive signal; CB Insights or PitchBook for global benchmarking; Sanchi Connect for India-LP intel. Everything wired into your CRM via Clay or direct connectors so analysts stop re-keying."
+  },
+  "buying_criteria": [
+    {
+      "label": "India coverage depth.",
+      "description": "Test the platform on twenty pre-Series-A Indian companies you know cold. If half are missing or stale, the platform is a global tool wearing an India hat."
+    },
+    {
+      "label": "Fit-to-data-job.",
+      "description": "Stealth founders, closed rounds, LP intel, and sector benchmarking are different jobs. No tool wins all four — buy by the job that's actually unblocked."
+    },
+    {
+      "label": "UI and time-to-answer.",
+      "description": "Coverage matters; so does whether your analyst gets the answer out in two clicks. Tracxn's UI is the benchmark."
+    },
+    {
+      "label": "CRM integration.",
+      "description": "Native push into Affinity, Attio, Taghash, or Notion. Data that doesn't land in your pipeline gets re-keyed once, then ignored forever."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Buying enterprise tiers analysts never open.",
+      "description": "Adoption dies in week three without a named owner, weekly rituals, and a dashboard tracking active queries-per-seat."
+    },
+    {
+      "label": "Treating one platform as ground truth.",
+      "description": "Every Indian data source misses something — early stage, regional, or a specific sector. Triangulate before you put a number in a memo."
+    }
+  ],
+  "reading_list": []
+}

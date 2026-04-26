@@ -1,0 +1,1 @@
+ALTER TABLE `tools` ADD `key_features` text;

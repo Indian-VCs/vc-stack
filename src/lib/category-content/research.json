@@ -1,0 +1,23 @@
+{
+  "slug": "research",
+  "name": "Research",
+  "description": "Secondary research, expert calls, and sector deep-dives — where Indian theses get pressure-tested before they reach IC.",
+  "intro": "Research is where a thesis lives or dies. Inside a fund, these tools power sector deep-dives, comp pulls, expert calls before IC, founder-claim verification, and the IC pre-read itself. The work used to be a junior analyst's week — scrape filings, ping ex-operators, build a market map, write the memo. Deep-research agents now compress that to an afternoon, which means the bar for \"did you actually look\" has moved up, not down.\n\nThe Indian reality is harder than the Bay Area version. Expert networks are thin in fintech-ops, Tier-2 retail, BFSI middle-management, and most regulated sectors — the operator who actually ran the unit doesn't take GLG calls. Half the source material lives in Hindi, Tamil, or trade press a US-trained model has never indexed. Most funds end up triangulating across two or three sources by job: paid sector reports for sizing, expert calls for verification, and AI-driven desk research for the long tail.",
+  "journey": null,
+  "buying_criteria": [
+    {
+      "label": "India coverage and expert availability.",
+      "description": "Global panels miss Tier-2 consumer, BFSI ops, and regulated sectors. Insist on Indian experts and Indian sector depth before you sign."
+    },
+    {
+      "label": "Expert credentials.",
+      "description": "Resume-grade titles aren't operator experience. Verify the expert actually ran the unit you care about — before the call, not after."
+    },
+    {
+      "label": "Fit-to-job.",
+      "description": "Buy for desk research, expert calls, or competitive intel — not all three. Tools that claim everything usually do nothing well."
+    }
+  ],
+  "pitfalls": [],
+  "reading_list": []
+}

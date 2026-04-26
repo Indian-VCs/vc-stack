@@ -1,0 +1,32 @@
+{
+  "slug": "communication",
+  "name": "Communication",
+  "description": "Where the partnership talks to itself and the outside world. WhatsApp runs founder threads, Slack runs the partnership.",
+  "intro": "In Indian VC, communication is bifurcated by audience and you don't get to choose. WhatsApp owns every founder, co-investor, banker, and angel conversation that matters — pitches arrive there, term sheets get negotiated there, \"quick check\" intros happen there. Slack (or the equivalent) is what the partnership uses to talk to itself: deal channels, IC prep, weekly pipeline. The fund that pretends Slack can replace WhatsApp loses dealflow inside a quarter. The fund that lets WhatsApp eat the partnership loses institutional memory.\n\nVideo is a separate axis. First founder calls in Tier-2 and Tier-3 cities still hit bandwidth walls — your call tool needs to degrade gracefully, not just look pretty on a Mumbai fibre line. US LP updates are non-negotiably high-fidelity, scheduled, and recorded. Diligence rooms (data rooms, secure file exchange) belong in this category too, because access patterns — who saw the cap table, when, from which IP — are themselves the conversation in late-stage rounds.",
+  "journey": {
+    "beginner": "Pick one internal channel tool — Slack or Teams — and stop using email internally. Move founder convos out of personal WhatsApp into a fund-branded WhatsApp Business number so the next analyst can inherit the thread.",
+    "intermediate": "Wire WhatsApp into the CRM. Standardise video — Zoom or Google Meet — for institutional calls; stop letting partners pick by mood.",
+    "advanced": "Treat the partnership channel as the source of truth for IC decisions — every deal has a thread, every thread has a decision log. Diligence rooms (DocSend, Notion) gated, watermarked, and access-logged by default."
+  },
+  "buying_criteria": [
+    {
+      "label": "WhatsApp capture path.",
+      "description": "If the tool can't get WhatsApp threads into your system of record without a human copy-paste, it's a leak. Native WhatsApp Business API integration is the bar for any India-deployed fund."
+    },
+    {
+      "label": "Graceful degradation on weak networks.",
+      "description": "Founder calls fail on the founder's bandwidth, not yours. Audio-first fallback and dial-in numbers matter more than 4K."
+    },
+    {
+      "label": "Access logs and retention controls.",
+      "description": "For diligence rooms and LP comms, you need to know who saw what, when — and prove it years later."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Letting personal WhatsApp own institutional relationships.",
+      "description": "When the partner leaves, the dealflow leaves with their phone. Fund-owned numbers and CRM sync are the fix — not a policy memo."
+    }
+  ],
+  "reading_list": []
+}

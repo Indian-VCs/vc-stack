@@ -274,6 +274,33 @@ export default async function ToolDetailPage({ params }: Props) {
         </p>
       </article>
 
+      {/* ── Key features ──────────────────────────────────────────── */}
+      {tool.keyFeatures && tool.keyFeatures.length > 0 && (
+        <section style={{ marginBottom: 32 }}>
+          <div className="section-header">Key features</div>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
+            {tool.keyFeatures.map((kf, i) => (
+              <li
+                key={i}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '18px 1fr',
+                  alignItems: 'start',
+                  gap: 10,
+                  fontFamily: 'var(--body)',
+                  fontSize: '1rem',
+                  lineHeight: 1.55,
+                  color: 'var(--ink)',
+                }}
+              >
+                <span style={{ color: 'var(--red)', fontWeight: 700, lineHeight: 1.55 }}>·</span>
+                <span>{kf}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* ── Popular use cases ─────────────────────────────────────── */}
       {tool.useCases && tool.useCases.length > 0 && (
         <section style={{ marginBottom: 40 }}>

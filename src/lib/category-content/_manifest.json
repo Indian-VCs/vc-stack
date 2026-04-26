@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-04-26",
+  "source_folder": "/Users/pc/Documents/Newsletter/vc-stack-category-updates/",
+  "target_project": "/Users/pc/Documents/VC Stack/",
+  "schema": {
+    "new_columns_to_add": ["journey", "pitfalls", "reading_list"],
+    "existing_columns_to_update": ["description", "intro", "buying_criteria"],
+    "column_types": {
+      "journey": "TEXT (JSON: { beginner: string, intermediate: string, advanced: string } | null)",
+      "pitfalls": "TEXT (JSON: { label: string, description: string }[])",
+      "reading_list": "TEXT (JSON: { title: string, source: string, url: string }[])"
+    }
+  },
+  "categories": [
+    { "slug": "crm", "name": "CRM", "file": "categories/crm.json" },
+    { "slug": "ai", "name": "AI", "file": "categories/ai.json" },
+    { "slug": "data", "name": "Data", "file": "categories/data.json" },
+    { "slug": "research", "name": "Research", "file": "categories/research.json" },
+    { "slug": "news", "name": "News", "file": "categories/news.json" },
+    { "slug": "portfolio-management", "name": "Portfolio Management", "file": "categories/portfolio-management.json" },
+    { "slug": "admin-ops", "name": "Admin & Ops", "file": "categories/admin-ops.json" },
+    { "slug": "automation", "name": "Automation", "file": "categories/automation.json" },
+    { "slug": "communication", "name": "Communication", "file": "categories/communication.json" },
+    { "slug": "mailing", "name": "Mailing", "file": "categories/mailing.json" },
+    { "slug": "calendar", "name": "Calendar", "file": "categories/calendar.json" },
+    { "slug": "transcription", "name": "Transcription", "file": "categories/transcription.json" },
+    { "slug": "voice-to-text", "name": "Voice to Text", "file": "categories/voice-to-text.json" },
+    { "slug": "productivity", "name": "Productivity", "file": "categories/productivity.json" },
+    { "slug": "vibe-coding", "name": "Vibe Coding", "file": "categories/vibe-coding.json" },
+    { "slug": "browser", "name": "Browser", "file": "categories/browser.json" },
+    { "slug": "other-tools", "name": "Other Tools", "file": "categories/other-tools.json" }
+  ],
+  "categories_with_no_journey": ["browser", "research", "other-tools"],
+  "categories_with_one_pitfall": ["browser", "communication", "other-tools"]
+}

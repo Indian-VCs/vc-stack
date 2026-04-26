@@ -14,6 +14,7 @@ import { audit } from '@/lib/audit'
 import {
   parseToolForm,
   parseUseCases,
+  parseKeyFeatures,
   parseExtraSlugs,
   parseFeaturedOrder,
   type ToolActionState,
@@ -78,6 +79,7 @@ export async function createTool(_prev: ToolActionState, formData: FormData): Pr
       description: parsed.data.description,
       shortDesc: parsed.data.shortDesc || null,
       useCases: parseUseCases(parsed.data.useCases),
+      keyFeatures: parseKeyFeatures(parsed.data.keyFeatures),
       websiteUrl: parsed.data.websiteUrl,
       logoUrl: parsed.data.logoUrl || null,
       pricingModel: parsed.data.pricingModel,
@@ -152,6 +154,7 @@ export async function updateTool(
         description: parsed.data.description,
         shortDesc: parsed.data.shortDesc || null,
         useCases: parseUseCases(parsed.data.useCases),
+      keyFeatures: parseKeyFeatures(parsed.data.keyFeatures),
         websiteUrl: parsed.data.websiteUrl,
         logoUrl: parsed.data.logoUrl || null,
         pricingModel: parsed.data.pricingModel,

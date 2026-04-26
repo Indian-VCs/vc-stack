@@ -1,0 +1,36 @@
+{
+  "slug": "portfolio-management",
+  "name": "Portfolio Management",
+  "description": "Where the cap table stops being a spreadsheet — KPIs, quarterly letters, and valuation marks for what you already own.",
+  "intro": "Sourcing gets the headlines; portfolio management is what your LPs actually grade you on. For most Indian funds, post-investment ops still runs on a Google Sheet, a partner chasing founders on WhatsApp the week before IC, and an associate copy-pasting MIS decks at 2am before the LP call. SEBI AIF Category II reporting cadence — quarterly NAVs, audited annuals, drawdown notices — does not forgive that workflow at fund II and beyond.\n\nThe category splits into three shapes. Cap-table and fund admin tools (Carta, Eqvista) are the system of record for ownership and dilution. Portfolio monitoring specialists (Standard Metrics, Vestberry) automate KPI collection and normalise across the book. Integrated fund OS platforms (Taghash, Bunch) collapse dealflow, portfolio, and LP reporting into one contract.",
+  "journey": {
+    "beginner": "Carta or local equivalent for the cap table, plus a disciplined quarterly KPI template in Google Sheets. Stop emailing founders for the same five numbers.",
+    "intermediate": "Add a monitoring layer — Standard Metrics, Vestberry — that pulls KPIs directly, flags drift, and generates the LP quarterly without manual consolidation. Most Indian funds with 20+ companies should live here.",
+    "advanced": "Integrated fund OS — Taghash, Bunch — where pipeline, ownership, KPIs, NAV, and LP comms share a graph, with AI on top doing portfolio anomaly detection and proactive value-creation prompts."
+  },
+  "buying_criteria": [
+    {
+      "label": "Founder-side friction.",
+      "description": "If your portfolio companies hate the input form, you'll get late, dirty, or no data. Pick the tool founders complete in under ten minutes a quarter."
+    },
+    {
+      "label": "SEBI AIF reporting fit.",
+      "description": "Quarterly unaudited NAVs, INR-denominated capital accounts, FEMA-aware foreign LP statements. Global-only tools force a parallel India workbook."
+    },
+    {
+      "label": "Interoperability with CRM and cap-table source.",
+      "description": "Affinity or Attio plus Carta plus monitoring should behave like one system, not three."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Buying a portfolio OS before you have a portfolio problem.",
+      "description": "Funds with under 15 companies almost always over-tool. A clean Sheet, a Carta seat, and a non-negotiable quarterly cadence beats a half-adopted platform."
+    },
+    {
+      "label": "Treating monitoring as LP theatre, not value creation.",
+      "description": "The point of clean, comparable KPIs is that you spot drift two quarters early and act — intro, hire, bridge, hard conversation. If the data only ever surfaces in the LP letter, you bought the wrong category."
+    }
+  ],
+  "reading_list": []
+}

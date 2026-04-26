@@ -1,0 +1,40 @@
+{
+  "slug": "productivity",
+  "name": "Productivity",
+  "description": "The fund's second brain — wikis, docs, and dealflow boards where every thesis, IC pre-read, and portfolio note actually lives.",
+  "intro": "Productivity tools are the connective tissue of a fund. The wiki holds your sector theses; databases run dealflow; pages carry IC pre-reads, post-mortems, and portfolio updates; templates onboard the next analyst. When this layer is sharp, founders feel a fund that remembers them; when it's sloppy, the same diligence question gets asked three times across two partners and one associate.\n\nThe Indian reality is messy. Most funds straddle Google Docs for speed, a half-built Notion wiki for \"real\" knowledge, and Sheets for everything numerical — Coda and Confluence sit on the edges. The serious shift in the last 18 months is AI inside the wiki: Notion AI run over a fund's own docs and dealflow turns the wiki into a queryable second brain. Notion is now the closest thing to an Apple-style ecosystem in this layer — once you're inside it, the integrations compound and the cost of leaving rises every quarter. Outside it, the learning curve is real and it can feel rigid. Pick the side and commit; the worst outcome is two half-built wikis.",
+  "journey": {
+    "beginner": "Google Sheets and Docs. Lowest-friction starting point. Every fund starts here before pretending otherwise.",
+    "intermediate": "Notion as the firm wiki and dealflow CRM, with Sheets kept for modelling. One source of truth, AI-assisted memo drafting inside the doc. Notion AI is genuinely underestimated — if your data lives there, \"every founder we met in fintech last quarter with ARR above ₹5 Cr\" is a five-second query.",
+    "advanced": "Airtable or Coda for relational dealflow, automations, and portfolio dashboards once views, roll-ups, and integrations outgrow Notion's database layer. Layer AI agents on top for memo drafting, dealflow tagging, and portfolio anomaly detection."
+  },
+  "buying_criteria": [
+    {
+      "label": "Adoption over features.",
+      "description": "The best stack is the one your associates actually open on Monday. Pick the platform your team already lives in, not the one that demos best."
+    },
+    {
+      "label": "Docs vs database fit.",
+      "description": "Decide whether you primarily write narrative (Notion wins) or query relational data (Airtable, Coda win). Most Indian funds need both — pick a primary, integrate the other."
+    },
+    {
+      "label": "Native AI surface.",
+      "description": "Memo drafting, meeting-note ingestion, and Q&A over your wiki should happen inside the tool, not via copy-paste. Test the AI on your own thesis pages before paying."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Three half-built wikis.",
+      "description": "Notion, Drive, and a forgotten Confluence all hold stale theses. Pick one home, migrate hard, sunset the rest."
+    },
+    {
+      "label": "Database sprawl on day one.",
+      "description": "Funds copy a 14-database template and fill none of it. Start with dealflow plus one thesis page; expand only when usage forces it."
+    },
+    {
+      "label": "No offboarding ritual.",
+      "description": "Analyst leaves, their Loom links and private pages go with them. Mandate firm-owned workspaces and a written handover before the laptop is returned."
+    }
+  ],
+  "reading_list": []
+}

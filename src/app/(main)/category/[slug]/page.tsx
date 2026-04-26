@@ -8,6 +8,9 @@ import ToolCard from '@/components/cards/ToolCard'
 import Pagination from '@/components/ui/Pagination'
 import CategoryIntro from '@/components/category/CategoryIntro'
 import BuyingCriteria from '@/components/category/BuyingCriteria'
+import Journey from '@/components/category/Journey'
+import Pitfalls from '@/components/category/Pitfalls'
+import ReadingList from '@/components/category/ReadingList'
 import RelatedCategories from '@/components/category/RelatedCategories'
 import RevealStagger from '@/components/ui/RevealStagger'
 
@@ -82,7 +85,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const { data: tools, total, totalPages, page: currentPage } = result
   const allCategories = category.relatedSlugs ? await getCategories() : []
-  const hasAccordionContent = Boolean(category.intro || (category.buyingCriteria && category.buyingCriteria.length > 0))
+  const hasAccordionContent = Boolean(
+    category.intro ||
+      (category.buyingCriteria && category.buyingCriteria.length > 0) ||
+      category.journey ||
+      (category.pitfalls && category.pitfalls.length > 0) ||
+      (category.readingList && category.readingList.length > 0),
+  )
 
   const categoryPageUrl = buildCategoryUrl(category.slug)
   const jsonLd = {
@@ -238,6 +247,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               </div>
             </details>
           )}
+          {category.journey && (
+            <details className="cat-accordion-item">
+              <summary>
+                <span>How to approach this stack</span>
+                <span aria-hidden="true" className="cat-accordion-icon">+</span>
+              </summary>
+              <div className="cat-accordion-body">
+                <Journey journey={category.journey} />
+              </div>
+            </details>
+          )}
           {category.buyingCriteria && category.buyingCriteria.length > 0 && (
             <details className="cat-accordion-item">
               <summary>
@@ -249,6 +269,31 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   criteria={category.buyingCriteria}
                   categoryName={category.name}
                 />
+              </div>
+            </details>
+          )}
+          {category.pitfalls && category.pitfalls.length > 0 && (
+            <details className="cat-accordion-item">
+              <summary>
+                <span>Common pitfalls</span>
+                <span aria-hidden="true" className="cat-accordion-icon">+</span>
+              </summary>
+              <div className="cat-accordion-body">
+                <Pitfalls
+                  pitfalls={category.pitfalls}
+                  categoryName={category.name}
+                />
+              </div>
+            </details>
+          )}
+          {category.readingList && category.readingList.length > 0 && (
+            <details className="cat-accordion-item">
+              <summary>
+                <span>Further reading</span>
+                <span aria-hidden="true" className="cat-accordion-icon">+</span>
+              </summary>
+              <div className="cat-accordion-body">
+                <ReadingList items={category.readingList} />
               </div>
             </details>
           )}

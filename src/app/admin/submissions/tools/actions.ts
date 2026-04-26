@@ -113,6 +113,7 @@ export async function approveSubmission(id: string): Promise<ActionResult> {
     description: sub.description,
     shortDesc: null,
     useCases: null,
+    keyFeatures: null,
     websiteUrl: sub.websiteUrl,
     logoUrl: null,
     pricingModel: sub.pricingModel ?? 'FREEMIUM',

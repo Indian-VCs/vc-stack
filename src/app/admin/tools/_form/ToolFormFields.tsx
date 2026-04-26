@@ -12,6 +12,7 @@ interface Props {
     description: string
     shortDesc: string
     useCases: string
+    keyFeatures: string
     websiteUrl: string
     logoUrl: string
     categoryId: string
@@ -115,6 +116,20 @@ export default function ToolFormFields({ categories, defaults = {}, state, autoS
           defaultValue={defaults.useCases ?? ''}
           style={textareaStyle}
           placeholder="Used to ..."
+        />
+      </Field>
+
+      <Field
+        label="Key features (one per line, 2–3 expected — leave blank for niche tools)"
+        name="keyFeatures"
+        error={errs.keyFeatures?.[0]}
+      >
+        <textarea
+          name="keyFeatures"
+          rows={3}
+          defaultValue={defaults.keyFeatures ?? ''}
+          style={textareaStyle}
+          placeholder="What the product *is* — short product-feature bullets."
         />
       </Field>
 

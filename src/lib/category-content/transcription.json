@@ -1,0 +1,44 @@
+{
+  "slug": "transcription",
+  "name": "Transcription",
+  "description": "Notetakers and meeting recorders that turn every founder pitch, IC pre-read, and portfolio call into searchable institutional memory.",
+  "intro": "Transcription is the quietest leverage shift inside a fund this decade. Founder calls, IC pre-reads, expert interviews, portfolio updates, reference calls — all of it now lands as structured text within minutes. The associate scribbling notes is gone; the partner skimming a half-remembered conversation a quarter later is gone. Memos draft themselves from real transcripts, CRM contact records auto-update after every call, and the firm finally has a searchable spine of who-said-what — across years.\n\nIndia adds friction the global playbook ignores. Early-stage founders, especially first-time ones, still flinch when a labelled bot joins the call — and most calls already have more bots than humans on them. Conversations run in code-mixed Hindi-English, sometimes Tamil, Marathi, or Kannada — accuracy collapses on weaker engines. Sensitive diligence demands clarity on retention and training-data settings; consumer plans almost always train on your audio.",
+  "journey": {
+    "beginner": "Granola. Local, no visible bot, two-minute setup. The simplest tool here that genuinely works — and the best way to start without changing meeting etiquette or asking permission on every cold call.",
+    "intermediate": "Fathom or Fireflies. Bot-based capture wired into the CRM (Affinity, Attio, Taghash) so summaries stop dying in folders. Move off personal plans to team plans here; institutional memory only works if everyone reads from the same archive.",
+    "advanced": "Notion Meetings if your fund is already inside the Notion ecosystem — the most comprehensive option, the transcript lands next to the thesis, and the integration with the rest of your wiki is unmatched. Or Circleback or Otter for firm-wide automations and a searchable archive across years of calls."
+  },
+  "buying_criteria": [
+    {
+      "label": "Auto-capture and summary quality.",
+      "description": "The whole point is to focus on the meeting, not the keyboard. Test summary quality on a real founder call — not a marketing video."
+    },
+    {
+      "label": "Local capture vs visible bot.",
+      "description": "Most founder meetings already have more bots than humans. Local capture preserves chai-chat energy on first calls."
+    },
+    {
+      "label": "Team plan with CRM sync.",
+      "description": "Personal plans don't scale. Institutional memory only exists if every transcript lands on the contact record and every analyst can search across years of calls."
+    },
+    {
+      "label": "Data privacy and training opt-out.",
+      "description": "Free tiers often train on your audio. Move regulated, M&A, and LP calls to team plans before — not after — an incident."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Personal plans for firm-critical calls.",
+      "description": "Transcripts are the institutional spine. If they live in one analyst's account, the spine snaps when they leave."
+    },
+    {
+      "label": "Bot-clutter on first pitches.",
+      "description": "Three notetakers introducing themselves before a founder finishes \"Hi\" is now a real meeting reality. Default to local capture for cold calls."
+    },
+    {
+      "label": "Free tiers on sensitive deals.",
+      "description": "Training-on-your-audio is the default on consumer plans. Check before, not after."
+    }
+  ],
+  "reading_list": []
+}

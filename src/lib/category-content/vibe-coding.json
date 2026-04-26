@@ -1,0 +1,36 @@
+{
+  "slug": "vibe-coding",
+  "name": "Vibe Coding",
+  "description": "Plain-English app builders for non-engineers. Ship a diligence form, LP dashboard, or sector map by EOD.",
+  "intro": "Vibe coding has collapsed the gap between \"I need a small tool\" and \"I have a small tool.\" For an Indian fund without an in-house engineer, that's the difference between a half-finished Notion doc and an actual login-gated diligence portal an analyst spun up before the IC meeting. The natural use cases are well-defined and unsexy: founder-intake forms, sector landscape maps, internal scoring dashboards, micro-sites for a thesis essay, an LP-only data room, the fund website itself.",
+  "journey": {
+    "beginner": "A single-screen internal tool — deal tracker, intern application form — with no auth and no database. Lovable or Bolt chat-first; v0 if you live in Vercel and Next.js.",
+    "intermediate": "A multi-page app with Supabase for storage, Clerk or built-in auth, and a custom domain. The level where a principal can ship a portfolio founder portal.",
+    "advanced": "Export code to GitHub, wire CI, layer Replit Agent or Claude Code on top to maintain it long-term. Most fund teams should live at Beginner-to-Intermediate forever — past that, hire a contractor."
+  },
+  "buying_criteria": [
+    {
+      "label": "Output quality on your actual workflow.",
+      "description": "Demo videos lie. Rebuild the same internal form in three tools and compare what breaks on iteration two."
+    },
+    {
+      "label": "Code export and backend portability.",
+      "description": "If the tool locks your data and code inside its own runtime, you've built a hostage, not an asset. Prefer tools that hand you a real Git repo."
+    },
+    {
+      "label": "Iteration speed.",
+      "description": "The magic isn't the first generation — it's prompt-edit-redeploy in under 30 seconds. Slow loops kill the whole point."
+    }
+  ],
+  "pitfalls": [
+    {
+      "label": "Treating the prototype as the product.",
+      "description": "A vibe-coded LP portal that handles ten logins is a demo, not infrastructure. Anything touching portfolio data, capital calls, or PII needs an engineer reviewing the auth and database layer before it goes live."
+    },
+    {
+      "label": "Skipping the export step.",
+      "description": "Teams build six months of internal tooling inside a single platform, then discover the export is half-broken or paywalled. Pull the code to GitHub on day one."
+    }
+  ],
+  "reading_list": []
+}
