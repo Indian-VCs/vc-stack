@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { getCategoryBySlug, getToolsByCategory, getCategories } from '@/lib/data'
-import { OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
+import { LAST_REVIEWED, OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
 import ToolCard from '@/components/cards/ToolCard'
 import Pagination from '@/components/ui/Pagination'
 import CategoryIntro from '@/components/category/CategoryIntro'
@@ -94,6 +94,37 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   )
 
   const categoryPageUrl = buildCategoryUrl(category.slug)
+
+  const faqEntities: Array<{
+    '@type': 'Question'
+    name: string
+    acceptedAnswer: { '@type': 'Answer'; text: string }
+  }> = []
+  if (category.buyingCriteria && category.buyingCriteria.length > 0) {
+    faqEntities.push({
+      '@type': 'Question',
+      name: `What should VCs look for when buying ${category.name} tools?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: category.buyingCriteria
+          .map((c) => `${c.label} ${c.description}`)
+          .join(' '),
+      },
+    })
+  }
+  if (category.pitfalls && category.pitfalls.length > 0) {
+    faqEntities.push({
+      '@type': 'Question',
+      name: `What are common pitfalls with ${category.name} tools for VC firms?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: category.pitfalls
+          .map((p) => `${p.label} ${p.description}`)
+          .join(' '),
+      },
+    })
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -131,6 +162,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           { '@type': 'ListItem', position: 3, name: category.name, item: categoryPageUrl },
         ],
       },
+      ...(faqEntities.length > 0
+        ? [
+            {
+              '@type': 'FAQPage',
+              '@id': `${categoryPageUrl}#faq`,
+              mainEntity: faqEntities,
+            },
+          ]
+        : []),
     ],
   }
 
@@ -368,6 +408,32 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         allCategories={allCategories}
         currentSlug={category.slug}
       />
+
+      <div
+        style={{
+          marginTop: 48,
+          paddingTop: 16,
+          borderTop: '1px solid var(--rule)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 12,
+          fontFamily: 'var(--mono)',
+          fontSize: 'var(--fs-tag)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.18em',
+          color: 'var(--ink-muted)',
+        }}
+      >
+        <span>Last reviewed · {LAST_REVIEWED}</span>
+        <Link
+          href="/methodology"
+          style={{ color: 'var(--ink-muted)', textDecoration: 'none', borderBottom: '1px solid var(--rule)' }}
+        >
+          How we curate ↗
+        </Link>
+      </div>
     </div>
   )
 }
