@@ -66,6 +66,9 @@ export interface Tool {
   category?: Category
   /** Slugs of additional categories the tool appears under (market map multi-placement). Primary category is always `category`. */
   extraCategorySlugs?: string[]
+  /** Unix-ms timestamp of the last admin edit. Undefined for tools served from
+   * the static catalog fallback — callers fall back to LAST_REVIEWED_EPOCH. */
+  updatedAt?: number
 }
 
 export interface PaginatedResult<T> {

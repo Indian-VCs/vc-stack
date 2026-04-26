@@ -61,6 +61,7 @@ function toolFromRow(row: ToolRow, category?: Category): Tool {
     categoryId: row.categoryId,
     category,
     extraCategorySlugs: row.extraCategorySlugs ?? undefined,
+    updatedAt: row.updatedAt,
   }
 }
 

@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import { getToolBySlug, getFeaturedToolsExcluding } from '@/lib/data'
-import { OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
+import { LAST_REVIEWED_EPOCH, OG_IMAGE_SIZE, categoryUrl as buildCategoryUrl, formatReviewedDate, ogImageUrl, publicUrl, toolUrl as buildToolUrl } from '@/lib/site'
 import LogoCard from '@/components/ui/LogoCard'
+import RequestUpdateButton from '@/components/ui/RequestUpdateButton'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -420,6 +421,42 @@ export default async function ToolDetailPage({ params }: Props) {
           `}</style>
         </div>
       )}
+
+      <div
+        style={{
+          marginTop: 40,
+          paddingTop: 16,
+          borderTop: '1px solid var(--rule)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 14,
+          fontFamily: 'var(--mono)',
+          fontSize: 'var(--fs-tag)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.18em',
+          color: 'var(--ink-muted)',
+        }}
+      >
+        <span>
+          Last reviewed · {formatReviewedDate(tool.updatedAt ?? LAST_REVIEWED_EPOCH)}
+        </span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <RequestUpdateButton toolSlug={tool.slug} />
+          <Link
+            href={`/suggest-update?tool=${encodeURIComponent(tool.slug)}`}
+            style={{
+              color: 'var(--ink-muted)',
+              textDecoration: 'none',
+              borderBottom: '1px solid var(--rule)',
+              transition: 'border-color 160ms ease, color 160ms ease',
+            }}
+          >
+            Suggest an update ↗
+          </Link>
+        </span>
+      </div>
     </div>
   )
 }

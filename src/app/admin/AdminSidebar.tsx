@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: '/admin/featured', label: 'Featured order' },
   { href: '/admin/submissions/tools', label: 'Tool submissions' },
   { href: '/admin/submissions/stack', label: 'Stack submissions' },
+  { href: '/admin/submissions/updates', label: 'Update feedback' },
   { href: '/admin/audit', label: 'Audit log' },
   { href: '/admin/seed', label: 'Seed catalog' },
 ] as const

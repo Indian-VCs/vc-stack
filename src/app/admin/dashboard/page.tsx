@@ -5,7 +5,7 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { eq, isNull } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/auth'
 import { getDb, schema } from '@/lib/db/client'
 import { recentAudit } from '@/lib/audit'
@@ -15,13 +15,40 @@ export const dynamic = 'force-dynamic'
 
 async function getCounts() {
   const db = await getDb()
-  const [tools, categories, pendingTools, pendingStacks] = await Promise.all([
-    db.$count(schema.tools, isNull(schema.tools.archivedAt)),
-    db.$count(schema.categories, isNull(schema.categories.archivedAt)),
-    db.$count(schema.toolSubmissions, eq(schema.toolSubmissions.status, 'pending')),
-    db.$count(schema.stackSubmissions, eq(schema.stackSubmissions.status, 'pending')),
-  ])
-  return { tools, categories, pendingTools, pendingStacks }
+  const pendingRequestsP = db
+    .select({ n: sql<number>`count(distinct ${schema.updateFeedback.toolSlug})` })
+    .from(schema.updateFeedback)
+    .where(
+      and(
+        eq(schema.updateFeedback.kind, 'request'),
+        eq(schema.updateFeedback.status, 'pending'),
+      ),
+    )
+    .then((rows) => Number(rows[0]?.n ?? 0))
+
+  const [tools, categories, pendingTools, pendingStacks, pendingSuggestions, pendingRequestTools] =
+    await Promise.all([
+      db.$count(schema.tools, isNull(schema.tools.archivedAt)),
+      db.$count(schema.categories, isNull(schema.categories.archivedAt)),
+      db.$count(schema.toolSubmissions, eq(schema.toolSubmissions.status, 'pending')),
+      db.$count(schema.stackSubmissions, eq(schema.stackSubmissions.status, 'pending')),
+      db.$count(
+        schema.updateFeedback,
+        and(
+          eq(schema.updateFeedback.kind, 'suggestion'),
+          eq(schema.updateFeedback.status, 'pending'),
+        )!,
+      ),
+      pendingRequestsP,
+    ])
+  return {
+    tools,
+    categories,
+    pendingTools,
+    pendingStacks,
+    pendingSuggestions,
+    pendingRequestTools,
+  }
 }
 
 export default async function DashboardPage() {
@@ -29,7 +56,14 @@ export default async function DashboardPage() {
 
   // Defensive: if D1 isn't bound yet, render zero counts and a setup hint
   // rather than crashing.
-  let counts = { tools: 0, categories: 0, pendingTools: 0, pendingStacks: 0 }
+  let counts = {
+    tools: 0,
+    categories: 0,
+    pendingTools: 0,
+    pendingStacks: 0,
+    pendingSuggestions: 0,
+    pendingRequestTools: 0,
+  }
   let dbOk = true
   let dbError = ''
   try {
@@ -53,6 +87,16 @@ export default async function DashboardPage() {
     { label: 'Active sections', value: counts.categories, href: '/admin' },
     { label: 'Pending tool submissions', value: counts.pendingTools, href: '/admin/submissions/tools' },
     { label: 'Pending stack submissions', value: counts.pendingStacks, href: '/admin/submissions/stack' },
+    {
+      label: 'Pending update suggestions',
+      value: counts.pendingSuggestions,
+      href: '/admin/submissions/updates?tab=suggestions',
+    },
+    {
+      label: 'Tools with update requests',
+      value: counts.pendingRequestTools,
+      href: '/admin/submissions/updates?tab=requests',
+    },
   ]
 
   return (
@@ -111,18 +155,23 @@ export default async function DashboardPage() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           border: '1px solid var(--ink)',
           marginBottom: 48,
         }}
       >
-        {cards.map((card, i) => (
+        {cards.map((card, i) => {
+          const cols = 3
+          const isLastCol = (i + 1) % cols === 0
+          const isLastRow = i >= cards.length - cols
+          return (
           <Link
             key={card.label}
             href={card.href}
             style={{
               padding: '24px 20px',
-              borderRight: i < cards.length - 1 ? '1px solid var(--rule)' : 'none',
+              borderRight: isLastCol ? 'none' : '1px solid var(--rule)',
+              borderBottom: isLastRow ? 'none' : '1px solid var(--rule)',
               textAlign: 'center',
               textDecoration: 'none',
               color: 'inherit',
@@ -152,7 +201,8 @@ export default async function DashboardPage() {
               {card.value}
             </div>
           </Link>
-        ))}
+          )
+        })}
       </div>
 
       <div className="section-header" style={{ marginBottom: 12 }}>

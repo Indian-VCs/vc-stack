@@ -15,6 +15,7 @@ import {
   STATIC_TOOLS,
   FEATURED_TOOL_SLUGS,
 } from './static-catalog'
+import { LAST_REVIEWED_EPOCH } from './site'
 
 function sqlString(value: string): string {
   // Escape single quotes (SQL standard). Then split on newlines and rebuild as
@@ -72,11 +73,13 @@ function upsert(
 }
 
 export interface SeedSqlOptions {
-  /** Unix-ms timestamp to stamp on createdAt/updatedAt. Defaults to Date.now() at call time. */
+  /** Unix-ms timestamp to stamp on createdAt/updatedAt. Defaults to LAST_REVIEWED_EPOCH
+   * so re-seeding (re-applying the static catalog) refreshes every tool's "Last reviewed"
+   * to the canonical editorial sweep date. */
   now?: number
 }
 
-export function buildSeedSql({ now = Date.now() }: SeedSqlOptions = {}): string {
+export function buildSeedSql({ now = LAST_REVIEWED_EPOCH }: SeedSqlOptions = {}): string {
   const catColumns = [
     'id', 'slug', 'name', 'description', 'icon', 'image_url',
     'intro', 'buying_criteria', 'journey', 'pitfalls', 'reading_list',

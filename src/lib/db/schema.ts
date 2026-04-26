@@ -127,6 +127,52 @@ export const stackSubmissions = sqliteTable(
   (t) => [index('stack_subs_status_idx').on(t.status, t.createdAt)],
 )
 
+// ─── update_feedback ─────────────────────────────────────────────────────────
+//
+// Two flows feed this table:
+//   1. "Request update" — one-click button on a tool page. No form, no email.
+//      Inserts kind='request'. Used as a volume signal for the editorial team.
+//   2. "Suggest update" — full form at /suggest-update. Inserts kind='suggestion'
+//      with field area + free-text suggestion + email.
+//
+// One table keeps admin queries simple; the kind enum is what the admin UI
+// branches on (tabbed view: Requests vs Suggestions).
+export const updateFeedback = sqliteTable(
+  'update_feedback',
+  {
+    id: text('id').primaryKey(),
+    toolSlug: text('tool_slug').notNull(),
+    kind: text('kind').notNull().$type<'request' | 'suggestion'>(),
+    /** Suggestion-only: which field area the change is about. */
+    fieldArea: text('field_area').$type<
+      | 'description'
+      | 'pricing'
+      | 'logo'
+      | 'use_cases'
+      | 'key_features'
+      | 'broken_link'
+      | 'other'
+      | null
+    >(),
+    /** Suggestion-only: the free-text suggestion. */
+    suggestion: text('suggestion'),
+    /** Suggestion-only: required email. */
+    submitterEmail: text('submitter_email'),
+    submitterRole: text('submitter_role'),
+    /** Hash of the submitter IP. Used for rate limiting + dedupe of repeated
+     * one-click requests within 24h. Never the raw IP. */
+    ipHash: text('ip_hash'),
+    status: text('status').notNull().default('pending').$type<'pending' | 'applied' | 'rejected' | 'archived'>(),
+    adminNotes: text('admin_notes'),
+    createdAt: integer('created_at').notNull(),
+    reviewedAt: integer('reviewed_at'),
+  },
+  (t) => [
+    index('update_feedback_tool_idx').on(t.toolSlug, t.kind, t.status),
+    index('update_feedback_status_idx').on(t.status, t.createdAt),
+  ],
+)
+
 // ─── admin_users ─────────────────────────────────────────────────────────────
 export const adminUsers = sqliteTable('admin_users', {
   id: text('id').primaryKey(),
@@ -143,7 +189,7 @@ export const auditLog = sqliteTable(
     id: integer('id').primaryKey({ autoIncrement: true }),
     adminEmail: text('admin_email').notNull(),
     action: text('action').notNull().$type<'create' | 'update' | 'delete' | 'publish' | 'archive' | 'login' | 'reorder'>(),
-    entity: text('entity').notNull().$type<'tool' | 'category' | 'tool_submission' | 'stack_submission' | 'featured' | 'session'>(),
+    entity: text('entity').notNull().$type<'tool' | 'category' | 'tool_submission' | 'stack_submission' | 'update_feedback' | 'featured' | 'session'>(),
     entityId: text('entity_id'),
     /** Compact JSON snapshot of changed fields: { before, after } or { fields: [...] } */
     diff: text('diff', { mode: 'json' }).$type<Record<string, unknown> | null>(),
@@ -157,5 +203,6 @@ export type CategoryRow = typeof categories.$inferSelect
 export type ToolRow = typeof tools.$inferSelect
 export type ToolSubmissionRow = typeof toolSubmissions.$inferSelect
 export type StackSubmissionRow = typeof stackSubmissions.$inferSelect
+export type UpdateFeedbackRow = typeof updateFeedback.$inferSelect
 export type AdminUserRow = typeof adminUsers.$inferSelect
 export type AuditLogRow = typeof auditLog.$inferSelect
