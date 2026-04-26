@@ -1,27 +1,84 @@
-const FAQS: { q: string; a: string }[] = [
+import Link from 'next/link'
+import Script from 'next/script'
+
+type Faq = {
+  q: string
+  /** Plain-text answer used for FAQPage JSON-LD schema. */
+  aPlain: string
+  /** Optional rich JSX used for visual rendering — defaults to aPlain. */
+  aJsx?: React.ReactNode
+}
+
+const FAQS: Faq[] = [
   {
-    q: 'Which tools should a new fund start with?',
-    a: 'Most funds under five people get away with five tools: a CRM for dealflow (Affinity, Attio, or Taghash), a data provider for diligence (Tracxn or Crunchbase), a shared workspace (Notion or Google Workspace), a meeting + transcription layer (Granola or Fireflies), and a portfolio tracker once you have more than ten positions (Carta, Rundit, or AngelList). Everything else — AI copilots, news feeds, fund admin — layers on as the team grows and the stack stops fitting in one head.',
+    q: 'What tools do top VC firms use?',
+    aPlain:
+      'Working venture stacks span about a dozen categories — CRM and dealflow (Affinity, Attio, Notion, Taghash), data and signal-tracking (Tracxn, Crunchbase, EverTrace, Harmonic), AI and research (Claude, ChatGPT, Perplexity), workspace and comms (Notion, Slack, Google Workspace), meetings and transcription (Notion, Granola, Fireflies), portfolio management (Carta, Rundit, AngelList), and the news beat (Inc42, The Ken). The mix shifts sharply with stage: seed funds run lean and informal — half the conversations live on WhatsApp and the CRM is whatever fits — while growth firms run process-led setups with enterprise CRMs, dedicated data layers, and structured LP comms.',
   },
   {
-    q: 'How are the tools chosen?',
-    a: 'Every entry is researched from the tool\'s own website and cross-checked against what Indian VCs actually report using in 2026. Nothing is paid placement — there are no sponsored slots, affiliate links, or "featured for a fee" tiers. If a tool appears, it\'s because venture teams here are meaningfully running on it, not because a vendor wrote a cheque. The criteria tilt toward tools used daily by investment teams, ops, or portfolio, rather than one-off experiments.',
+    q: 'What does a starter stack for a new fund look like?',
+    aPlain:
+      'Most funds under five people get away with five tools. A CRM for dealflow (Affinity, Attio, Notion, or Taghash). A data provider for diligence (Tracxn or Crunchbase). A shared workspace for memos, dashboards, and the firm wiki (Notion or Google Workspace). A meeting and transcription layer (Notion or Granola). And a serious email client so founder threads do not slip (Superhuman or Notion Mail). Everything else — AI copilots, signal-tracking, news feeds, portfolio platforms, fund admin — layers on as the team grows and the stack stops fitting in one head.',
   },
   {
-    q: 'What makes this India-first?',
-    a: 'The global VC catalogues optimise for Silicon Valley workflows, which miss half the stack an Indian fund runs. This list weights the tools that actually matter here: Taghash and LetsVenture for cap-table and syndicate mechanics, Inc42 and The Ken for the news beat, AngelList India for SPVs, Tracxn and Private Circle for local dealflow data, plus the regional admin and compliance layer no global directory covers. Global defaults (Affinity, Notion, Slack, ChatGPT) still sit alongside — because they\'re the global defaults here too.',
+    q: 'What are the AI tools VCs are using?',
+    aPlain:
+      'AI now sits as a layer across the stack, not a separate beat. Claude leads for long-context reasoning — memo drafting, data-room synthesis, and Skills that package firm SOPs (memo formats, diligence checklists, deck triage) into reusable agents. ChatGPT covers custom GPTs loaded with firm playbooks. Perplexity and Exa handle quick research with citations. Granola and Fireflies turn calls into structured notes that flow into the CRM. EverTrace and Harmonic run the signal-tracking layer — surfacing stealth founders from LinkedIn, GitHub, and registry data weeks before the usual databases catch up. Most firms run two or three of these daily — see the AI and Research categories.',
+    aJsx: (
+      <>
+        AI now sits as a layer across the stack, not a separate beat. Claude
+        leads for long-context reasoning — memo drafting, data-room synthesis,
+        and Skills that package firm SOPs (memo formats, diligence checklists,
+        deck triage) into reusable agents. ChatGPT covers custom GPTs loaded
+        with firm playbooks. Perplexity and Exa handle quick research with
+        citations. Granola and Fireflies turn calls into structured notes that
+        flow into the CRM. EverTrace and Harmonic run the signal-tracking
+        layer — surfacing stealth founders from LinkedIn, GitHub, and registry
+        data weeks before the usual databases catch up. Most firms run two or
+        three of these daily — see the{' '}
+        <Link href="/category/ai" className="faq-link">AI</Link>
+        {' '}and{' '}
+        <Link href="/category/research" className="faq-link">Research</Link>
+        {' '}categories.
+      </>
+    ),
   },
   {
-    q: 'How often is the list updated?',
-    a: 'The catalog is reviewed quarterly for description freshness and new additions happen continuously between. The stack meaningfully shifts once or twice a year — a new AI research tool breaks into daily use, a portfolio platform wins mindshare, a category consolidates — and those shifts land here as they happen. The underlying data lives in a single versioned file on GitHub, so every change is traceable and dated.',
+    q: 'How are tools chosen and how often is the list updated?',
+    aPlain:
+      'Inclusion is editorial, not algorithmic — every tool listed is one that VC firms in our network meaningfully use, tested in production by the team, and benchmarked against alternatives in the same category. The catalog is reviewed on a rolling basis with quarterly editorial sweeps; the "Last reviewed" stamp at the bottom of each category page reflects the most recent pass. For the full picture — research methods, testing process, disclosures — see the methodology.',
+    aJsx: (
+      <>
+        Inclusion is editorial, not algorithmic — every tool listed is one
+        that VC firms in our network meaningfully use, tested in production by
+        the team, and benchmarked against alternatives in the same category.
+        The catalog is reviewed on a rolling basis with quarterly editorial
+        sweeps; the &ldquo;Last reviewed&rdquo; stamp at the bottom of each
+        category page reflects the most recent pass. For the full picture —
+        research methods, testing process, disclosures — see the{' '}
+        <Link href="/methodology" className="faq-link">methodology</Link>.
+      </>
+    ),
   },
   {
-    q: 'How do I suggest a tool that isn\'t listed?',
-    a: 'Email hello@indianvcs.com with the tool name, the website, and one line on how Indian venture teams use it. Include your role (GP, analyst, ops) — that context helps decide which category it fits. Tools that are genuinely in use at two or more Indian funds almost always make it in; vendor pitches and "we just launched" submissions generally do not.',
-  },
-  {
-    q: 'Is it free to use?',
-    a: 'Yes — free to browse, no logins, no email gate, no paywall. The Dispatch (our weekly newsletter) is also free. The project is run by DealQuick Labs as a public good for the Indian VC community, not a lead-gen funnel, so nothing you do on this site is tracked beyond standard anonymous analytics.',
+    q: "How do I suggest a tool that isn't listed?",
+    aPlain:
+      'Email support@indianvcs.com with the tool name, the website, and one line on how venture teams use it — or use the Submit a tool form. Include your role (GP, analyst, ops) and the categories where you would place it. Tools that two or more funds in our network already run almost always make it in; pure vendor pitches and "we just launched" submissions generally do not.',
+    aJsx: (
+      <>
+        Email{' '}
+        <a href="mailto:support@indianvcs.com" className="faq-link">
+          support@indianvcs.com
+        </a>{' '}
+        with the tool name, the website, and one line on how venture teams use
+        it — or use the{' '}
+        <Link href="/submit-product" className="faq-link">Submit a tool</Link>
+        {' '}form. Include your role (GP, analyst, ops) and the categories
+        where you would place it. Tools that two or more funds in our network
+        already run almost always make it in; pure vendor pitches and
+        &ldquo;we just launched&rdquo; submissions generally do not.
+      </>
+    ),
   },
 ]
 
@@ -34,17 +91,16 @@ export default function FaqSection() {
       name: f.q,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: f.a,
+        text: f.aPlain,
       },
     })),
   }
 
   return (
     <section className="page" style={{ paddingTop: 12, paddingBottom: 56, borderTop: '1px solid var(--rule)' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <Script id="home-faq-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {JSON.stringify(jsonLd)}
+      </Script>
 
       <div
         style={{
@@ -136,7 +192,7 @@ export default function FaqSection() {
                 maxWidth: 900,
               }}
             >
-              {f.a}
+              {f.aJsx ?? f.aPlain}
             </p>
           </details>
         ))}
@@ -145,6 +201,12 @@ export default function FaqSection() {
       <style>{`
         .faq-grid details summary::-webkit-details-marker { display: none; }
         .faq-grid details[open] summary { color: var(--red); }
+        .faq-link {
+          color: var(--red);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        .faq-link:hover { color: var(--red-dark); }
       `}</style>
     </section>
   )
