@@ -4,12 +4,13 @@ import { useState, useTransition } from 'react'
 import { requestUpdate } from '@/server/actions/update-feedback'
 
 /**
- * One-click "Request update" button on tool detail pages.
+ * One-click "Request update" link on tool detail pages.
  *
- * Flow: click → server action inserts a kind='request' row in update_feedback
- * (server-side dedupes per IP+tool within 24h). On success, the button
- * collapses into a thank-you stamp for the rest of the session. The dedupe
- * means even if a user reloads and clicks again, the count stays honest.
+ * Styled as inline mono-caps text (not a boxed button) to match the sibling
+ * "Suggest an update ↗" link. On click → server action inserts a kind='request'
+ * row in update_feedback (server-side dedupes per IP+tool within 24h). On
+ * success the link collapses into a thank-you stamp for the rest of the
+ * session; the dedupe means even repeat clicks across reloads stay honest.
  */
 export default function RequestUpdateButton({ toolSlug }: { toolSlug: string }) {
   const [pending, start] = useTransition()
@@ -52,29 +53,7 @@ export default function RequestUpdateButton({ toolSlug }: { toolSlug: string }) 
         type="button"
         onClick={click}
         disabled={pending}
-        style={{
-          background: 'transparent',
-          border: '1px solid var(--rule)',
-          padding: '6px 10px',
-          cursor: pending ? 'not-allowed' : 'pointer',
-          fontFamily: 'var(--mono)',
-          fontSize: 'var(--fs-tag)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.18em',
-          color: 'var(--ink-muted)',
-          opacity: pending ? 0.6 : 1,
-          transition: 'border-color 160ms ease, color 160ms ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!pending) {
-            e.currentTarget.style.borderColor = 'var(--ink)'
-            e.currentTarget.style.color = 'var(--ink)'
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--rule)'
-          e.currentTarget.style.color = 'var(--ink-muted)'
-        }}
+        className="request-update-link"
       >
         {pending ? 'Flagging…' : 'Request update'}
       </button>
@@ -90,6 +69,29 @@ export default function RequestUpdateButton({ toolSlug }: { toolSlug: string }) 
           {error}
         </span>
       )}
+      <style>{`
+        .request-update-link {
+          background: transparent;
+          border: none;
+          padding: 0;
+          font-family: var(--mono);
+          font-size: var(--fs-tag);
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          color: var(--ink-muted);
+          border-bottom: 1px solid var(--rule);
+          cursor: pointer;
+          transition: color 160ms ease, border-color 160ms ease;
+        }
+        .request-update-link:hover:not(:disabled) {
+          color: var(--red);
+          border-bottom-color: var(--red);
+        }
+        .request-update-link:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      `}</style>
     </span>
   )
 }

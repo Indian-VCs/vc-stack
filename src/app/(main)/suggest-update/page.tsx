@@ -70,7 +70,7 @@ export default async function SuggestUpdatePage({ searchParams }: Props) {
         </p>
       </header>
 
-      <div style={{ maxWidth: 720 }}>
+      <div style={{ maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
         <SuggestUpdateForm tools={tools} defaultToolSlug={defaultToolSlug} />
       </div>
     </div>

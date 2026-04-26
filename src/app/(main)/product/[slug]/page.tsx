@@ -423,6 +423,7 @@ export default async function ToolDetailPage({ params }: Props) {
       )}
 
       <div
+        className="tool-feedback-row"
         style={{
           marginTop: 40,
           paddingTop: 16,
@@ -439,23 +440,48 @@ export default async function ToolDetailPage({ params }: Props) {
           color: 'var(--ink-muted)',
         }}
       >
-        <span>
+        <span className="tool-feedback-date">
           Last reviewed · {formatReviewedDate(tool.updatedAt ?? LAST_REVIEWED_EPOCH)}
         </span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        <span
+          className="tool-feedback-actions"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}
+        >
           <RequestUpdateButton toolSlug={tool.slug} />
           <Link
             href={`/suggest-update?tool=${encodeURIComponent(tool.slug)}`}
-            style={{
-              color: 'var(--ink-muted)',
-              textDecoration: 'none',
-              borderBottom: '1px solid var(--rule)',
-              transition: 'border-color 160ms ease, color 160ms ease',
-            }}
+            className="tool-feedback-suggest"
           >
             Suggest an update ↗
           </Link>
         </span>
+
+        <style>{`
+          .tool-feedback-suggest {
+            color: var(--ink-muted);
+            text-decoration: none;
+            border-bottom: 1px solid var(--rule);
+            transition: color 160ms ease, border-color 160ms ease;
+          }
+          .tool-feedback-suggest:hover {
+            color: var(--red);
+            border-bottom-color: var(--red);
+          }
+          @media (max-width: 640px) {
+            .tool-feedback-row {
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              gap: 16px;
+            }
+            .tool-feedback-date,
+            .tool-feedback-actions {
+              width: 100%;
+              justify-content: center;
+            }
+          }
+        `}</style>
       </div>
     </div>
   )
