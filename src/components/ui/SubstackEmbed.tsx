@@ -38,7 +38,7 @@ export default function SubstackEmbed({
         }}
         role="status"
       >
-        <strong>Launching soon.</strong> Weekly dispatch starting in the next few weeks.
+        <strong>Launching soon.</strong> Weekly newsletter starting in the next few weeks.
       </div>
     )
   }
@@ -88,7 +88,7 @@ export default function SubstackEmbed({
       )}
 
       <p className="ssb-trust">
-        Weekly dispatch. No spam. Unsubscribe anytime.
+        Weekly newsletter. No spam. Unsubscribe anytime.
       </p>
 
       <style jsx>{`

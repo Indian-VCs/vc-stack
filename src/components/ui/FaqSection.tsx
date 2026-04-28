@@ -13,7 +13,7 @@ const FAQS: Faq[] = [
   {
     q: 'What tools do top VC firms use?',
     aPlain:
-      'Working venture stacks span about a dozen categories — CRM and dealflow (Affinity, Attio, Notion, Taghash), data and signal-tracking (Tracxn, Crunchbase, EverTrace, Harmonic), AI and research (Claude, ChatGPT, Perplexity), workspace and comms (Notion, Slack, Google Workspace), meetings and transcription (Notion, Granola, Fireflies), portfolio management (Carta, Rundit, AngelList), and the news beat (Inc42, The Ken). The mix shifts sharply with stage: seed funds run lean and informal — half the conversations live on WhatsApp and the CRM is whatever fits — while growth firms run process-led setups with enterprise CRMs, dedicated data layers, and structured LP comms.',
+      'Working venture stacks span about a dozen categories — CRM and dealflow (Affinity, Attio, Notion, Taghash), data and signal-tracking (Tracxn, Crunchbase, Evertrace, Harmonic), AI and research (Claude, ChatGPT, Perplexity), workspace and comms (Notion, Slack, Google Workspace), meetings and transcription (Notion, Granola, Fireflies), portfolio management (Carta, Rundit, AngelList), and the news beat (Inc42, The Ken). The mix shifts sharply with stage: seed funds run lean and informal — half the conversations live on WhatsApp and the CRM is whatever fits — while growth firms run process-led setups with enterprise CRMs, dedicated data layers, and structured LP comms.',
   },
   {
     q: 'What does a starter stack for a new fund look like?',
@@ -23,7 +23,7 @@ const FAQS: Faq[] = [
   {
     q: 'What are the AI tools VCs are using?',
     aPlain:
-      'AI now sits as a layer across the stack, not a separate beat. Claude leads for long-context reasoning — memo drafting, data-room synthesis, and Skills that package firm SOPs (memo formats, diligence checklists, deck triage) into reusable agents. ChatGPT covers custom GPTs loaded with firm playbooks. Perplexity and Exa handle quick research with citations. Granola and Fireflies turn calls into structured notes that flow into the CRM. EverTrace and Harmonic run the signal-tracking layer — surfacing stealth founders from LinkedIn, GitHub, and registry data weeks before the usual databases catch up. Most firms run two or three of these daily — see the AI and Research categories.',
+      'AI now sits as a layer across the stack, not a separate beat. Claude leads for long-context reasoning — memo drafting, data-room synthesis, and Skills that package firm SOPs (memo formats, diligence checklists, deck triage) into reusable agents. ChatGPT covers custom GPTs loaded with firm playbooks. Perplexity and Exa handle quick research with citations. Granola and Fireflies turn calls into structured notes that flow into the CRM. Evertrace and Harmonic run the signal-tracking layer — surfacing stealth founders from LinkedIn, GitHub, and registry data weeks before the usual databases catch up. Most firms run two or three of these daily — see the AI and Research categories.',
     aJsx: (
       <>
         AI now sits as a layer across the stack, not a separate beat. Claude
@@ -32,7 +32,7 @@ const FAQS: Faq[] = [
         deck triage) into reusable agents. ChatGPT covers custom GPTs loaded
         with firm playbooks. Perplexity and Exa handle quick research with
         citations. Granola and Fireflies turn calls into structured notes that
-        flow into the CRM. EverTrace and Harmonic run the signal-tracking
+        flow into the CRM. Evertrace and Harmonic run the signal-tracking
         layer — surfacing stealth founders from LinkedIn, GitHub, and registry
         data weeks before the usual databases catch up. Most firms run two or
         three of these daily — see the{' '}

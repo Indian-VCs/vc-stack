@@ -50,7 +50,7 @@ export { STATIC_CATEGORIES, STATIC_TOOLS, FEATURED_TOOL_SLUGS, categorySlugsForT
 
 const PINNED_SLUG = 'evertrace'
 
-function pinEverTrace<T extends { slug: string }>(list: T[]): T[] {
+function pinEvertrace<T extends { slug: string }>(list: T[]): T[] {
   const idx = list.findIndex((t) => t.slug === PINNED_SLUG)
   if (idx <= 0) return list
   const copy = [...list]
@@ -138,7 +138,7 @@ export async function getAllTools(): Promise<Tool[]> {
   const list = (fromDb ?? STATIC_TOOLS).map(withCanonicalFeatured).sort(
     (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.name.localeCompare(b.name),
   )
-  return pinEverTrace(dedupeByWebsite(list))
+  return pinEvertrace(dedupeByWebsite(list))
 }
 
 export async function getToolBySlug(slug: string): Promise<Tool | null> {

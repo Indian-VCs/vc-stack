@@ -82,7 +82,7 @@ export default async function HomePage() {
                 fontWeight: 600,
               }}
             >
-              The Dispatch · Weekly
+              VC Stack · Weekly
             </div>
             <SubstackEmbed wide />
           </div>

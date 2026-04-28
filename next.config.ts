@@ -5,6 +5,7 @@ import type { NextConfig } from "next";
 //   - GTM / GA (script-src + connect-src)
 //   - Google's favicon service (img-src www.google.com)
 //   - Webflow Cloud CDN (script/style/font/img — *.cosmic.webflow.services)
+//   - GTM-injected analytics: LinkedIn Insight, Microsoft Clarity, PostHog
 //
 // Webflow Cloud rewrites Next.js's _next/static/* asset URLs from same-origin
 // to its per-project CDN subdomain (e.g. <uuid>.wf-app-prod.cosmic.webflow.services).
@@ -15,17 +16,50 @@ import type { NextConfig } from "next";
 // JSON-LD <script> tags. A nonce-based CSP is the next upgrade once the public
 // site stabilises.
 //
+// GTM allowance is a leaky abstraction: GTM itself loads from googletagmanager.com,
+// but every downstream tag (LinkedIn, Clarity, PostHog, etc.) loads from its own
+// CDN and needs its own script-src + connect-src entries here. When you add a new
+// tag in the GTM UI, you must also extend this CSP — otherwise the tag silently
+// fails with a `Refused to load the script` console error and zero data flows.
+//
 // Roll changes out in `Content-Security-Policy-Report-Only` first if you tune
 // the directives below — a broken CSP silently breaks GTM and GA.
 const WEBFLOW_CDN = "https://*.cosmic.webflow.services"
+// LinkedIn Insight Tag: snap.licdn.com (script), px.ads.linkedin.com (pixel beacon).
+// Microsoft Clarity: www.clarity.ms / *.clarity.ms (script + recording endpoint), c.bing.com (Bing Ads attribution).
+// PostHog (US cluster): us-assets.i.posthog.com (script + worker), us.i.posthog.com (event ingest).
+const ANALYTICS_SCRIPT = [
+  "https://snap.licdn.com",
+  "https://*.licdn.com",
+  "https://www.clarity.ms",
+  "https://*.clarity.ms",
+  "https://us-assets.i.posthog.com",
+  "https://*.i.posthog.com",
+].join(' ')
+const ANALYTICS_CONNECT = [
+  "https://px.ads.linkedin.com",
+  "https://*.linkedin.com",
+  "https://*.licdn.com",
+  "https://*.clarity.ms",
+  "https://c.bing.com",
+  "https://us.i.posthog.com",
+  "https://us-assets.i.posthog.com",
+  "https://*.i.posthog.com",
+].join(' ')
+const SCRIPT_SOURCES = `'self' 'unsafe-inline' 'unsafe-eval' ${WEBFLOW_CDN} https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com ${ANALYTICS_SCRIPT}`
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${WEBFLOW_CDN} https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com`,
+  // script-src-elem covers <script src=...>; script-src is the legacy fallback
+  // (older browsers + workers). Keep both in lockstep.
+  `script-src ${SCRIPT_SOURCES}`,
+  `script-src-elem ${SCRIPT_SOURCES}`,
   `style-src 'self' 'unsafe-inline' ${WEBFLOW_CDN} https://fonts.googleapis.com`,
   "img-src 'self' data: blob: https:",
   `font-src 'self' data: ${WEBFLOW_CDN} https://fonts.gstatic.com`,
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.googletagmanager.com",
-  "frame-src 'self' https://*.substack.com",
+  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.googletagmanager.com ${ANALYTICS_CONNECT}`,
+  // PostHog session-replay uses a Web Worker hosted at us-assets.i.posthog.com.
+  "worker-src 'self' blob: https://us-assets.i.posthog.com",
+  "frame-src 'self' https://*.substack.com https://*.clarity.ms",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
