@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { TOTAL_TOOL_APPEARANCES, TOTAL_CATEGORIES } from '@/lib/stats'
 import { COMMANDK_OPEN_EVENT } from '@/components/ui/CommandK'
 import IndianVCsLogo from '@/components/ui/IndianVCsLogo'
+import { SUBSTACK_URL } from '@/lib/substack'
 
 type Cat = { name: string; slug: string }
 
@@ -32,8 +33,8 @@ const CATEGORIES_SECONDARY: Cat[] = [
   { name: 'Other Tools',         slug: 'other-tools' },
 ]
 
-const BLOG_EXTERNAL = 'https://hub.indianvcs.com/'
-const NEWSLETTER_EXTERNAL = 'https://hub.indianvcs.com/newsletter'
+const VC_HUB_EXTERNAL = 'https://hub.indianvcs.com/'
+const NEWSLETTER_EXTERNAL = SUBSTACK_URL
 
 export default function Navbar() {
   const pathname = usePathname() || '/'
@@ -192,7 +193,7 @@ export default function Navbar() {
             </div>
 
             <NavLink href="/market-map" label="Market Map" active={pathname.startsWith('/market-map')} />
-            <NavLink href={BLOG_EXTERNAL} label="VC Hub" external active={false} />
+            <NavLink href={VC_HUB_EXTERNAL} label="VC Hub" external active={false} />
             <NavLink href={NEWSLETTER_EXTERNAL} label="Newsletter" external active={false} />
           </div>
 
@@ -283,7 +284,7 @@ export default function Navbar() {
                 <Link href="/" className={`nav-mobile-link ${pathname === '/' ? 'is-active' : ''}`} onClick={closeMenus}>Home</Link>
                 <Link href="/all-categories" className={`nav-mobile-link ${pathname.startsWith('/all-categories') ? 'is-active' : ''}`} onClick={closeMenus}>All Categories</Link>
                 <Link href="/market-map" className={`nav-mobile-link ${pathname.startsWith('/market-map') ? 'is-active' : ''}`} onClick={closeMenus}>Market Map</Link>
-                <a href={BLOG_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link" onClick={closeMenus}>
+                <a href={VC_HUB_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link" onClick={closeMenus}>
                   VC Hub <span className="ext-arrow" aria-hidden="true">↗</span>
                 </a>
                 <a href={NEWSLETTER_EXTERNAL} target="_blank" rel="noopener noreferrer" className="nav-mobile-link" onClick={closeMenus}>
